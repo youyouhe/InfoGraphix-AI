@@ -1,0 +1,5 @@
+{
+  "name": "InfoGraphix AI",
+  "description": "An AI-powered research assistant that transforms topics into visually stunning infographic reports using Google Gemini and search grounding.",
+  "requestFramePermissions": []
+}
