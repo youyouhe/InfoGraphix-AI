@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "InfoGraphix AI",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "identifier": "ai.infographix.app",
   "build": {
     "frontendDist": "../dist",

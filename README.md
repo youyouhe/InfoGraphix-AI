@@ -9,6 +9,19 @@
 
 [📹 Watch Full Demo Video](https://github.com/youyouhe/InfoGraphix-AI/releases/tag/v1.0.0-demo)
 
+## Download
+
+**Windows Desktop App (Tauri)**
+
+Download the pre-built installer from [GitHub Releases](https://github.com/youyouhe/InfoGraphix-AI/releases):
+
+- **MSI Installer** - Standard Windows installation
+- **NSIS Setup** - Custom installation options
+
+No need to install Node.js or configure environment - just download and run!
+
+[🚀 Download Latest Release](https://github.com/youyouhe/InfoGraphix-AI/releases/latest)
+
 ## Features
 
 - **Multi-Provider LLM Support**: Gemini, DeepSeek, OpenRouter, OpenAI
