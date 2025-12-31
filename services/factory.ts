@@ -3,7 +3,7 @@ import { GeminiProvider } from "./providers/geminiProvider";
 import { DeepSeekProvider } from "./providers/deepSeekProvider";
 import { OpenRouterProvider } from "./providers/openRouterProvider";
 import { OpenAIProvider } from "./providers/openAIProvider";
-import { getApiKey as getTauriApiKey } from "./apiKeyStore";
+import { getApiKey as getTauriApiKey, setApiKey as setTauriApiKey } from "./apiKeyStore";
 
 /**
  * Check if running in Tauri desktop environment
@@ -107,19 +107,30 @@ function getApiKeySync(providerId: string): string {
 }
 
 /**
- * Save API key to localStorage
+ * Save API key to localStorage and Tauri store (if available)
  * @param providerId - Provider identifier
  * @param apiKey - API key to save
  */
-export function saveApiKey(providerId: string, apiKey: string): void {
+export async function saveApiKey(providerId: string, apiKey: string): Promise<void> {
   if (typeof window === 'undefined') {
-    console.warn('[Factory] Window not available, skipping localStorage save');
+    console.warn('[Factory] Window not available, skipping save');
     return;
   }
 
+  // 1. Save to localStorage (for web/fallback)
   const storageKey = `${STORAGE_KEY_PREFIX}${providerId}`;
   localStorage.setItem(storageKey, apiKey);
   console.log(`[Factory] Saved API key for ${providerId} to localStorage`);
+
+  // 2. Also save to Tauri store if available (for desktop app)
+  if (isTauri()) {
+    try {
+      await setTauriApiKey(providerId as keyof import('./apiKeyStore').ApiKeys, apiKey);
+      console.log(`[Factory] Saved API key for ${providerId} to Tauri store`);
+    } catch (e) {
+      console.warn('[Factory] Failed to save to Tauri store:', e);
+    }
+  }
 }
 
 /**
@@ -275,10 +286,17 @@ export class LLMServiceFactory {
   }
 
   /**
-   * Get default provider from environment variable
+   * Get default provider from localStorage, Tauri store, or environment variable
    * @returns Default provider ID
    */
   static getDefaultProvider(): string {
+    // 1. Try localStorage first (for web and quick access)
+    if (typeof window !== 'undefined') {
+      const lsProvider = localStorage.getItem('infographix_default_provider');
+      if (lsProvider) return lsProvider;
+    }
+
+    // 2. Try environment variable
     return process.env.DEFAULT_PROVIDER || 'gemini';
   }
 

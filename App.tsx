@@ -4,11 +4,13 @@ import SettingsModal from './components/SettingsModal';
 import { LLMServiceFactory, saveApiKey, getStoredApiKey } from './services/factory';
 import { HistoryItem, InfographicReport, SectionType, DisplayMode } from './types';
 import { TextSection, StatHighlight, ChartSection, ProcessFlow, ComparisonSection } from './components/Visuals';
-import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings } from 'lucide-react';
+import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings, PanelLeftClose, PanelLeftOpen, Languages } from 'lucide-react';
+import { t, tp } from './i18n';
 import { registerCoreSectionTypes } from './services/registry/coreSections';
 import { sectionRegistry } from './services/registry/sectionRegistry';
 import { ImageExporter } from './services/export/svgExporter';
 import { loadHistory, saveHistory, clearHistoryStorage } from './services/historyStorage';
+import { Language, getInitialLanguage, saveLanguage, UILanguage, getInitialUILanguage, saveUILanguage } from './i18n';
 
 export default function App() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -17,12 +19,17 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showDebug, setShowDebug] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(true);
   const [provider, setProvider] = useState(() => LLMServiceFactory.getDefaultProvider());
   const [model, setModel] = useState(() => {
     const providers = LLMServiceFactory.getAvailableProviders();
     const defaultProvider = providers.find(p => p.id === LLMServiceFactory.getDefaultProvider());
     return defaultProvider?.defaultModel || '';
   });
+  // UI language for interface (en/zh only)
+  const [uiLanguage, setUiLanguage] = useState<UILanguage>(() => getInitialUILanguage());
+  // Output language for LLM (8 languages)
+  const [language, setLanguage] = useState<Language>(() => getInitialLanguage());
 
   // Display Mode state
   const [displayMode, setDisplayMode] = useState<DisplayMode>('scroll-vertical');
@@ -70,6 +77,16 @@ export default function App() {
       setModel(currentProvider.defaultModel);
     }
   }, [provider]);
+
+  // Save language to localStorage when it changes
+  useEffect(() => {
+    saveLanguage(language);
+  }, [language]);
+
+  // Save UI language to localStorage when it changes
+  useEffect(() => {
+    saveUILanguage(uiLanguage);
+  }, [uiLanguage]);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -146,7 +163,7 @@ export default function App() {
             sources: prev?.sources || partialReport.sources
           }));
         }
-      }, { model });  // Pass the selected model
+      }, { model, language });  // Pass the selected model and language
 
       // Final success state
       const newHistoryItem: HistoryItem = {
@@ -185,15 +202,15 @@ export default function App() {
   };
 
   // Handle API Key submission
-  const handleApiKeySubmit = () => {
+  const handleApiKeySubmit = async () => {
     const trimmedKey = apiKeyInput.trim();
     if (!trimmedKey) {
       setError('API key cannot be empty');
       return;
     }
 
-    // Save to localStorage
-    saveApiKey(apiKeyProvider, trimmedKey);
+    // Save to both localStorage and Tauri store (if available)
+    await saveApiKey(apiKeyProvider, trimmedKey);
 
     // Close modal
     setShowApiKeyModal(false);
@@ -310,7 +327,7 @@ export default function App() {
   return (
     <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 dark:bg-[#161618] overflow-hidden text-gray-900 dark:text-white transition-colors duration-300">
       {/* Left Sidebar */}
-      <Sidebar
+      {sidebarVisible && <Sidebar
         history={history}
         onSelectHistory={handleSelectHistory}
         onClearHistory={handleClearHistory}
@@ -327,49 +344,68 @@ export default function App() {
         onPageChange={setCurrentPage}
         totalPages={getTotalPages(currentReport)}
         onSettingsClick={() => setShowSettings(true)}
-      />
+        uiLanguage={uiLanguage}
+        language={language}
+        onLanguageChange={setLanguage}
+      />}
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full relative overflow-hidden">
         {/* Top Bar */}
         <div className="h-16 bg-white dark:bg-[#1a1b1e] border-b border-gray-200 dark:border-zinc-800 flex items-center justify-between px-6 flex-shrink-0 transition-colors duration-300">
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSidebarVisible(!sidebarVisible)}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors"
+              title={sidebarVisible ? t('hideSidebar', uiLanguage) : t('showSidebar', uiLanguage)}
+            >
+              {sidebarVisible ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
+            </button>
             <div className="w-3 h-3 rounded-full bg-red-500" />
             <div className="w-3 h-3 rounded-full bg-yellow-500" />
             <div className="w-3 h-3 rounded-full bg-green-500" />
           </div>
           <div className="bg-gray-100 dark:bg-black/30 px-4 py-1.5 rounded-full text-xs font-mono text-gray-600 dark:text-zinc-500 flex items-center gap-2">
              <span className={`w-2 h-2 rounded-full bg-indigo-500 ${loading ? 'animate-ping' : ''}`}></span>
-             {loading ? 'Streaming...' : 'Preview Mode'}
+             {loading ? t('loading', uiLanguage) : t('previewMode', uiLanguage)}
           </div>
           <div className="flex gap-2 items-center">
-             <button 
+             <button
               onClick={() => setShowDebug(!showDebug)}
               className={`p-2 rounded-lg transition-colors ${showDebug ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400' : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400'}`}
-              title="Toggle Debug View"
+              title={t('debugView', uiLanguage)}
             >
               <Bug size={18} />
             </button>
             <div className="w-px h-4 bg-gray-300 dark:bg-zinc-700 mx-1"></div>
-             <button 
+             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors" 
-              title="Toggle Theme"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors"
+              title={t('toggleTheme', uiLanguage)}
             >
               {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <div className="w-px h-4 bg-gray-300 dark:bg-zinc-700 mx-1"></div>
-            <button className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors" title="Copy Text">
-              <Share2 size={18} />
-            </button>
-             <button
-              onClick={() => displayMode === 'pagination' ? handleExportJpg('current') : handleExportJpg('all')}
-              disabled={!currentReport}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title={displayMode === 'pagination' ? "Export current page as PNG" : "Export all pages as PNG"}
+            <button
+              onClick={() => setUiLanguage(uiLanguage === 'en' ? 'zh' : 'en')}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors text-sm font-medium"
+              title={uiLanguage === 'en' ? '中文' : 'English'}
             >
-              <Download size={18} />
+              <Languages size={18} />
+              <span className="ml-1">{uiLanguage === 'en' ? 'EN' : '中'}</span>
             </button>
+            {displayMode === 'pagination' && (
+              <>
+                <div className="w-px h-4 bg-gray-300 dark:bg-zinc-700 mx-1"></div>
+                <button
+                  onClick={() => handleExportJpg('current')}
+                  disabled={!currentReport}
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Export current page as PNG"
+                >
+                  <Download size={18} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -389,8 +425,8 @@ export default function App() {
                   <Sparkles size={20} className="text-indigo-500 dark:text-indigo-400 animate-pulse" />
                 </div>
               </div>
-              <h2 className="mt-8 text-xl font-light text-gray-900 dark:text-white">Synthesizing Research...</h2>
-              <p className="text-gray-500 dark:text-zinc-500 mt-2 text-sm">Gathering data from valid sources</p>
+              <h2 className="mt-8 text-xl font-light text-gray-900 dark:text-white">{t('synthesizing', uiLanguage)}</h2>
+              <p className="text-gray-500 dark:text-zinc-500 mt-2 text-sm">{t('gatheringData', uiLanguage)}</p>
             </div>
           )}
 
@@ -398,9 +434,9 @@ export default function App() {
           {!currentReport && !loading && !error && (
             <div className="h-full flex flex-col items-center justify-center opacity-30 select-none pointer-events-none">
                <div className="w-64 h-64 rounded-full bg-gradient-to-t from-indigo-500/20 to-transparent blur-3xl absolute" />
-               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 z-10">InfoGraphix AI</h1>
+               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 z-10">{t('appName', uiLanguage)}</h1>
                <p className="text-gray-500 dark:text-zinc-400 max-w-md text-center z-10">
-                 Enter a complex topic on the left to generate a beautiful, data-driven infographic report powered by Gemini.
+                 {t('appTagline', uiLanguage)}
                </p>
             </div>
           )}
@@ -409,7 +445,7 @@ export default function App() {
           {error && (
              <div className="flex flex-col items-center justify-center h-full text-red-500 dark:text-red-400">
                <div className="bg-red-50 dark:bg-red-500/10 p-6 rounded-xl border border-red-200 dark:border-red-500/20 max-w-lg text-center">
-                  <h3 className="text-lg font-bold mb-2">Generation Failed</h3>
+                  <h3 className="text-lg font-bold mb-2">{t('generationFailed', uiLanguage)}</h3>
                   <p>{error}</p>
                </div>
              </div>
@@ -468,7 +504,7 @@ export default function App() {
               {/* Footer Sources */}
               {currentReport.sources && currentReport.sources.length > 0 && !loading && (
                 <div className="mt-16 pt-8 border-t border-gray-200 dark:border-zinc-800 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                  <h4 className="text-xs uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-4">Sources & References</h4>
+                  <h4 className="text-xs uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-4">{t('sources', uiLanguage)}</h4>
                   <div className="flex flex-wrap gap-3">
                     {currentReport.sources.map((source, i) => (
                       <a
@@ -515,7 +551,7 @@ export default function App() {
                   {/* Sources Card */}
                   {currentReport.sources && currentReport.sources.length > 0 && !loading && (
                     <div className="flex-shrink-0 w-[85vw] max-w-4xl snap-center bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl">
-                      <h4 className="text-sm uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-4">Sources & References</h4>
+                      <h4 className="text-sm uppercase tracking-widest text-gray-500 dark:text-zinc-500 mb-4">{t('sources', uiLanguage)}</h4>
                       <div className="flex flex-wrap gap-3">
                         {currentReport.sources.map((source, i) => (
                           <a
@@ -559,7 +595,7 @@ export default function App() {
                     ) : (
                       /* Sources Page */
                       <div className="w-full max-w-4xl bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl animate-fade-in">
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Sources & References</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('sources', uiLanguage)}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {currentReport.sources?.map((source, i) => (
                             <a
@@ -585,13 +621,13 @@ export default function App() {
                       disabled={currentPage === 0}
                       className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
-                      ← Previous
+                      ← {t('previous', uiLanguage)}
                     </button>
                     <span className="text-sm text-gray-500 dark:text-zinc-400 min-w-[100px] text-center">
                       {currentPage === 0
-                        ? 'Summary'
+                        ? t('summary', uiLanguage)
                         : currentPage === currentReport.sections.length + 1
-                          ? 'Sources'
+                          ? t('sources', uiLanguage)
                           : `${currentPage}/${currentReport.sections.length}`}
                     </span>
                     <button
@@ -599,7 +635,7 @@ export default function App() {
                       disabled={currentPage === getTotalPages(currentReport) - 1}
                       className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
-                      Next →
+                      {t('next', uiLanguage)} →
                     </button>
 
                     {/* Export Controls */}
@@ -611,7 +647,7 @@ export default function App() {
                       title="Export current page as PNG"
                     >
                       <Download size={16} />
-                      Export This Page (PNG)
+                      {t('exportCurrent', uiLanguage)}
                     </button>
                     <button
                       onClick={() => handleExportJpg('all')}
@@ -620,7 +656,7 @@ export default function App() {
                       title="Export all pages as PNG"
                     >
                       <Download size={16} />
-                      Export All Pages (PNG)
+                      {t('exportAll', uiLanguage)}
                     </button>
                   </div>
                 </div>
@@ -635,9 +671,9 @@ export default function App() {
              <div className="p-3 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-900/50">
                <div className="flex items-center gap-2">
                  <Bug size={14} className="text-indigo-500" />
-                 <span className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">Live LLM Output</span>
+                 <span className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">{t('liveOutput', uiLanguage)}</span>
                </div>
-               <button 
+               <button
                  onClick={() => setShowDebug(false)}
                  className="p-1 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded text-gray-500 dark:text-zinc-400 transition-colors"
                >
@@ -652,7 +688,7 @@ export default function App() {
                ) : (
                  <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-zinc-600 italic gap-2">
                    <Bug size={32} className="opacity-20" />
-                   <p>No active report data</p>
+                   <p>{t('noReportData', uiLanguage)}</p>
                  </div>
                )}
              </div>
@@ -669,10 +705,10 @@ export default function App() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    Enter API Key
+                    {t('enterApiKey', uiLanguage)}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-zinc-400">
-                    {provider.toUpperCase()} API Key is required
+                    {tp('apiKeyDesc', { provider: provider.toUpperCase() }, uiLanguage)}
                   </p>
                 </div>
                 <button
@@ -697,13 +733,13 @@ export default function App() {
                   onClick={handleApiKeyCancel}
                   className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                 >
-                  Cancel
+                  {t('cancel', uiLanguage)}
                 </button>
                 <button
                   onClick={handleApiKeySubmit}
                   className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors"
                 >
-                  Save & Generate
+                  {t('saveAndGenerate', uiLanguage)}
                 </button>
               </div>
 
@@ -720,6 +756,19 @@ export default function App() {
         <SettingsModal
           isOpen={showSettings}
           onClose={() => setShowSettings(false)}
+          onSaveSuccess={() => {
+            // Reload default provider from localStorage
+            const savedProvider = localStorage.getItem('infographix_default_provider');
+            if (savedProvider && savedProvider !== provider) {
+              setProvider(savedProvider);
+              // Also update model to the new provider's default
+              const providers = LLMServiceFactory.getAvailableProviders();
+              const newProvider = providers.find(p => p.id === savedProvider);
+              if (newProvider) {
+                setModel(newProvider.defaultModel);
+              }
+            }
+          }}
         />
 
         {/* Hidden capture container for PNG export */}
@@ -790,7 +839,7 @@ export default function App() {
                 className="bg-white dark:bg-[#161618]"
                 style={{ padding: '60px', width: '1200px' }}
               >
-                <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-10">Sources & References</h2>
+                <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-10">{t('sources', uiLanguage)}</h2>
                 <div className="grid grid-cols-2 gap-6">
                   {currentReport.sources.map((source, i) => (
                     <a

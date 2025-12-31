@@ -6,9 +6,10 @@ import { LLMServiceFactory } from '../services/factory';
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSaveSuccess?: () => void;
 }
 
-export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
+export default function SettingsModal({ isOpen, onClose, onSaveSuccess }: SettingsModalProps) {
   const [apiKeys, setApiKeys] = useState<Store.ApiKeys>({
     gemini: '',
     deepseek: '',
@@ -56,6 +57,8 @@ export default function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       await Store.setDefaultProvider(defaultProvider);
       setSaveStatus('success');
       setTimeout(() => setSaveStatus('idle'), 2000);
+      // Notify parent component to refresh
+      onSaveSuccess?.();
     } catch (e) {
       console.error('Failed to save settings:', e);
       setSaveStatus('error');

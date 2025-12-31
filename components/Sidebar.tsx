@@ -1,7 +1,8 @@
 import React, { FormEvent, useState } from 'react';
 import { HistoryItem, DisplayMode } from '../types';
-import { History, Plus, MessageSquare, Trash2, Settings, Command, Cpu, Key, Check, Monitor } from 'lucide-react';
+import { History, Plus, MessageSquare, Trash2, Settings, Command, Cpu, Key, Check, Monitor, Copy, Eye, EyeOff, X, Languages } from 'lucide-react';
 import { LLMServiceFactory, getStoredApiKey } from '../services/factory';
+import { Language, SUPPORTED_LANGUAGES, UILanguage, t, tp } from '../i18n';
 
 interface SidebarProps {
   history: HistoryItem[];
@@ -20,6 +21,9 @@ interface SidebarProps {
   onPageChange?: (page: number) => void;
   totalPages?: number;
   onSettingsClick?: () => void;
+  uiLanguage: UILanguage;  // For interface translations (en/zh only)
+  language: Language;       // For LLM output (8 languages)
+  onLanguageChange: (language: Language) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -38,9 +42,15 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentPage = 0,
   onPageChange,
   totalPages = 0,
-  onSettingsClick
+  onSettingsClick,
+  uiLanguage,
+  language,
+  onLanguageChange
 }) => {
   const [input, setInput] = useState('');
+  const [visibleApiKeyModal, setVisibleApiKeyModal] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Get available providers and models
   const availableProviders = LLMServiceFactory.getAvailableProviders();
@@ -56,22 +66,33 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const suggestions = [
-    "Evolution of AI models from 2020 to 2024",
-    "Comparison between React and Vue ecosystems",
-    "Global EV Market Analysis Q3 2024",
-    "Lifecycle of a Star: From Nebula to Black Hole"
+    t('suggestion1', uiLanguage),
+    t('suggestion2', uiLanguage),
+    t('suggestion3', uiLanguage),
+    t('suggestion4', uiLanguage)
   ];
+
+  const handleCopyApiKey = async () => {
+    const apiKey = getStoredApiKey(provider);
+    if (apiKey) {
+      await navigator.clipboard.writeText(apiKey);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const apiKey = getStoredApiKey(provider) || '';
 
   return (
     <div className="w-full md:w-[400px] flex flex-col h-screen bg-gray-50 dark:bg-[#1f2125] border-r border-gray-200 dark:border-zinc-800 flex-shrink-0 transition-colors duration-300">
       {/* Header */}
       <div className="p-4 flex items-center justify-between border-b border-gray-200 dark:border-zinc-800">
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">生成记录</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">{t('history', uiLanguage)}</h1>
         <div className="flex gap-2">
-           <button onClick={onNewChat} className="p-2 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+           <button onClick={onNewChat} className="p-2 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-colors" title={t('newChat', uiLanguage)}>
             <Plus size={18} />
           </button>
-           <button onClick={onClearHistory} className="p-2 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-red-500 dark:hover:text-red-400 transition-colors">
+           <button onClick={onClearHistory} className="p-2 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-red-500 dark:hover:text-red-400 transition-colors" title={t('clearHistory', uiLanguage)}>
             <Trash2 size={18} />
           </button>
         </div>
@@ -81,8 +102,8 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {history.length === 0 ? (
           <div className="text-center text-gray-500 dark:text-zinc-500 mt-10">
-            <p>No history yet.</p>
-            <p className="text-xs mt-2">Start a new research topic.</p>
+            <p>{t('noHistory', uiLanguage)}</p>
+            <p className="text-xs mt-2">{t('noHistoryHint', uiLanguage)}</p>
           </div>
         ) : (
           history.map((item) => (
@@ -122,7 +143,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 handleSubmit(e);
               }
             }}
-            placeholder="Tell me your topic, I will generate an infographic report..."
+            placeholder={t('placeholder', uiLanguage)}
             className="w-full bg-white dark:bg-[#2a2b30] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-zinc-500 text-sm rounded-xl p-4 pr-12 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500/50 border border-gray-300 dark:border-zinc-700 h-24 shadow-sm dark:shadow-none transition-colors"
             disabled={isLoading}
           />
@@ -153,11 +174,23 @@ const Sidebar: React.FC<SidebarProps> = ({
                 ))}
               </select>
               {/* API Key Status Indicator */}
-              {getStoredApiKey(provider) ? (
-                <Check size={12} className="text-green-500" title="API Key configured" />
-              ) : (
-                <Key size={12} className="text-orange-500 cursor-pointer" title="No API Key - click to add" />
-              )}
+              <button
+                onClick={() => {
+                  if (getStoredApiKey(provider)) {
+                    setVisibleApiKeyModal(true);
+                    setShowKey(false);
+                    setCopied(false);
+                  }
+                }}
+                className="cursor-pointer hover:scale-110 transition-transform"
+                title={getStoredApiKey(provider) ? "Click to view API Key" : "No API Key - add in Settings"}
+              >
+                {getStoredApiKey(provider) ? (
+                  <Check size={12} className="text-green-500" />
+                ) : (
+                  <Key size={12} className="text-orange-500" />
+                )}
+              </button>
             </div>
 
             {/* Model Selector */}
@@ -188,9 +221,26 @@ const Sidebar: React.FC<SidebarProps> = ({
               className="bg-transparent text-xs font-medium outline-none cursor-pointer text-gray-600 dark:text-zinc-400 flex-1"
               disabled={isLoading}
             >
-              <option value="scroll-vertical">竖屏滚动</option>
-              <option value="scroll-horizontal">横屏滚动</option>
-              <option value="pagination">翻页模式</option>
+              <option value="scroll-vertical">{t('modeVertical', uiLanguage)}</option>
+              <option value="scroll-horizontal">{t('modeHorizontal', uiLanguage)}</option>
+              <option value="pagination">{t('modePagination', uiLanguage)}</option>
+            </select>
+          </div>
+
+          {/* Language Selector - Output Language (8 languages for LLM) */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
+            <Languages size={12} className="text-zinc-400" />
+            <select
+              value={language}
+              onChange={(e) => onLanguageChange(e.target.value as Language)}
+              className="bg-transparent text-xs font-medium outline-none cursor-pointer text-gray-600 dark:text-zinc-400 flex-1"
+              disabled={isLoading}
+            >
+              {SUPPORTED_LANGUAGES.map(lang => (
+                <option key={lang.code} value={lang.code} className="text-gray-900 dark:text-white bg-white dark:bg-zinc-900">
+                  {lang.flag} {lang.nativeName}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -201,22 +251,22 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onPageChange(Math.max(0, currentPage - 1))}
                 disabled={currentPage === 0}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 disabled:opacity-50 transition-colors"
-                title="Previous page"
+                title={t('previous', uiLanguage)}
               >
                 <span className="text-xs">←</span>
               </button>
               <span className="text-xs text-gray-500 dark:text-zinc-400">
                 {currentPage === 0
-                  ? 'Summary'
+                  ? t('summary', uiLanguage)
                   : currentPage === totalPages - 1
-                    ? 'Sources'
+                    ? t('sources', uiLanguage)
                     : `${currentPage}/${totalPages - 2}`}
               </span>
               <button
                 onClick={() => onPageChange(Math.min(totalPages - 1, currentPage + 1))}
                 disabled={currentPage >= totalPages - 1}
                 className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 disabled:opacity-50 transition-colors"
-                title="Next page"
+                title={t('next', uiLanguage)}
               >
                 <span className="text-xs">→</span>
               </button>
@@ -225,13 +275,13 @@ const Sidebar: React.FC<SidebarProps> = ({
 
           <div className="flex items-center justify-between text-xs text-gray-500 dark:text-zinc-500 px-1">
             <span className="flex items-center gap-1">
-              CMD + Enter to send
+              {t('cmdEnter', uiLanguage)}
             </span>
             {onSettingsClick && (
               <button
                 onClick={onSettingsClick}
                 className="p-1.5 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded text-gray-500 dark:text-zinc-400 transition-colors"
-                title="Settings"
+                title={t('settings', uiLanguage)}
               >
                 <Settings size={14} />
               </button>
@@ -239,6 +289,87 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* API Key View Modal */}
+      {visibleApiKeyModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-zinc-800 max-w-md w-full mx-4 p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                <Key size={24} className="text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {currentProvider?.name} API Key
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-zinc-400">
+                  {t('apiKeyStatus', uiLanguage)}
+                </p>
+              </div>
+              <button
+                onClick={() => setVisibleApiKeyModal(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors"
+                title={t('close', uiLanguage)}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* API Key Display */}
+            <div className="mb-4">
+              <div className="relative">
+                <input
+                  type={showKey ? 'text' : 'password'}
+                  value={apiKey}
+                  readOnly
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 rounded-lg text-gray-900 dark:text-white text-sm pr-24 font-mono"
+                />
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                  <button
+                    onClick={() => setShowKey(!showKey)}
+                    className="p-1.5 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded text-gray-500 dark:text-zinc-400"
+                    title={showKey ? t('close', uiLanguage) : t('apiKeyStatus', uiLanguage)}
+                  >
+                    {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                  <button
+                    onClick={handleCopyApiKey}
+                    className="p-1.5 hover:bg-gray-200 dark:hover:bg-zinc-700 rounded text-gray-500 dark:text-zinc-400 flex items-center gap-1"
+                    title={t('apiKeyStatus', uiLanguage)}
+                  >
+                    {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => {
+                  setVisibleApiKeyModal(false);
+                  onSettingsClick?.();
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-zinc-400 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+              >
+                {t('manageInSettings', uiLanguage)}
+              </button>
+              <button
+                onClick={() => setVisibleApiKeyModal(false)}
+                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors"
+              >
+                {t('close', uiLanguage)}
+              </button>
+            </div>
+
+            {copied && (
+              <div className="mt-4 p-3 bg-green-50 dark:bg-green-500/10 rounded-lg border border-green-200 dark:border-green-500/20 text-center">
+                <span className="text-sm text-green-600 dark:text-green-400">{t('apiKeyCopied', uiLanguage)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

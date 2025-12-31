@@ -2,6 +2,7 @@ import { Type, Schema } from "@google/genai";
 import { CoreSectionTypes } from "../../types";
 import { getSectionTypeSchemaEnum } from "../registry/sectionRegistry";
 import { getEnhancedSystemInstruction } from "./fewShotExamples";
+import { Language } from "../../i18n";
 
 /**
  * Core system instruction for infographic generation
@@ -353,3 +354,133 @@ export const REPORT_JSON_SCHEMA = {
   },
   required: ["title", "summary", "sections"]
 };
+
+/**
+ * Language-specific instructions for infographic generation
+ */
+const LANGUAGE_INSTRUCTIONS: Record<Language, string> = {
+  en: `
+
+**IMPORTANT - LANGUAGE REQUIREMENT:**
+You MUST output ALL content in **English**.
+This includes:
+- Report title and summary
+- All section titles and content
+- All chart labels, data names, and descriptions
+- All step titles and process flow descriptions
+- All comparison items and labels
+
+The user speaks English and expects the entire infographic report in English.`,
+  zh: `
+
+**IMPORTANT - LANGUAGE REQUIREMENT:**
+You MUST output ALL content in **Chinese (Simplified)**.
+This includes:
+- Report title and summary
+- All section titles and content
+- All chart labels, data names, and descriptions
+- All step titles and process flow descriptions
+- All comparison items and labels
+
+The user speaks Chinese and expects the entire infographic report in Chinese.`,
+  ja: `
+
+**IMPORTANT - LANGUAGE REQUIREMENT:**
+You MUST output ALL content in **Japanese**.
+This includes:
+- Report title and summary
+- All section titles and content
+- All chart labels, data names, and descriptions
+- All step titles and process flow descriptions
+- All comparison items and labels
+
+The user speaks Japanese and expects the entire infographic report in Japanese.`,
+  ko: `
+
+**IMPORTANT - LANGUAGE REQUIREMENT:**
+You MUST output ALL content in **Korean**.
+This includes:
+- Report title and summary
+- All section titles and content
+- All chart labels, data names, and descriptions
+- All step titles and process flow descriptions
+- All comparison items and labels
+
+The user speaks Korean and expects the entire infographic report in Korean.`,
+  es: `
+
+**IMPORTANTE - REQUISITO DE IDIOMA:**
+Debes generar TODO el contenido en **español**.
+Esto incluye:
+- Título y resumen del informe
+- Todos los títulos y contenido de las secciones
+- Todas las etiquetas de gráficos, nombres de datos y descripciones
+- Todos los títulos de pasos y descripciones de flujo de procesos
+- Todos los elementos de comparación y etiquetas
+
+El usuario habla español y espera todo el informe de infografía en español.`,
+  fr: `
+
+**IMPORTANT - EXIGENCE DE LANGUE :**
+Vous devez produire TOUT le contenu en **français**.
+Cela inclut :
+- Titre et résumé du rapport
+- Tous les titres et contenus des sections
+- Toutes les étiquettes de graphiques, noms de données et descriptions
+- Tous les titres d'étapes et descriptions de flux de processus
+- Tous les éléments de comparaison et étiquettes
+
+L'utilisateur parle français et s'attend à ce que tout le rapport de l'infographie soit en français.`,
+  de: `
+
+**WICHTIG - SPRACHANFORDERUNG:**
+Sie müssen ALLE Inhalte auf **Deutsch** ausgeben.
+Dies gilt für:
+- Berichtstitel und Zusammenfassung
+- Alle Abschnittstitel und Inhalte
+- Alle Diagrammbeschriftungen, Datennamen und Beschreibungen
+- Alle Schritttitel und Prozessflussbeschreibungen
+- Alle Vergleichselemente und Beschriftungen
+
+Der Benutzer spricht Deutsch und erwartet den gesamten Infografik-Bericht auf Deutsch.`,
+  pt: `
+
+**IMPORTANTE - REQUISITO DE IDIOMA:**
+Você deve produzir TODO o conteúdo em **português**.
+Isso inclui:
+- Título e resumo do relatório
+- Todos os títulos e conteúdos das seções
+- Todos os rótulos de gráficos, nomes de dados e descrições
+- Todos os títulos de etapas e descrições de fluxo de processo
+- Todos os itens de comparação e rótulos
+
+O usuário fala português e espera todo o relatório de infográfico em português.`,
+};
+
+/**
+ * Get localized system instruction for a specific language
+ * @param language - Target language
+ * @returns System instruction with language-specific guidance
+ */
+export function getLocalizedSystemInstruction(language: Language = 'en'): string {
+  const languageInstruction = LANGUAGE_INSTRUCTIONS[language] || '';
+  return CORE_SYSTEM_INSTRUCTION + languageInstruction;
+}
+
+/**
+ * Get language name in native format for display
+ */
+export function getLanguageName(code: Language): string {
+  const names: Record<Language, string> = {
+    en: 'English',
+    zh: '中文 (Simplified)',
+    ja: '日本語',
+    ko: '한국어',
+    es: 'Español',
+    fr: 'Français',
+    de: 'Deutsch',
+    pt: 'Português',
+  };
+  return names[code] || 'English';
+}
+

@@ -1,4 +1,5 @@
 import { InfographicReport } from '../types';
+import { Language } from '../i18n';
 
 /**
  * Provider configuration
@@ -17,6 +18,7 @@ export interface GenerationOptions {
   enableSearch?: boolean;
   maxTokens?: number;
   model?: string;  // Override the default model
+  language?: Language;  // Output language for the report
 }
 
 /**

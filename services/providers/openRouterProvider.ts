@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { InfographicReport } from "../../types";
 import { LLMProvider, ProviderConfig, GenerationOptions } from "../types";
 import { parsePartialJson } from "../utils/jsonParser";
-import { CORE_SYSTEM_INSTRUCTION } from "../prompts/systemPrompt";
+import { getLocalizedSystemInstruction } from "../prompts/systemPrompt";
 import { registerCoreSectionTypes } from "../registry/coreSections";
 
 /**
@@ -43,6 +43,10 @@ export class OpenRouterProvider implements LLMProvider {
     // Ensure core types are registered
     registerCoreSectionTypes();
 
+    // Get localized system instruction based on language
+    const language = options?.language || 'en';
+    const systemPrompt = getLocalizedSystemInstruction(language);
+
     // Retry logic: up to 3 attempts
     const maxRetries = 3;
     let lastError: Error | null = null;
@@ -57,7 +61,7 @@ export class OpenRouterProvider implements LLMProvider {
         // Debug: Log the request
         console.log(`[OpenRouter Provider] Request:`, {
           model,
-          systemPromptLength: CORE_SYSTEM_INSTRUCTION.length,
+          systemPromptLength: systemPrompt.length,
           userPrompt: input,
         });
 
@@ -66,7 +70,7 @@ export class OpenRouterProvider implements LLMProvider {
           messages: [
             {
               role: 'system',
-              content: CORE_SYSTEM_INSTRUCTION,
+              content: systemPrompt,
             },
             {
               role: 'user',

@@ -2,7 +2,7 @@ import { GoogleGenAI } from "@google/genai";
 import { InfographicReport } from "../../types";
 import { LLMProvider, ProviderConfig, GenerationOptions } from "../types";
 import { parsePartialJson } from "../utils/jsonParser";
-import { CORE_SYSTEM_INSTRUCTION, getReportSchema, REPORT_SCHEMA } from "../prompts/systemPrompt";
+import { getReportSchema, getLocalizedSystemInstruction, REPORT_SCHEMA } from "../prompts/systemPrompt";
 import { registerCoreSectionTypes } from "../registry/coreSections";
 
 /**
@@ -34,6 +34,10 @@ export class GeminiProvider implements LLMProvider {
     // Ensure core types are registered
     registerCoreSectionTypes();
 
+    // Get localized system instruction based on language
+    const language = options?.language || 'en';
+    const systemInstruction = getLocalizedSystemInstruction(language);
+
     // Track the last valid partial object to fallback if the final stream is cut off
     let lastValidPartial: InfographicReport | null = null;
 
@@ -47,7 +51,7 @@ export class GeminiProvider implements LLMProvider {
         model: model,
         contents: `Create an infographic report for: "${input}"`,
         config: {
-          systemInstruction: CORE_SYSTEM_INSTRUCTION,
+          systemInstruction: systemInstruction,
           ...(options?.enableSearch !== false && { tools: [{ googleSearch: {} }] }),
           responseMimeType: "application/json",
           responseSchema: reportSchema,
