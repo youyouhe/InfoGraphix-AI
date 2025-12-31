@@ -5,7 +5,9 @@
 
 ## Demo
 
-https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6
+![InfoGraphix AI Demo](https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6)
+
+[📹 Watch Demo Video](https://github.com/youyouhe/InfoGraphix-AI/releases/tag/v1.0.0-demo)
 
 ## Features
 
