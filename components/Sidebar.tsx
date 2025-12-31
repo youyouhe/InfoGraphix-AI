@@ -204,7 +204,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-xs">←</span>
               </button>
               <span className="text-xs text-gray-500 dark:text-zinc-400">
-                {currentPage === 0 ? 'Summary' : `${currentPage}/${totalPages - 1}`}
+                {currentPage === 0
+                  ? 'Summary'
+                  : currentPage === totalPages - 1
+                    ? 'Sources'
+                    : `${currentPage}/${totalPages - 2}`}
               </span>
               <button
                 onClick={() => onPageChange(Math.min(totalPages - 1, currentPage + 1))}

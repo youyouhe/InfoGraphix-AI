@@ -6,8 +6,8 @@ import { TextSection, StatHighlight, ChartSection, ProcessFlow, ComparisonSectio
 import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor } from 'lucide-react';
 import { registerCoreSectionTypes } from './services/registry/coreSections';
 import { sectionRegistry } from './services/registry/sectionRegistry';
-import { PptxExporter } from './services/export/pptxExporter';
-import { PdfExporter } from './services/export/pdfExporter';
+import { ImageExporter } from './services/export/svgExporter';
+import { loadHistory, saveHistory, clearHistoryStorage } from './services/historyStorage';
 
 export default function App() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -32,10 +32,31 @@ export default function App() {
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [apiKeyProvider, setApiKeyProvider] = useState('');
 
+  // Track if history has been loaded from storage
+  const historyLoadedRef = useRef(false);
+
   // Initialize core section types on mount
   useEffect(() => {
     registerCoreSectionTypes();
   }, []);
+
+  // Load history from localStorage on mount (only once)
+  useEffect(() => {
+    if (!historyLoadedRef.current) {
+      const savedHistory = loadHistory();
+      if (savedHistory.length > 0) {
+        setHistory(savedHistory);
+      }
+      historyLoadedRef.current = true;
+    }
+  }, []);
+
+  // Save history to localStorage whenever it changes (after initial load)
+  useEffect(() => {
+    if (historyLoadedRef.current) {
+      saveHistory(history);
+    }
+  }, [history]);
 
   // Update model when provider changes
   useEffect(() => {
@@ -151,6 +172,7 @@ export default function App() {
   const handleClearHistory = () => {
     setHistory([]);
     setCurrentReport(null);
+    clearHistoryStorage();
   };
 
   const handleNewChat = () => {
@@ -195,12 +217,19 @@ export default function App() {
     return !!getStoredApiKey(providerId);
   };
 
-  // Handle PDF export (using modern-screenshot for visual fidelity)
-  const handleExportPPT = async () => {
+  // Get total pages count for pagination
+  const getTotalPages = (report: InfographicReport | null): number => {
+    if (!report) return 0;
+    // 1 for summary + sections + 1 for sources (if exists)
+    return 1 + report.sections.length + (report.sources && report.sources.length > 0 ? 1 : 0);
+  };
+
+  // Handle PNG export - export current page or all pages
+  const handleExportJpg = async (mode: 'current' | 'all' = 'current') => {
     if (!currentReport || !captureContainerRef.current) return;
 
     try {
-      const exporter = new PdfExporter();
+      const exporter = new ImageExporter();
 
       // Helper function to get section elements from capture container
       const getSectionElement = (type: 'title' | 'section' | 'sources', index?: number) => {
@@ -223,10 +252,16 @@ export default function App() {
         .replace(/[<>:"/\\|?*]/g, '')
         .substring(0, 50);
 
-      await exporter.export(currentReport, getSectionElement, `${sanitizedTitle}.pdf`, isDarkMode);
+      if (mode === 'current') {
+        // Export current page only
+        await exporter.exportSinglePage(currentReport, currentPage, getSectionElement, sanitizedTitle, isDarkMode);
+      } else {
+        // Export all pages
+        await exporter.exportAllPages(currentReport, getSectionElement, sanitizedTitle, isDarkMode);
+      }
     } catch (err: any) {
-      console.error('PDF export failed:', err);
-      setError('Failed to export PDF. Please try again.');
+      console.error('PNG export failed:', err);
+      setError('Failed to export PNG. Please try again.');
     }
   };
 
@@ -286,7 +321,7 @@ export default function App() {
         onDisplayModeChange={setDisplayMode}
         currentPage={currentPage}
         onPageChange={setCurrentPage}
-        totalPages={currentReport ? (currentReport.sections.length + 1) : 0}
+        totalPages={getTotalPages(currentReport)}
       />
 
       {/* Main Content Area */}
@@ -323,10 +358,10 @@ export default function App() {
               <Share2 size={18} />
             </button>
              <button
-              onClick={handleExportPPT}
+              onClick={() => displayMode === 'pagination' ? handleExportJpg('current') : handleExportJpg('all')}
               disabled={!currentReport}
               className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              title="Export as PPT"
+              title={displayMode === 'pagination' ? "Export current page as PNG" : "Export all pages as PNG"}
             >
               <Download size={18} />
             </button>
@@ -511,10 +546,29 @@ export default function App() {
                           {currentReport.summary || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-full inline-block"></span>}
                         </p>
                       </div>
-                    ) : (
+                    ) : currentPage <= currentReport.sections.length ? (
                       /* Section Page */
                       <div className="w-full max-w-4xl animate-fade-in">
                         {renderSection(currentReport.sections[currentPage - 1], currentPage - 1)}
+                      </div>
+                    ) : (
+                      /* Sources Page */
+                      <div className="w-full max-w-4xl bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl animate-fade-in">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Sources & References</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {currentReport.sources?.map((source, i) => (
+                            <a
+                              key={i}
+                              href={source.uri}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:border-indigo-500/50 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors text-sm text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300"
+                            >
+                              <ExternalLink size={14} />
+                              <span className="truncate">{source.title}</span>
+                            </a>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -531,14 +585,37 @@ export default function App() {
                     <span className="text-sm text-gray-500 dark:text-zinc-400 min-w-[100px] text-center">
                       {currentPage === 0
                         ? 'Summary'
-                        : `${currentPage}/${currentReport.sections.length}`}
+                        : currentPage === currentReport.sections.length + 1
+                          ? 'Sources'
+                          : `${currentPage}/${currentReport.sections.length}`}
                     </span>
                     <button
-                      onClick={() => setCurrentPage(Math.min(currentReport.sections.length, currentPage + 1))}
-                      disabled={currentPage === currentReport.sections.length}
+                      onClick={() => setCurrentPage(Math.min(getTotalPages(currentReport) - 1, currentPage + 1))}
+                      disabled={currentPage === getTotalPages(currentReport) - 1}
                       className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                     >
                       Next →
+                    </button>
+
+                    {/* Export Controls */}
+                    <div className="w-px h-6 bg-gray-300 dark:bg-zinc-700 mx-2"></div>
+                    <button
+                      onClick={() => handleExportJpg('current')}
+                      disabled={!currentReport}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex items-center gap-2"
+                      title="Export current page as PNG"
+                    >
+                      <Download size={16} />
+                      Export This Page (PNG)
+                    </button>
+                    <button
+                      onClick={() => handleExportJpg('all')}
+                      disabled={!currentReport}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex items-center gap-2"
+                      title="Export all pages as PNG"
+                    >
+                      <Download size={16} />
+                      Export All Pages (PNG)
                     </button>
                   </div>
                 </div>
@@ -634,18 +711,18 @@ export default function App() {
           </div>
         )}
 
-        {/* Hidden capture container for PDF export */}
+        {/* Hidden capture container for PNG export */}
         {currentReport && (
           <div
             ref={captureContainerRef}
-            className="fixed -left-[9999px] top-0 pointer-events-none"
-            style={{ width: 'fit-content', height: 'fit-content' }}
+            className="fixed left-0 top-0 pointer-events-none -z-50"
+            style={{ visibility: 'hidden', width: 'fit-content', height: 'fit-content' }}
           >
             {/* Title + Summary Page */}
             <div
               data-export-page="title"
               className="bg-white dark:bg-[#161618]"
-              style={{ padding: '60px', minWidth: '800px' }}
+              style={{ padding: '60px', width: '1200px' }}
             >
               <div className="text-center relative">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
@@ -666,7 +743,7 @@ export default function App() {
                 key={idx}
                 data-export-page={`section-${idx}`}
                 className="bg-white dark:bg-[#161618] flex items-center justify-center"
-                style={{ padding: '40px', minWidth: '800px' }}
+                style={{ padding: '40px', width: '1200px' }}
               >
                 {(() => {
                   const props = { ...section, isDark: isDarkMode, isLoading: false };
@@ -700,7 +777,7 @@ export default function App() {
               <div
                 data-export-page="sources"
                 className="bg-white dark:bg-[#161618]"
-                style={{ padding: '60px', minWidth: '800px' }}
+                style={{ padding: '60px', width: '1200px' }}
               >
                 <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-10">Sources & References</h2>
                 <div className="grid grid-cols-2 gap-6">
