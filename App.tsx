@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
+import SettingsModal from './components/SettingsModal';
 import { LLMServiceFactory, saveApiKey, getStoredApiKey } from './services/factory';
 import { HistoryItem, InfographicReport, SectionType, DisplayMode } from './types';
 import { TextSection, StatHighlight, ChartSection, ProcessFlow, ComparisonSection } from './components/Visuals';
-import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor } from 'lucide-react';
+import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings } from 'lucide-react';
 import { registerCoreSectionTypes } from './services/registry/coreSections';
 import { sectionRegistry } from './services/registry/sectionRegistry';
 import { ImageExporter } from './services/export/svgExporter';
@@ -31,6 +32,9 @@ export default function App() {
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [apiKeyProvider, setApiKeyProvider] = useState('');
+
+  // Settings Modal state
+  const [showSettings, setShowSettings] = useState(false);
 
   // Track if history has been loaded from storage
   const historyLoadedRef = useRef(false);
@@ -322,6 +326,7 @@ export default function App() {
         currentPage={currentPage}
         onPageChange={setCurrentPage}
         totalPages={getTotalPages(currentReport)}
+        onSettingsClick={() => setShowSettings(true)}
       />
 
       {/* Main Content Area */}
@@ -710,6 +715,12 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* Settings Modal */}
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
 
         {/* Hidden capture container for PNG export */}
         {currentReport && (

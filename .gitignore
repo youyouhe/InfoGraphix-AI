@@ -25,3 +25,11 @@ dist-ssr
 
 # Articles
 articles/
+
+# Tauri
+src-tauri/target
+src-tauri/Cargo.lock
+
+# Tauri build outputs
+src-tauri/target/release/bundle/
+src-tauri/target/debug/bundle/

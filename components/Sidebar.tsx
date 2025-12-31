@@ -19,6 +19,7 @@ interface SidebarProps {
   currentPage?: number;
   onPageChange?: (page: number) => void;
   totalPages?: number;
+  onSettingsClick?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -36,7 +37,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onDisplayModeChange,
   currentPage = 0,
   onPageChange,
-  totalPages = 0
+  totalPages = 0,
+  onSettingsClick
 }) => {
   const [input, setInput] = useState('');
 
@@ -225,6 +227,15 @@ const Sidebar: React.FC<SidebarProps> = ({
             <span className="flex items-center gap-1">
               CMD + Enter to send
             </span>
+            {onSettingsClick && (
+              <button
+                onClick={onSettingsClick}
+                className="p-1.5 hover:bg-gray-200 dark:hover:bg-zinc-800 rounded text-gray-500 dark:text-zinc-400 transition-colors"
+                title="Settings"
+              >
+                <Settings size={14} />
+              </button>
+            )}
           </div>
         </div>
       </div>

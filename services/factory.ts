@@ -3,12 +3,33 @@ import { GeminiProvider } from "./providers/geminiProvider";
 import { DeepSeekProvider } from "./providers/deepSeekProvider";
 import { OpenRouterProvider } from "./providers/openRouterProvider";
 import { OpenAIProvider } from "./providers/openAIProvider";
+import { getApiKey as getTauriApiKey } from "./apiKeyStore";
+
+/**
+ * Check if running in Tauri desktop environment
+ */
+function isTauri(): boolean {
+  return typeof window !== 'undefined' && '__TAURI__' in window;
+}
 
 /**
  * Get provider configuration from environment variables
+ * Uses sync version for compatibility with existing synchronous code
  */
 export function getProviderConfig(providerId: string): ProviderConfig {
-  const apiKey = getApiKey(providerId);
+  const apiKey = getApiKeySync(providerId);
+
+  return {
+    apiKey,
+    model: undefined, // Use provider's default model
+  };
+}
+
+/**
+ * Get provider configuration with async support (for Tauri)
+ */
+export async function getProviderConfigAsync(providerId: string): Promise<ProviderConfig> {
+  const apiKey = await getApiKey(providerId);
 
   return {
     apiKey,
@@ -23,10 +44,22 @@ const STORAGE_KEY_PREFIX = 'infographix_apikey_';
 
 /**
  * Get API key for a specific provider
- * Priority: localStorage > environment variables
+ * Priority: Tauri store > localStorage > environment variables
  */
-function getApiKey(providerId: string): string {
-  // 1. Try localStorage first
+async function getApiKey(providerId: string): Promise<string> {
+  // 1. Try Tauri store first (desktop app)
+  if (isTauri()) {
+    try {
+      const tauriKey = await getTauriApiKey(providerId);
+      if (tauriKey) {
+        return tauriKey;
+      }
+    } catch (e) {
+      console.warn('[Factory] Tauri store not available:', e);
+    }
+  }
+
+  // 2. Try localStorage
   const storageKey = `${STORAGE_KEY_PREFIX}${providerId}`;
   const storedKey = typeof window !== 'undefined' ? localStorage.getItem(storageKey) : null;
 
@@ -34,7 +67,33 @@ function getApiKey(providerId: string): string {
     return storedKey;
   }
 
-  // 2. Fallback to environment variables
+  // 3. Fallback to environment variables
+  const envKey = getEnvKeyName(providerId);
+  const apiKey =
+    (process.env[envKey] as string) ||
+    (process.env[`${providerId.toUpperCase()}_API_KEY`] as string);
+
+  if (!apiKey) {
+    throw new Error(`API key for ${providerId} is missing. Set ${envKey} in .env.local or enter it in the UI.`);
+  }
+
+  return apiKey;
+}
+
+/**
+ * Synchronous version of getApiKey for compatibility
+ * This returns the key from localStorage or env vars (not Tauri store)
+ */
+function getApiKeySync(providerId: string): string {
+  // Try localStorage first
+  const storageKey = `${STORAGE_KEY_PREFIX}${providerId}`;
+  const storedKey = typeof window !== 'undefined' ? localStorage.getItem(storageKey) : null;
+
+  if (storedKey) {
+    return storedKey;
+  }
+
+  // Fallback to environment variables
   const envKey = getEnvKeyName(providerId);
   const apiKey =
     (process.env[envKey] as string) ||
@@ -224,13 +283,27 @@ export class LLMServiceFactory {
   }
 
   /**
-   * Check if a provider has its API key configured
+   * Check if a provider has its API key configured (sync version)
    * @param providerId - Provider identifier
    * @returns True if API key is available
    */
   static hasApiKey(providerId: string): boolean {
     try {
-      getApiKey(providerId);
+      getApiKeySync(providerId);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if a provider has its API key configured (async version for Tauri)
+   * @param providerId - Provider identifier
+   * @returns True if API key is available
+   */
+  static async hasApiKeyAsync(providerId: string): Promise<boolean> {
+    try {
+      await getApiKey(providerId);
       return true;
     } catch {
       return false;
