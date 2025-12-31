@@ -5,9 +5,9 @@
 
 ## Demo
 
-![InfoGraphix AI Demo](public/cut01.png)
+![InfoGraphix AI Demo](public/demo.gif)
 
-[📹 Watch Demo Video](https://github.com/youyouhe/InfoGraphix-AI/releases/tag/v1.0.0-demo)
+[📹 Watch Full Demo Video](https://github.com/youyouhe/InfoGraphix-AI/releases/tag/v1.0.0-demo)
 
 ## Features
 
