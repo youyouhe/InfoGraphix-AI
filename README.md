@@ -3,6 +3,10 @@
   <p>Transform research topics into beautiful infographic reports powered by AI</p>
 </div>
 
+## Demo
+
+https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6
+
 ## Features
 
 - **Multi-Provider LLM Support**: Gemini, DeepSeek, OpenRouter, OpenAI
