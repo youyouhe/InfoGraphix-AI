@@ -9,6 +9,7 @@ import { StatHighlight } from '../../components/Visuals';
 import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
+import { SequenceTimeline } from '../../components/Visuals';
 
 /**
  * Register all core section types
@@ -79,6 +80,17 @@ export function registerCoreSectionTypes(): void {
     requiredFields: ['comparisonItems'],
     optionalFields: ['content'],
     forbiddenFields: ['data', 'steps', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Sequence Timeline Section
+  registerSectionType({
+    type: 'sequence-timeline-simple',
+    displayName: 'Timeline',
+    category: 'sequence',
+    component: SequenceTimeline,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 }
 

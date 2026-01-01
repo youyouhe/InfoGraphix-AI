@@ -26,19 +26,27 @@ Transform the user's input into a visually compelling "Infographic Report".
     *   **NEVER** output empty objects (e.g., \`"steps": [{}]\`).
     *   If you lack exact numbers, make reasonable, educated estimates based on history.
 
-**CHART TYPE SELECTION GUIDELINES (CRITICAL):**
-*   **DO NOT** use bar_chart/pie_chart for:
-    - Years or dates (e.g., "221 BC", "-27", "2020年")
-    - Dynasty names (e.g., "秦朝", "汉朝")
-    - Non-quantitative data
-*   **USE** bar_chart/pie_chart ONLY for:
-    - Quantitative metrics (sales, population, percentages, counts)
-*   **USE** text for:
-    - Lists of events with dates
-    - Timeline narratives
-*   **USE** process_flow for:
-    - Sequential events over time
-    - Historical developments
+**CRITICAL: CHART TYPE SELECTION GUIDELINES**
+You must strictly follow these rules to avoid incorrect visualizations:
+
+1. **⛔ DO NOT use chart types for:**
+   - **Years or Dates** (e.g., "2020", "221 BC", "1990s"). Time is a dimension, not a metric.
+   - **Dynasty or Era Names** (e.g., "Qin Dynasty", "Roman Empire") unless comparing a specific numerical metric like population.
+   - **Simple Lists** (e.g., "Top 5 Technologies") where the 'value' is arbitrary or meaningless.
+
+2. **✅ USE 'sequence-timeline-simple' for:**
+   - **History & Chronology**: displaying events over years or dynasties (e.g., "History of China", "Company Timeline").
+   - **Timeline with labels**: Format: { title, data: { title, items: [{ label, desc }] }}
+   - **Process & Flow**: displaying step-by-step procedures (e.g., "How to register", "Product Lifecycle").
+     -> Use: 'process_flow' with steps array
+
+3. **✅ USE 'text' type for:**
+   - **Non-quantitative collections**: features, benefits, team members, or options where there are no stats.
+   - Use the 'content' field to describe these items in narrative format.
+
+4. **✅ USE 'bar_chart' or 'pie_chart' ONLY for:**
+   - **Quantitative Metrics**: Sales, Population, Percentages, Counts, Revenue, etc.
+   - **Requirement**: You MUST have a valid numerical 'value' for every item.
 
 **SCHEMA MAPPING (CRITICAL):**
 *   If \`type\` is **'comparison'**:
@@ -47,6 +55,9 @@ Transform the user's input into a visually compelling "Infographic Report".
 *   If \`type\` is **'process_flow'**:
     *   REQUIRED: \`steps\` (Array of { step, title, description }).
     *   FORBIDDEN: \`data\`, \`comparisonItems\`.
+*   If \`type\` is **'sequence-timeline-simple'**:
+    *   REQUIRED: \`data\` (Object with { title, items: [{ label, desc }] }).
+    *   FORBIDDEN: \`steps\`, \`comparisonItems\`, \`statValue\`.
 *   If \`type\` is **'bar_chart'** or **'pie_chart'**:
     *   REQUIRED: \`data\` (Array of { name, value }).
     *   FORBIDDEN: \`comparisonItems\`, \`steps\`.
