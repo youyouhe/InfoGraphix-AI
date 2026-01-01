@@ -489,3 +489,137 @@ export const ListColumn: React.FC<VisualProps> = ({ section, isLoading = false }
     </div>
   );
 };
+
+// --- Sequence Circular (for sequence-circular-simple) ---
+export const SequenceCircular: React.FC<VisualProps> = ({ section, isLoading = false }) => {
+  const circularData = section.data as { title?: string; items?: { label: string; desc: string; icon?: string }[] };
+
+  if (!circularData?.items || circularData.items.length === 0) {
+    return <DataPlaceholder isLoading={isLoading} title={section.title} type="Process" />;
+  }
+
+  return (
+    <div className="mb-8 p-6 bg-white dark:bg-zinc-900/80 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
+      {circularData.title && <p className="text-center text-gray-500 dark:text-zinc-500 text-sm mb-6">{circularData.title}</p>}
+
+      <div className="flex flex-wrap justify-center gap-6">
+        {circularData.items.map((item, index) => (
+          <div key={index} className="flex flex-col items-center gap-3">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+              {circularData.items.findIndex(i => i === item) + 1}
+            </div>
+            <div className="w-32 p-4 bg-gradient-to-br from-gray-50 to-white dark:from-zinc-800 dark:to-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-shadow text-center">
+              {item.icon && <div className="text-2xl mb-2">{item.icon}</div>}
+              <h4 className="font-bold text-gray-900 dark:text-white text-sm mb-1">{item.label}</h4>
+              <p className="text-xs text-gray-600 dark:text-zinc-400">{item.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// --- Chart Column Simple (for chart-column-simple) ---
+export const ChartColumnSimple: React.FC<VisualProps> = ({ section, isLoading = false }) => {
+  const chartData = section.data as { title?: string; items?: { label: string; value: number; color?: string }[] };
+
+  if (!chartData?.items || chartData.items.length === 0) {
+    return <DataPlaceholder isLoading={isLoading} title={section.title} type="Chart" />;
+  }
+
+  const maxValue = Math.max(...chartData.items.map(d => d.value));
+
+  return (
+    <div className="mb-8 p-6 bg-white dark:bg-zinc-900/80 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
+      {chartData.title && <p className="text-center text-gray-500 dark:text-zinc-500 text-sm mb-6">{chartData.title}</p>}
+
+      <div className="h-64 flex items-end gap-2">
+        {chartData.items.map((item, index) => {
+          const height = (item.value / maxValue) * 100;
+          const color = item.color || COLORS[index % COLORS.length];
+
+          return (
+            <div key={index} className="flex-1 flex flex-col items-center">
+              <div
+                className="w-full bg-gradient-to-t from-indigo-500 to-indigo-600 rounded-t-lg"
+                style={{ height: `${height}%`, backgroundColor: color }}
+              ></div>
+              <p className="text-xs text-gray-900 dark:text-white text-center mt-1 truncate w-full">{item.label}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// --- Chart Line Plain (for chart-line-plain-text) ---
+export const ChartLinePlain: React.FC<VisualProps> = ({ section, isLoading = false }) => {
+  const chartData = section.data as { title?: string; items?: { label: string; value: number }[] };
+
+  if (!chartData?.items || chartData.items.length === 0) {
+    return return <DataPlaceholder isLoading={isLoading} title={section.title} type="Chart" />;
+  }
+
+  const chartType = section.type as string;
+  const isLineChart = chartType === 'chart-line-plain-text';
+
+  return (
+    <div className="mb-8 p-6 bg-white dark:bg-zinc-900/80 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
+      {chartData.title && <p className="text-center text-gray-500 dark:text-zinc-500 text-sm mb-6">{chartData.title}</p>}
+
+      <div className="h-64 flex items-center">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={chartData.items} margin={{ top: 20, right:20, left:20, bottom:40 }}>
+            <XAxis dataKey="label" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+              {chartData.items.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div  );
+};
+
+// --- Quadrant Quarter Card (for quadrant-quarter-simple-card) ---
+export const QuadrantQuarterCard: React.FC<VisualProps> = ({ section, isLoading = false }) => {
+  const quadrantData = section.data as { title?: string; quadrants?: { label: string; content: string }[] };
+
+  if (!quadrantData?.quadrants || quadrantData.quadrants.length === 0) {
+    return <DataPlaceholder isLoading={isLoading} title={section.title} type="Chart" />;
+  }
+
+  const getQuadrantColor = (index: number) => {
+    const colors = [
+      'bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800 text-blue-700 dark:text-blue-400',
+      'bg-red-50 dark:bg-red-900/20 dark:border-red-800 text-red-700 dark:text-red-400',
+      'bg-yellow-50 dark:bg-yellow-900/20 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400',
+      'bg-green-50 dark:bg-green-900/20 dark:border-green-800 text-green-700 dark:text-green-400'
+    ];
+    return colors[index % 4];
+  };
+
+  return (
+    <div className="mb-8 p-6 bg-white dark:bg-zinc-900/80 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm dark:shadow-none">
+      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
+      {quadrantData.title && <p className="text-center text-gray-500 dark:text-zinc-500 text-sm mb-6">{quadrantData.title}</p>}
+
+      <div className="grid grid-cols-2 gap-4">
+        {quadrantData.quadrants.map((quadrant, index) => (
+          <div key={index} className={`p-6 rounded-xl border ${getQuadrantColor(index)}`}>
+            <h4 className="text-center font-bold text-lg mb-3">{quadrant.label}</h4>
+            <p className="text-sm leading-relaxed">{quadrant.content}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};

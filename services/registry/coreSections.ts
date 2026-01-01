@@ -9,8 +9,8 @@ import { StatHighlight } from '../../components/Visuals';
 import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
-import { SequenceTimeline, SequenceSteps } from '../../components/Visuals';
-import { ListGrid, ListRow, ListColumn, CompareBinary, SWOTAnalysis } from '../../components/Visuals';
+import { SequenceTimeline, SequenceSteps, SequenceCircular } from '../../components/Visuals';
+import { ListGrid, ListRow, ListColumn, CompareBinary, SWOTAnalysis, ChartColumnSimple, ChartLinePlain, QuadrantQuarterCard } from '../../components/Visuals';
 
 /**
  * Register all core section types
@@ -224,6 +224,59 @@ export function registerCoreSectionTypes(): void {
     displayName: 'Zigzag Up',
     category: 'list',
     component: ListRow,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Sequence Circular Section
+  registerSectionType({
+    type: 'sequence-circular-simple',
+    displayName: 'Circular Process',
+    category: 'sequence',
+    component: SequenceCircular,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Chart Column Simple
+  registerSectionType({
+    type: 'chart-column-simple',
+    displayName: 'Column Chart Simple',
+    category: 'chart',
+    component: ChartColumnSimple,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  registerSectionType({
+    type: 'chart-line-plain-text',
+    displayName: 'Line Chart',
+    category: 'chart',
+    component: ChartLinePlain,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Quadrant Quarter
+  registerSectionType({
+    type: 'quadrant-quarter-simple-card',
+    displayName: 'Quadrant Card',
+    category: 'quadrant',
+    component: QuadrantQuarterCard,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  registerSectionType({
+    type: 'quadrant-quarter-circular',
+    displayName: 'Quadrant Circular',
+    category: 'quadrant',
+    component: QuadrantQuarterCard,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
