@@ -240,7 +240,7 @@ export default function App() {
 
   // Get total pages count for pagination
   const getTotalPages = (report: InfographicReport | null): number => {
-    if (!report) return 0;
+    if (!report || !report.sections) return 0;
     // 1 for summary + sections + 1 for sources (if exists)
     return 1 + report.sections.length + (report.sources && report.sources.length > 0 ? 1 : 0);
   };
