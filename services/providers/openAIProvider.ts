@@ -40,7 +40,8 @@ export class OpenAIProvider implements LLMProvider {
 
     // Get localized system instruction based on language
     const language = options?.language || 'en';
-    const systemPrompt = getLocalizedSystemInstruction(language);
+    const sectionCount = options?.sectionCount || 5;
+    const systemPrompt = getLocalizedSystemInstruction(language, sectionCount);
 
     // Retry logic: up to 3 attempts
     const maxRetries = 3;

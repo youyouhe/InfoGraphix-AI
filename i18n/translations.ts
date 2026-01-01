@@ -81,6 +81,7 @@ export const translations: Translations = {
     next: 'Next',
     summary: 'Summary',
     page: 'Page',
+    sections: 'sections',
 
     // Suggestions
     suggestion1: 'Evolution of AI models from 2020 to 2024',
@@ -162,6 +163,7 @@ export const translations: Translations = {
     next: '下一页',
     summary: '摘要',
     page: '页面',
+    sections: '节',
 
     // Suggestions
     suggestion1: '2020-2024年 AI 模型演进史',

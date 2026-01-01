@@ -19,6 +19,7 @@ export interface GenerationOptions {
   maxTokens?: number;
   model?: string;  // Override the default model
   language?: Language;  // Output language for the report
+  sectionCount?: number;  // Number of sections to generate (5, 10, 15, 20, 30)
 }
 
 /**

@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react';
 import { HistoryItem, DisplayMode } from '../types';
-import { History, Plus, MessageSquare, Trash2, Settings, Command, Cpu, Key, Check, Monitor, Copy, Eye, EyeOff, X, Languages } from 'lucide-react';
+import { History, Plus, MessageSquare, Trash2, Settings, Command, Cpu, Key, Check, Monitor, Copy, Eye, EyeOff, X, Languages, FileText } from 'lucide-react';
 import { LLMServiceFactory, getStoredApiKey } from '../services/factory';
 import { Language, SUPPORTED_LANGUAGES, UILanguage, t, tp } from '../i18n';
 
@@ -24,6 +24,8 @@ interface SidebarProps {
   uiLanguage: UILanguage;  // For interface translations (en/zh only)
   language: Language;       // For LLM output (8 languages)
   onLanguageChange: (language: Language) => void;
+  sectionCount: number;     // Number of sections to generate (5, 10, 15, 20, 30)
+  onSectionCountChange: (count: number) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -45,7 +47,9 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSettingsClick,
   uiLanguage,
   language,
-  onLanguageChange
+  onLanguageChange,
+  sectionCount,
+  onSectionCountChange
 }) => {
   const [input, setInput] = useState('');
   const [visibleApiKeyModal, setVisibleApiKeyModal] = useState(false);
@@ -210,6 +214,23 @@ const Sidebar: React.FC<SidebarProps> = ({
                 </select>
               </div>
             )}
+          </div>
+
+          {/* Section Count Selector */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700">
+            <FileText size={12} className="text-zinc-400" />
+            <select
+              value={sectionCount.toString()}
+              onChange={(e) => onSectionCountChange(parseInt(e.target.value))}
+              className="bg-transparent text-xs font-medium outline-none cursor-pointer text-gray-600 dark:text-zinc-400 flex-1"
+              disabled={isLoading}
+            >
+              <option value="5" className="text-gray-900 dark:text-white bg-white dark:bg-zinc-900">5 {t('sections', uiLanguage)}</option>
+              <option value="10" className="text-gray-900 dark:text-white bg-white dark:bg-zinc-900">10 {t('sections', uiLanguage)}</option>
+              <option value="15" className="text-gray-900 dark:text-white bg-white dark:bg-zinc-900">15 {t('sections', uiLanguage)}</option>
+              <option value="20" className="text-gray-900 dark:text-white bg-white dark:bg-zinc-900">20 {t('sections', uiLanguage)}</option>
+              <option value="30" className="text-gray-900 dark:text-white bg-white dark:bg-zinc-900">30 {t('sections', uiLanguage)}</option>
+            </select>
           </div>
 
           {/* Display Mode Selector */}

@@ -7,15 +7,17 @@ import { Language } from "../../i18n";
 /**
  * Core system instruction for infographic generation
  * Works across all LLM providers
+ * @param sectionCount - Number of sections to generate (default: 5)
  */
-export const CORE_SYSTEM_INSTRUCTION = `
+export function getCoreSystemInstruction(sectionCount: number = 5): string {
+  return `
 You are an expert Information Designer and Data Journalist.
 
 **Your Goal:**
 Transform the user's input into a visually compelling "Infographic Report".
 
 **STRICT GENERATION RULES:**
-1.  **Section Count:** Generate as many sections as needed to thoroughly cover the topic. 
+1.  **Section Count:** Generate exactly **${sectionCount} sections** to thoroughly cover the topic.
 2.  **No Loops:** Do not repeat similar sections. Cover different aspects (History, Economics, Technology, Future).
 3.  **Data Quantity Requirements:**
     *   bar_chart/pie_chart: Include at least **5-8 data points**. More data = better visualization.
@@ -72,6 +74,13 @@ You must strictly follow these rules to avoid incorrect visualizations:
 
 ${getEnhancedSystemInstruction()}
 `;
+}
+
+/**
+ * Legacy constant for backward compatibility (deprecated)
+ * @deprecated Use getCoreSystemInstruction(sectionCount) instead
+ */
+export const CORE_SYSTEM_INSTRUCTION = getCoreSystemInstruction(5);
 
 /**
  * Get dynamic report schema for Gemini (uses native Schema type)
@@ -471,11 +480,12 @@ O usuário fala português e espera todo o relatório de infográfico em portugu
 /**
  * Get localized system instruction for a specific language
  * @param language - Target language
+ * @param sectionCount - Number of sections to generate (default: 5)
  * @returns System instruction with language-specific guidance
  */
-export function getLocalizedSystemInstruction(language: Language = 'en'): string {
+export function getLocalizedSystemInstruction(language: Language = 'en', sectionCount: number = 5): string {
   const languageInstruction = LANGUAGE_INSTRUCTIONS[language] || '';
-  return CORE_SYSTEM_INSTRUCTION + languageInstruction;
+  return getCoreSystemInstruction(sectionCount) + languageInstruction;
 }
 
 /**

@@ -30,6 +30,14 @@ export default function App() {
   const [uiLanguage, setUiLanguage] = useState<UILanguage>(() => getInitialUILanguage());
   // Output language for LLM (8 languages)
   const [language, setLanguage] = useState<Language>(() => getInitialLanguage());
+  // Section count for generated output
+  const [sectionCount, setSectionCount] = useState<number>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('infographix_section_count');
+      if (saved) return parseInt(saved);
+    }
+    return 5; // Default
+  });
 
   // Display Mode state
   const [displayMode, setDisplayMode] = useState<DisplayMode>('scroll-vertical');
@@ -165,7 +173,7 @@ export default function App() {
             sources: prev?.sources || partialReport.sources
           }));
         }
-      }, { model, language });  // Pass the selected model and language
+      }, { model, language, sectionCount });  // Pass the selected model, language, and section count
 
       // Final success state
       const newHistoryItem: HistoryItem = {
@@ -359,6 +367,13 @@ export default function App() {
         uiLanguage={uiLanguage}
         language={language}
         onLanguageChange={setLanguage}
+        sectionCount={sectionCount}
+        onSectionCountChange={(count) => {
+          setSectionCount(count);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('infographix_section_count', count.toString());
+          }
+        }}
       />}
 
       {/* Main Content Area */}

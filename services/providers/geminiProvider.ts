@@ -36,7 +36,8 @@ export class GeminiProvider implements LLMProvider {
 
     // Get localized system instruction based on language
     const language = options?.language || 'en';
-    const systemInstruction = getLocalizedSystemInstruction(language);
+    const sectionCount = options?.sectionCount || 5;
+    const systemInstruction = getLocalizedSystemInstruction(language, sectionCount);
 
     // Track the last valid partial object to fallback if the final stream is cut off
     let lastValidPartial: InfographicReport | null = null;
