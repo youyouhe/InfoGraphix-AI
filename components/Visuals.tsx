@@ -407,19 +407,21 @@ export const CompareBinary: React.FC<VisualProps> = ({ section, isLoading = fals
 
       <div className="space-y-4">
         {compareData.items.map((item, index) => (
-          <div key={index} className="flex items-center gap-4">
-            <div className="flex-1 p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 rounded-xl border border-blue-200 dark:border-blue-800">
-              <p className="font-bold text-blue-900 dark:text-blue-100 text-center mb-2">{item.left}</p>
+          <div key={index} className="space-y-2">
+            <div className="flex items-center gap-4">
+              <div className="flex-1 p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/30 rounded-xl border border-blue-200 dark:border-blue-800">
+                <p className="font-bold text-blue-900 dark:text-blue-100 text-center mb-2">{item.left}</p>
+              </div>
+              <div className="flex-shrink-0 font-bold text-gray-400 dark:text-zinc-500">VS</div>
+              <div className="flex-1 p-4 bg-gradient-to-r from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/30 rounded-xl border border-pink-200 dark:border-pink-800">
+                <p className="font-bold text-pink-900 dark:text-pink-100 text-center mb-2">{item.right}</p>
+              </div>
             </div>
-            <div className="flex-shrink-0 font-bold text-gray-400 dark:text-zinc-500">VS</div>
-            <div className="flex-1 p-4 bg-gradient-to-r from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/30 rounded-xl border border-pink-200 dark:border-pink-800">
-              <p className="font-bold text-pink-900 dark:text-pink-100 text-center mb-2">{item.right}</p>
+            <div className="text-center">
+              <span className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 text-sm rounded-full">
+                {item.label}
+              </span>
             </div>
-          </div>
-          <div key={`${index}-label`} className="text-center">
-            <span className="px-3 py-1 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-zinc-300 text-sm rounded-full">
-              {item.label}
-            </span>
           </div>
         ))}
       </div>
@@ -459,7 +461,8 @@ export const SWOTAnalysis: React.FC<VisualProps> = ({ section, isLoading = false
           </div>
         ))}
       </div>
-    </div  );
+    </div>
+  );
 };
 
 // --- List Column (for list-column-done-list, list-column-vertical-icon-arrow, list-column-simple-vertical-arrow) ---
@@ -561,7 +564,7 @@ export const ChartLinePlain: React.FC<VisualProps> = ({ section, isLoading = fal
   const chartData = section.data as { title?: string; items?: { label: string; value: number }[] };
 
   if (!chartData?.items || chartData.items.length === 0) {
-    return return <DataPlaceholder isLoading={isLoading} title={section.title} type="Chart" />;
+    return <DataPlaceholder isLoading={isLoading} title={section.title} type="Chart" />;
   }
 
   const chartType = section.type as string;
@@ -582,11 +585,12 @@ export const ChartLinePlain: React.FC<VisualProps> = ({ section, isLoading = fal
               {chartData.items.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </div>
-    </div  );
+    </div>
+  );
 };
 
 // --- Quadrant Quarter Card (for quadrant-quarter-simple-card) ---

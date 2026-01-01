@@ -159,6 +159,8 @@ export default function App() {
         if (partialReport.title || (partialReport.sections && partialReport.sections.length > 0)) {
           setCurrentReport(prev => ({
             ...partialReport,
+            // Defensive: ensure sections is always an array
+            sections: partialReport.sections || [],
             // Keep sources if we already had them (though usually sources come last)
             sources: prev?.sources || partialReport.sources
           }));
@@ -288,6 +290,16 @@ export default function App() {
 
   // Render a specific section based on its type (dynamic from registry)
   const renderSection = (section: any, index: number) => {
+    // Defensive check for null/undefined section
+    if (!section) {
+      return (
+        <div key={index} className="mb-8 p-6 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
+          <h3 className="text-lg font-bold text-red-800 dark:text-red-200 mb-2">Section Error</h3>
+          <p className="text-sm text-red-700 dark:text-red-300">Section data is missing at index {index}.</p>
+        </div>
+      );
+    }
+
     const props = { ...section, isDark: isDarkMode, isLoading: loading };
 
     // Try to get component from registry
@@ -587,10 +599,10 @@ export default function App() {
                           {currentReport.summary || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-full inline-block"></span>}
                         </p>
                       </div>
-                    ) : currentPage <= currentReport.sections.length ? (
+                    ) : currentPage <= (currentReport.sections?.length ?? 0) ? (
                       /* Section Page */
                       <div className="w-full max-w-4xl animate-fade-in">
-                        {renderSection(currentReport.sections[currentPage - 1], currentPage - 1)}
+                        {renderSection(currentReport.sections?.[currentPage - 1], currentPage - 1)}
                       </div>
                     ) : (
                       /* Sources Page */
@@ -626,9 +638,9 @@ export default function App() {
                     <span className="text-sm text-gray-500 dark:text-zinc-400 min-w-[100px] text-center">
                       {currentPage === 0
                         ? t('summary', uiLanguage)
-                        : currentPage === currentReport.sections.length + 1
+                        : currentPage === (currentReport.sections?.length ?? 0) + 1
                           ? t('sources', uiLanguage)
-                          : `${currentPage}/${currentReport.sections.length}`}
+                          : `${currentPage}/${currentReport.sections?.length ?? 0}`}
                     </span>
                     <button
                       onClick={() => setCurrentPage(Math.min(getTotalPages(currentReport) - 1, currentPage + 1))}
@@ -798,7 +810,7 @@ export default function App() {
             </div>
 
             {/* Section Pages */}
-            {currentReport.sections.map((section, idx) => (
+            {currentReport.sections?.map((section, idx) => (
               <div
                 key={idx}
                 data-export-page={`section-${idx}`}
