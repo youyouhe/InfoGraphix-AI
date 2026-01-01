@@ -9,8 +9,11 @@ import { StatHighlight } from '../../components/Visuals';
 import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
-import { SequenceTimeline, SequenceSteps, SequenceCircular } from '../../components/Visuals';
-import { ListGrid, ListRow, ListColumn, CompareBinary, SWOTAnalysis, ChartColumnSimple, ChartLinePlain, QuadrantQuarterCard } from '../../components/Visuals';
+import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap } from '../../components/Visuals';
+import { ListGrid, ListRow, ListColumn, ListSector } from '../../components/Visuals';
+import { CompareBinary, SWOTAnalysis } from '../../components/Visuals';
+import { ChartColumnSimple, ChartLinePlain, QuadrantQuarterCard } from '../../components/Visuals';
+import { RelationCircle } from '../../components/Visuals';
 
 /**
  * Register all core section types
@@ -277,6 +280,59 @@ export function registerCoreSectionTypes(): void {
     displayName: 'Quadrant Circular',
     category: 'quadrant',
     component: QuadrantQuarterCard,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // List Sector
+  registerSectionType({
+    type: 'list-sector-plain-text',
+    displayName: 'Sector List',
+    category: 'list',
+    component: ListSector,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Relation Circle
+  registerSectionType({
+    type: 'relation-circle-icon-badge',
+    displayName: 'Relation Circle',
+    category: 'relation',
+    component: RelationCircle,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  registerSectionType({
+    type: 'relation-circle-circular-progress',
+    displayName: 'Relation Progress',
+    category: 'relation',
+    component: RelationCircle,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Sequence Roadmap
+  registerSectionType({
+    type: 'sequence-roadmap-vertical-simple',
+    displayName: 'Roadmap',
+    category: 'sequence',
+    component: SequenceRoadmap,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  registerSectionType({
+    type: 'sequence-horizontal-zigzag-underline-text',
+    displayName: 'Zigzag Timeline',
+    category: 'sequence',
+    component: SequenceTimeline,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
