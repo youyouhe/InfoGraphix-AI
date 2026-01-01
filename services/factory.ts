@@ -248,6 +248,7 @@ export class LLMServiceFactory {
   static getAvailableModels(providerId: string): { id: string; name: string; free?: boolean }[] {
     const models: Record<string, { id: string; name: string; free?: boolean }[]> = {
       openrouter: [
+        { id: 'mistralai/devstral-2512:free', name: 'Devstral 2512 (Free)', free: true },
         { id: 'google/gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
         { id: 'google/gemini-3-flash-preview', name: 'Gemini 3 Flash Preview' },
         { id: 'x-ai/grok-4.1-fast', name: 'Grok 4.1 Fast' },
