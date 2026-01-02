@@ -151,8 +151,8 @@ export const ChartSection: React.FC<VisualProps> = ({ section, isDark = true, is
   return (
     <div className="mb-8 p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-lg">
       <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
-      {/* Explicit style dimensions to prevent layout shift and 0x0 errors */}
-      <div className="h-[300px] w-full min-w-0" style={{ minHeight: '300px' }}>
+      {/* Use aspect-ratio for responsive height based on width */}
+      <div className="w-full min-w-0" style={{ aspectRatio: '16 / 9', minHeight: '250px' }}>
         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           {section.type === 'bar_chart' ? (
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -575,7 +575,7 @@ export const ChartLinePlain: React.FC<VisualProps> = ({ section, isLoading = fal
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
       {chartData.title && <p className="text-center text-gray-500 dark:text-zinc-500 text-sm mb-6">{chartData.title}</p>}
 
-      <div className="h-64 flex items-center">
+      <div className="w-full flex items-center" style={{ aspectRatio: '16 / 9', minHeight: '200px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData.items} margin={{ top: 20, right:20, left:20, bottom:40 }}>
             <XAxis dataKey="label" stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} />

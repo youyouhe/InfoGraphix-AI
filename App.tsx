@@ -165,26 +165,30 @@ export default function App() {
       const report = await llmService.generateInfographic(topic, (partialReport) => {
         // Stream update: only update if we have meaningful content
         if (partialReport.title || (partialReport.sections && partialReport.sections.length > 0)) {
+          const normalized = normalizeReport(partialReport);
           setCurrentReport(prev => ({
-            ...partialReport,
+            ...normalized,
             // Defensive: ensure sections is always an array
-            sections: partialReport.sections || [],
+            sections: normalized.sections || [],
             // Keep sources if we already had them (though usually sources come last)
-            sources: prev?.sources || partialReport.sources
+            sources: prev?.sources || normalized.sources
           }));
         }
       }, { model, language, sectionCount });  // Pass the selected model, language, and section count
+
+      // Normalize final report
+      const normalizedReport = normalizeReport(report);
 
       // Final success state
       const newHistoryItem: HistoryItem = {
         id: Date.now().toString(),
         query: topic,
         timestamp: Date.now(),
-        report: report
+        report: normalizedReport
       };
-      
+
       setHistory(prev => [newHistoryItem, ...prev]);
-      setCurrentReport(report);
+      setCurrentReport(normalizedReport);
     } catch (err: any) {
       setError(err.message || "Failed to generate infographic. Please check your API key.");
     } finally {
@@ -195,7 +199,7 @@ export default function App() {
   const handleSelectHistory = (id: string) => {
     const item = history.find(h => h.id === id);
     if (item && item.report) {
-      setCurrentReport(item.report);
+      setCurrentReport(normalizeReport(item.report));
       setError(null);
     }
   };
@@ -253,6 +257,17 @@ export default function App() {
     if (!report || !report.sections) return 0;
     // 1 for summary + sections + 1 for sources (if exists)
     return 1 + report.sections.length + (report.sources && report.sources.length > 0 ? 1 : 0);
+  };
+
+  // Normalize report fields - handle field name variations from LLM
+  const normalizeReport = (report: any): InfographicReport => {
+    if (!report) return report;
+    return {
+      ...report,
+      // Map reportTitle/reportSummary to title/summary
+      title: report.title || report.reportTitle || '',
+      summary: report.summary || report.reportSummary || '',
+    };
   };
 
   // Handle PNG export - export current page or all pages
