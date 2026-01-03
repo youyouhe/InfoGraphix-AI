@@ -104,6 +104,13 @@ export {
   HierarchyCircleProgress,
 } from './hierarchy';
 
+// Quadrant components
+export {
+  QuadrantCircular,
+  QuadrantIllustrated,
+  QuadrantMatrix,
+} from './quadrant';
+
 // Other components
 export {
   TextSection,

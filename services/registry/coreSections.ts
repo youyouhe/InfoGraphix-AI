@@ -12,7 +12,7 @@ import { ComparisonSection } from '../../components/Visuals';
 import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap } from '../../components/Visuals';
 import { ListGrid, ListRow, ListColumn, ListSector, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
-import { ChartLinePlain, QuadrantQuarterCard, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
+import { ChartLinePlain, QuadrantQuarterCard, QuadrantCircular, QuadrantIllustrated, QuadrantMatrix, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
 import { RelationCircle, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
 
 /**
@@ -263,32 +263,37 @@ export function registerCoreSectionTypes(): void {
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
-  // Quadrant Quarter
+  // ========================================
+  // QUADRANT TYPES (with specialized components)
+  // ========================================
+  // Matrix/Priority style
   registerSectionType({
     type: 'quadrant-quarter-simple-card',
-    displayName: 'Quadrant Card',
+    displayName: 'Priority Matrix',
     category: 'quadrant',
-    component: QuadrantQuarterCard,
+    component: QuadrantMatrix,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
+  // Circular style
   registerSectionType({
     type: 'quadrant-quarter-circular',
-    displayName: 'Quadrant Circular',
+    displayName: 'Circular Quadrant',
     category: 'quadrant',
-    component: QuadrantQuarterCard,
+    component: QuadrantCircular,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
+  // Illustrated style
   registerSectionType({
     type: 'quadrant-simple-illus',
-    displayName: 'Quadrant Simple Illustration',
+    displayName: 'Illustrated Quadrant',
     category: 'quadrant',
-    component: QuadrantQuarterCard,
+    component: QuadrantIllustrated,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
