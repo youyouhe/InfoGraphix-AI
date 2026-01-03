@@ -10,7 +10,7 @@ import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
 import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap } from '../../components/Visuals';
-import { ListGrid, ListRow, ListColumn, ListSector } from '../../components/Visuals';
+import { ListGrid, ListRow, ListColumn, ListSector, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
 import { ChartLinePlain, QuadrantQuarterCard, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
 import { RelationCircle, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
@@ -150,16 +150,6 @@ export function registerCoreSectionTypes(): void {
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
-  registerSectionType({
-    type: 'list-zigzag-down',
-    displayName: 'Zigzag List',
-    category: 'list',
-    component: ListRow,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
   // Compare Binary Section (using few-shot types)
   registerSectionType({
     type: 'compare-binary-horizontal-underline-text-vs',
@@ -227,26 +217,6 @@ export function registerCoreSectionTypes(): void {
     displayName: 'Simple List',
     category: 'list',
     component: ListColumn,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  registerSectionType({
-    type: 'list-row-simple-illus',
-    displayName: 'Simple Row List',
-    category: 'list',
-    component: ListRow,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  registerSectionType({
-    type: 'list-zigzag-up',
-    displayName: 'Zigzag Up',
-    category: 'list',
-    component: ListRow,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -537,53 +507,25 @@ export function registerCoreSectionTypes(): void {
   });
 
   // ========================================
-  // LIST TYPES (10 types - missing)
+  // LIST TYPES (with specialized components)
   // ========================================
+  // Candy card
   registerSectionType({
     type: 'list-grid-candy-card-lite',
-    displayName: 'Grid Candy Card',
+    displayName: 'Candy Card',
     category: 'list',
-    component: ListGrid,
+    component: ListCandyCard,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
+  // Circular progress variants
   registerSectionType({
     type: 'list-grid-circular-progress',
-    displayName: 'Grid Circular Progress',
+    displayName: 'Grid Progress',
     category: 'list',
-    component: ListGrid,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  registerSectionType({
-    type: 'list-grid-ribbon-card',
-    displayName: 'Grid Ribbon Card',
-    category: 'list',
-    component: ListGrid,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  registerSectionType({
-    type: 'list-pyramid-badge-card',
-    displayName: 'Pyramid Badge Card',
-    category: 'list',
-    component: ListGrid,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  registerSectionType({
-    type: 'list-pyramid-compact-card',
-    displayName: 'Pyramid Compact Card',
-    category: 'list',
-    component: ListGrid,
+    component: ListCircularProgress,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -591,39 +533,52 @@ export function registerCoreSectionTypes(): void {
 
   registerSectionType({
     type: 'list-row-circular-progress',
-    displayName: 'Row Circular Progress',
+    displayName: 'Row Progress',
     category: 'list',
-    component: ListRow,
+    component: ListCircularProgress,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Ribbon card
+  registerSectionType({
+    type: 'list-grid-ribbon-card',
+    displayName: 'Ribbon Card',
+    category: 'list',
+    component: ListRibbonCard,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Pyramid variants
+  registerSectionType({
+    type: 'list-pyramid-badge-card',
+    displayName: 'Pyramid Badge',
+    category: 'list',
+    component: ListPyramid,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
   registerSectionType({
-    type: 'list-row-horizontal-icon-line',
-    displayName: 'Row Icon Line',
+    type: 'list-pyramid-compact-card',
+    displayName: 'Pyramid Compact',
     category: 'list',
-    component: ListRow,
+    component: ListPyramid,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
+  // Zigzag variants
   registerSectionType({
-    type: 'list-row-simple-illus',
-    displayName: 'Row Simple Illustration',
+    type: 'list-zigzag-down',
+    displayName: 'Zigzag Down',
     category: 'list',
-    component: ListRow,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  registerSectionType({
-    type: 'list-sector-half-plain-text',
-    displayName: 'Sector Half Plain Text',
-    category: 'list',
-    component: ListSector,
+    component: ListZigzag,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -631,9 +586,19 @@ export function registerCoreSectionTypes(): void {
 
   registerSectionType({
     type: 'list-zigzag-down-compact-card',
-    displayName: 'Zigzag Down Compact Card',
+    displayName: 'Zigzag Down Compact',
     category: 'list',
-    component: ListGrid,
+    component: ListZigzag,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  registerSectionType({
+    type: 'list-zigzag-up',
+    displayName: 'Zigzag Up',
+    category: 'list',
+    component: ListZigzag,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -641,9 +606,41 @@ export function registerCoreSectionTypes(): void {
 
   registerSectionType({
     type: 'list-zigzag-up-compact-card',
-    displayName: 'Zigzag Up Compact Card',
+    displayName: 'Zigzag Up Compact',
     category: 'list',
-    component: ListGrid,
+    component: ListZigzag,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Sector enhanced variants
+  registerSectionType({
+    type: 'list-sector-plain-text',
+    displayName: 'Sector Chart',
+    category: 'list',
+    component: ListSectorEnhanced,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  registerSectionType({
+    type: 'list-sector-half-plain-text',
+    displayName: 'Sector Half',
+    category: 'list',
+    component: ListSectorEnhanced,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Keep existing registrations for other types
+  registerSectionType({
+    type: 'list-row-horizontal-icon-line',
+    displayName: 'Row Icon Line',
+    category: 'list',
+    component: ListRow,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],

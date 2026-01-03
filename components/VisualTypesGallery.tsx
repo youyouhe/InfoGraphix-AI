@@ -628,6 +628,166 @@ const MOCK_DATA: Record<string, any> = {
     ],
   },
 
+  // Grid variants
+  'list-grid-candy-card-lite': {
+    title: '产品亮点',
+    items: [
+      { label: '智能推荐', desc: 'AI驱动个性化' },
+      { label: '实时同步', desc: '多端数据一致' },
+      { label: '云端备份', desc: '安全可靠存储' },
+      { label: '团队协作', desc: '高效沟通工具' },
+    ],
+  },
+
+  'list-grid-circular-progress': {
+    title: '技能掌握度',
+    items: [
+      { label: 'JavaScript', value: 90 },
+      { label: 'React', value: 85 },
+      { label: 'Node.js', value: 75 },
+      { label: 'Python', value: 70 },
+    ],
+  },
+
+  'list-grid-ribbon-card': {
+    title: '核心优势',
+    items: [
+      { label: '高性能', desc: '毫秒级响应' },
+      { label: '易扩展', desc: '模块化架构' },
+      { label: '高可用', desc: '99.99% SLA' },
+      { label: '低门槛', desc: '快速上手' },
+    ],
+  },
+
+  // Row variants
+  'list-row-horizontal-icon-line': {
+    title: '开发流程',
+    items: [
+      { label: '需求分析', desc: '理解用户需求' },
+      { label: '方案设计', desc: '制定技术方案' },
+      { label: '代码开发', desc: '编写高质量代码' },
+      { label: '测试部署', desc: '确保稳定上线' },
+    ],
+  },
+
+  'list-row-circular-progress': {
+    title: '学习进度',
+    items: [
+      { label: 'HTML/CSS', value: 95 },
+      { label: 'JavaScript', value: 80 },
+      { label: 'React框架', value: 70 },
+      { label: '后端开发', value: 60 },
+    ],
+  },
+
+  // Column variants
+  'list-column-vertical-icon-arrow': {
+    title: '架构层次',
+    items: [
+      { label: '表现层', desc: '用户界面' },
+      { label: '业务层', desc: '逻辑处理' },
+      { label: '数据层', desc: '数据存储' },
+      { label: '基础设施', desc: '服务器网络' },
+    ],
+  },
+
+  'list-column-simple-vertical-arrow': {
+    title: '晋升路径',
+    items: [
+      { label: '初级工程师' },
+      { label: '中级工程师' },
+      { label: '高级工程师' },
+      { label: '技术专家' },
+    ],
+  },
+
+  // Sector variants
+  'list-sector-plain-text': {
+    title: '时间分配',
+    items: [
+      { label: '工作', value: 8 },
+      { label: '睡眠', value: 7 },
+      { label: '学习', value: 3 },
+      { label: '娱乐', value: 3 },
+      { label: '运动', value: 2 },
+      { label: '其他', value: 1 },
+    ],
+  },
+
+  'list-sector-half-plain-text': {
+    title: '预算分配',
+    items: [
+      { label: '房租', value: 30 },
+      { label: '餐饮', value: 20 },
+      { label: '交通', value: 15 },
+      { label: '购物', value: 15 },
+      { label: '娱乐', value: 10 },
+      { label: '储蓄', value: 10 },
+    ],
+  },
+
+  // Pyramid variants
+  'list-pyramid-badge-card': {
+    title: '用户分层',
+    items: [
+      { label: 'VIP用户', desc: '最高优先级' },
+      { label: '高价值用户', desc: '重点服务' },
+      { label: '普通用户', desc: '常规支持' },
+      { label: '潜在用户', desc: '待转化' },
+    ],
+  },
+
+  'list-pyramid-compact-card': {
+    title: '优先级排序',
+    items: [
+      { label: 'P0 紧急重要' },
+      { label: 'P1 重要不紧急' },
+      { label: 'P2 紧急不重要' },
+      { label: 'P3 不紧急不重要' },
+    ],
+  },
+
+  // Zigzag variants
+  'list-zigzag-down': {
+    title: '发展历程',
+    items: [
+      { label: '初创期', desc: '2020年成立' },
+      { label: '成长期', desc: '用户突破百万' },
+      { label: '扩张期', desc: '进军海外市场' },
+      { label: '成熟期', desc: '行业领导者' },
+    ],
+  },
+
+  'list-zigzag-down-compact-card': {
+    title: '技术演进',
+    items: [
+      { label: 'Web 1.0', desc: '静态网页时代' },
+      { label: 'Web 2.0', desc: '社交互动时代' },
+      { label: 'Web 3.0', desc: '去中心化时代' },
+      { label: 'Web 4.0', desc: '智能互联时代' },
+    ],
+  },
+
+  'list-zigzag-up': {
+    title: '攀登阶梯',
+    items: [
+      { label: '第一步', desc: '确立目标' },
+      { label: '第二步', desc: '制定计划' },
+      { label: '第三步', desc: '执行行动' },
+      { label: '第四步', desc: '达成成功' },
+    ],
+  },
+
+  'list-zigzag-up-compact-card': {
+    title: '能力进阶',
+    items: [
+      { label: '入门', desc: '掌握基础知识' },
+      { label: '熟练', desc: '独立完成工作' },
+      { label: '精通', desc: '解决复杂问题' },
+      { label: '专家', desc: '引领行业发展' },
+    ],
+  },
+
   // Hierarchy types
   'hierarchy-tree-tech-style-capsule-item': {
     title: '组织架构',
@@ -1095,6 +1255,27 @@ export const VisualTypesGallery: React.FC = () => {
         title: mockData.title,
         data: {
           items: [hierarchyNode], // Wrap in items array
+        },
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
+    // Special handling for list types: expects data.items array
+    const isListType = type.startsWith('list-');
+    if (isListType) {
+      // List mock data has: { title, items: [...] }
+      // Component expects: { data: { items: [...] } }
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        data: {
+          items: mockData.items, // Pass items directly
         },
       };
 

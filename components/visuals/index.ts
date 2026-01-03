@@ -72,6 +72,12 @@ export {
   ListRow,
   ListColumn,
   ListSector,
+  ListCircularProgress,
+  ListRibbonCard,
+  ListPyramid,
+  ListZigzag,
+  ListCandyCard,
+  ListSectorEnhanced,
 } from './list';
 
 // Comparison components
