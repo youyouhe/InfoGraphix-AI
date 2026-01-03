@@ -13,7 +13,7 @@ import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap, Seq
 import { ListGrid, ListRow, ListColumn, ListSector, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
 import { ChartLinePlain, QuadrantQuarterCard, QuadrantCircular, QuadrantIllustrated, QuadrantMatrix, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
-import { RelationCircle, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
+import { RelationCircle, RelationCircularProgress, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
 
 /**
  * Register all core section types
@@ -325,7 +325,7 @@ export function registerCoreSectionTypes(): void {
     type: 'relation-circle-circular-progress',
     displayName: 'Relation Progress',
     category: 'relation',
-    component: RelationCircle,
+    component: RelationCircularProgress,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],

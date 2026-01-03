@@ -1116,6 +1116,30 @@ const MOCK_DATA: Record<string, any> = {
     title: '介绍',
     content: '这是一段示例文本，用于展示文本类型的可视化效果。可以包含多行内容，支持富文本格式。',
   },
+  'relation-circle-icon-badge': {
+    title: '技术生态',
+    data: {
+      center: 'React',
+      relations: [
+        { label: '状态管理', desc: 'Redux, Zustand' },
+        { label: '路由', desc: 'React Router' },
+        { label: 'UI组件', desc: 'Material-UI' },
+        { label: '构建工具', desc: 'Vite' },
+      ],
+    },
+  },
+  'relation-circle-circular-progress': {
+    title: '技能评估',
+    data: {
+      center: '前端开发',
+      relations: [
+        { label: 'JavaScript', value: 90 },
+        { label: 'TypeScript', value: 85 },
+        { label: 'React', value: 80 },
+        { label: 'CSS', value: 75 },
+      ],
+    },
+  },
   'stat_highlight': {
     title: '关键指标',
     statValue: '98.5%',
@@ -1269,6 +1293,22 @@ export const VisualTypesGallery: React.FC = () => {
       );
     }
 
+    // Special handling for 'text' type: uses content field at section level
+    if (type === 'text') {
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        content: mockData.content,
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
     // Special handling for 'process_flow': uses steps field at section level
     if (type === 'process_flow') {
       const section: InfographicSection = {
@@ -1276,6 +1316,23 @@ export const VisualTypesGallery: React.FC = () => {
         type: type as any,
         title: mockData.title,
         steps: mockData.steps,
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
+    // Special handling for relation types: uses data.relations structure
+    const isRelationType = type.startsWith('relation-');
+    if (isRelationType) {
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        data: mockData.data, // Pass data directly (contains center, relations)
       };
 
       return (

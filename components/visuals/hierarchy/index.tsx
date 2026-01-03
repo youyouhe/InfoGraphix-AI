@@ -5,6 +5,7 @@
 
 export { HierarchyTree } from './HierarchyTree';
 export { RelationCircle } from './RelationCircle';
+export { RelationCircularProgress } from './RelationCircularProgress';
 export { HierarchyMindmap } from './HierarchyMindmap';
 export { HierarchyCapsule } from './HierarchyCapsule';
 export { HierarchyBadge } from './HierarchyBadge';

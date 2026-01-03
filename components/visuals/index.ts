@@ -101,6 +101,7 @@ export {
 export {
   HierarchyTree,
   RelationCircle,
+  RelationCircularProgress,
   HierarchyMindmap,
   HierarchyCapsule,
   HierarchyBadge,
