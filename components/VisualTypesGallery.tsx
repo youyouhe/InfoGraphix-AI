@@ -369,21 +369,198 @@ const MOCK_DATA: Record<string, any> = {
   },
   'compare-binary-fold': {
     title: '优劣势对比',
-    items: [
-      {
-        label: '优势',
-        children: [
-          { label: '技术强', desc: '自主研发' },
-          { label: '用户多', desc: '市场占有率高' },
-        ],
-      },
-      {
-        label: '劣势',
-        children: [
-          { label: '成本高', desc: '运营支出大' },
-          { label: '更新慢', desc: '迭代周期长' },
-        ],
-      },
+    left: {
+      title: '优势',
+      items: [
+        { label: '技术强', desc: '自主研发' },
+        { label: '用户多', desc: '市场占有率高' },
+      ],
+    },
+    right: {
+      title: '劣势',
+      items: [
+        { label: '成本高', desc: '运营支出大' },
+        { label: '更新慢', desc: '迭代周期长' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-underline-text-vs': {
+    title: '方案对比',
+    left: {
+      title: '方案A',
+      items: [
+        { label: '成本低', desc: '初期投入少' },
+        { label: '上手快', desc: '无需培训' },
+      ],
+    },
+    right: {
+      title: '方案B',
+      items: [
+        { label: '功能强', desc: '支持高级特性' },
+        { label: '扩展好', desc: '易于集成' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-badge-card-vs': {
+    title: '产品对比',
+    left: {
+      title: '基础版',
+      items: [
+        { label: '免费', desc: '永久免费使用' },
+        { label: '基础功能', desc: '满足日常需求' },
+      ],
+    },
+    right: {
+      title: '专业版',
+      items: [
+        { label: '高级功能', desc: 'AI智能分析' },
+        { label: '优先支持', desc: '24小时响应' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-compact-card-vs': {
+    title: '架构对比',
+    left: {
+      title: '单体架构',
+      items: [
+        { label: '简单', desc: '易于开发和部署' },
+        { label: '性能', desc: '低延迟无网络调用' },
+      ],
+    },
+    right: {
+      title: '微服务',
+      items: [
+        { label: '可扩展', desc: '独立部署和扩展' },
+        { label: '容错性', desc: '服务隔离故障隔离' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-compact-card-arrow': {
+    title: '开发模式',
+    left: {
+      title: '敏捷开发',
+      items: [
+        { label: '快速', desc: '短周期迭代' },
+        { label: '灵活', desc: '快速响应变化' },
+      ],
+    },
+    right: {
+      title: '瀑布开发',
+      items: [
+        { label: '稳定', desc: '需求明确可控' },
+        { label: '规范', desc: '文档完整齐全' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-simple-fold': {
+    title: '技术选型',
+    left: {
+      title: 'React',
+      items: [
+        { label: '生态', desc: '组件库丰富' },
+        { label: '灵活', desc: '虚拟DOM高效' },
+      ],
+    },
+    right: {
+      title: 'Vue',
+      items: [
+        { label: '简单', desc: '学习曲线平缓' },
+        { label: '完整', desc: '官方全家桶' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-underline-text-arrow': {
+    title: '部署方式',
+    left: {
+      title: '容器化',
+      items: [
+        { label: '环境一致', desc: '消除环境差异' },
+        { label: '快速部署', desc: '秒级启动' },
+      ],
+    },
+    right: {
+      title: '传统部署',
+      items: [
+        { label: '稳定', desc: '成熟可靠' },
+        { label: '简单', desc: '运维成本低' },
+      ],
+    },
+  },
+  'compare-binary-horizontal-underline-text-fold': {
+    title: '数据库对比',
+    left: {
+      title: 'MySQL',
+      items: [
+        { label: '开源', desc: '免费使用' },
+        { label: '成熟', desc: '社区活跃' },
+      ],
+    },
+    right: {
+      title: 'PostgreSQL',
+      items: [
+        { label: '功能', desc: '支持更多特性' },
+        { label: '标准', desc: 'SQL标准更完整' },
+      ],
+    },
+  },
+  'compare-hierarchy-left-right-circle-node-pill-badge': {
+    title: '组织架构',
+    left: {
+      title: '总部',
+      items: [
+        { label: '管理层', desc: '战略决策' },
+        { label: '职能部门', desc: 'HR、财务、IT' },
+      ],
+    },
+    right: {
+      title: '分公司',
+      items: [
+        { label: '业务团队', desc: '销售、实施' },
+        { label: '本地支持', desc: '客户服务' },
+      ],
+    },
+  },
+  'compare-hierarchy-left-right-circle-node-plain-text': {
+    title: '系统分层',
+    left: {
+      title: '前端',
+      items: [
+        { label: '展示层', desc: '用户界面' },
+        { label: '交互', desc: '响应操作' },
+      ],
+    },
+    right: {
+      title: '后端',
+      items: [
+        { label: '业务逻辑', desc: '数据处理' },
+        { label: '存储', desc: '数据持久化' },
+      ],
+    },
+  },
+  'compare-hierarchy-row-letter-card-compact-card': {
+    title: '产品定位',
+    left: {
+      title: '免费版',
+      items: [
+        { label: '个人', desc: '适合个人使用' },
+        { label: '限制', desc: '功能受限' },
+      ],
+    },
+    right: {
+      title: '企业版',
+      items: [
+        { label: '团队', desc: '支持多人协作' },
+        { label: '服务', desc: '专属技术支持' },
+      ],
+    },
+  },
+  'comparison': {
+    title: '产品对比',
+    comparisonItems: [
+      { label: '价格', left: '$99', right: '$149' },
+      { label: '存储', left: '100GB', right: '500GB' },
+      { label: '支持', left: '邮件', right: '24/7' },
+      { label: '功能', left: '基础', right: '高级' },
     ],
   },
 
@@ -649,14 +826,33 @@ export const VisualTypesGallery: React.FC = () => {
       console.log('Rendering stat_highlight with section:', section);
 
       return (
-        <div className="h-48 overflow-hidden">
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
+    // Special handling for 'comparison' type: uses comparisonItems field
+    if (type === 'comparison') {
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        comparisonItems: mockData.comparisonItems,
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
           <Component section={section} isLoading={false} />
         </div>
       );
     }
 
     // For all other types: extract data payload
-    const dataPayload: any = mockData.data || mockData.items || mockData;
+    // Comparison types: use entire mockData (it has pros/cons/items/features/etc directly)
+    // Chart types: use mockData.data (array of chart items)
+    const isComparisonType = type.startsWith('compare-');
+    const dataPayload: any = isComparisonType ? mockData : (mockData.data || mockData.items || mockData);
 
     const section: InfographicSection = {
       id: 'preview',
@@ -666,7 +862,7 @@ export const VisualTypesGallery: React.FC = () => {
     };
 
     return (
-      <div className="h-48 overflow-hidden">
+      <div className="min-h-[200px] overflow-auto">
         <Component section={section} isLoading={false} />
       </div>
     );
