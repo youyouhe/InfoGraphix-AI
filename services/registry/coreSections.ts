@@ -10,9 +10,9 @@ import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
 import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap, SequenceSnake, SequenceZigzagUnderline, SequenceAscending, SequenceHorizontalZigzag } from '../../components/Visuals';
-import { ListGrid, ListRow, ListColumn, ListSector, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
+import { ListGrid, ListRow, ListColumn, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
-import { ChartLinePlain, QuadrantQuarterCard, QuadrantCircular, QuadrantIllustrated, QuadrantMatrix, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
+import { ChartLinePlain, QuadrantQuarterCard, QuadrantCircular, QuadrantIllustrated, QuadrantMatrix, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape, WordCloudSimple } from '../../components/Visuals';
 import { RelationCircle, RelationCircularProgress, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
 
 /**
@@ -294,17 +294,6 @@ export function registerCoreSectionTypes(): void {
     displayName: 'Illustrated Quadrant',
     category: 'quadrant',
     component: QuadrantIllustrated,
-    requiredFields: ['data'],
-    optionalFields: [],
-    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-  });
-
-  // List Sector
-  registerSectionType({
-    type: 'list-sector-plain-text',
-    displayName: 'Sector List',
-    category: 'list',
-    component: ListSector,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -652,13 +641,13 @@ export function registerCoreSectionTypes(): void {
   });
 
   // ========================================
-  // CHART TYPES (1 type - missing)
+  // CHART TYPES (Word Cloud)
   // ========================================
   registerSectionType({
     type: 'chart-wordcloud',
     displayName: 'Word Cloud',
     category: 'chart',
-    component: ChartSection,
+    component: WordCloudSimple,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],

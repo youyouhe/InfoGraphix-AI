@@ -47,6 +47,8 @@ export { LIST_GRID_EXAMPLES } from './listGrid';
 export { CHART_EXAMPLES } from './chart';
 export { HIERARCHY_EXAMPLES } from './hierarchy';
 export { QUADRANT_EXAMPLES } from './quadrant';
+export { RELATION_EXAMPLES } from './relation';
+export { BASIC_EXAMPLES } from './basic';
 
 /**
  * Default export - get a random few-shot prompt

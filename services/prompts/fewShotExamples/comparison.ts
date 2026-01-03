@@ -100,6 +100,75 @@ export const COMPARISON_EXAMPLES: CategoryExamples = {
     },
 
     // ============================================
+    // BINARY HORIZONTAL - UNDERLINE TEXT VS
+    // ============================================
+    {
+      "type": "Binary Horizontal Underline Text VS (水平下划线VS二元对比)",
+      "example_id": "compare-binary-horizontal-underline-text-vs",
+      "syntax": "infographic compare-binary-horizontal-underline-text-vs\\ndata\\n  title 方案对比\\n  left\\n    title 方案A\\n    items\\n      - label 成本低\\n        desc 初期投入少\\n      - label 上手快\\n        desc 无需培训\\n  right\\n    title 方案B\\n    items\\n      - label 功能强\\n        desc 支持高级特性\\n      - label 扩展好\\n        desc 易于集成",
+      "data": { "title": "方案对比", "left": { "title": "方案A", "items": [{ "label": "成本低", "desc": "初期投入少" }, { "label": "上手快", "desc": "无需培训" }] }, "right": { "title": "方案B", "items": [{ "label": "功能强", "desc": "支持高级特性" }, { "label": "扩展好", "desc": "易于集成" }] } }
+    },
+
+    {
+      "type": "Binary Horizontal Badge Card VS (徽章卡片VS二元对比)",
+      "example_id": "compare-binary-horizontal-badge-card-vs",
+      "syntax": "infographic compare-binary-horizontal-badge-card-vs\\ndata\\n  title 产品对比\\n  left\\n    title 基础版\\n    items\\n      - label 免费\\n        desc 永久免费使用\\n      - label 基础功能\\n        desc 满足日常需求\\n  right\\n    title 专业版\\n    items\\n      - label 高级功能\\n        desc AI智能分析\\n      - label 优先支持\\n        desc 24小时响应",
+      "data": { "title": "产品对比", "left": { "title": "基础版", "items": [{ "label": "免费", "desc": "永久免费使用" }, { "label": "基础功能", "desc": "满足日常需求" }] }, "right": { "title": "专业版", "items": [{ "label": "高级功能", "desc": "AI智能分析" }, { "label": "优先支持", "desc": "24小时响应" }] } }
+    },
+
+    {
+      "type": "Binary Horizontal Compact Card Arrow (紧凑卡片箭头二元对比)",
+      "example_id": "compare-binary-horizontal-compact-card-arrow",
+      "syntax": "infographic compare-binary-horizontal-compact-card-arrow\\ndata\\n  title 架构对比\\n  left\\n    title 单体架构\\n    items\\n      - label 简单\\n        desc 易于开发和部署\\n      - label 性能\\n        desc 低延迟无网络调用\\n  right\\n    title 微服务\\n    items\\n      - label 可扩展\\n        desc 独立部署和扩展\\n      - label 容错性\\n        desc 服务隔离故障隔离",
+      "data": { "title": "架构对比", "left": { "title": "单体架构", "items": [{ "label": "简单", "desc": "易于开发和部署" }, { "label": "性能", "desc": "低延迟无网络调用" }] }, "right": { "title": "微服务", "items": [{ "label": "可扩展", "desc": "独立部署和扩展" }, { "label": "容错性", "desc": "服务隔离故障隔离" }] } }
+    },
+
+    {
+      "type": "Binary Horizontal Simple Fold (简单折叠二元对比)",
+      "example_id": "compare-binary-horizontal-simple-fold",
+      "syntax": "infographic compare-binary-horizontal-simple-fold\\ndata\\n  title 技术选型\\n  left\\n    title React\\n    items\\n      - label 生态\\n        desc 组件库丰富\\n      - label 灵活\\n        desc 虚拟DOM高效\\n  right\\n    title Vue\\n    items\\n      - label 简单\\n        desc 学习曲线平缓\\n      - label 完整\\n        desc 官方全家桶",
+      "data": { "title": "技术选型", "left": { "title": "React", "items": [{ "label": "生态", "desc": "组件库丰富" }, { "label": "灵活", "desc": "虚拟DOM高效" }] }, "right": { "title": "Vue", "items": [{ "label": "简单", "desc": "学习曲线平缓" }, { "label": "完整", "desc": "官方全家桶" }] } }
+    },
+
+    {
+      "type": "Binary Horizontal Underline Text Arrow (下划线箭头二元对比)",
+      "example_id": "compare-binary-horizontal-underline-text-arrow",
+      "syntax": "infographic compare-binary-horizontal-underline-text-arrow\\ndata\\n  title 部署方式\\n  left\\n    title 容器化\\n    items\\n      - label 环境一致\\n        desc 消除环境差异\\n      - label 快速部署\\n        desc 秒级启动\\n  right\\n    title 传统部署\\n    items\\n      - label 稳定\\n        desc 成熟可靠\\n      - label 简单\\n        desc 运维成本低",
+      "data": { "title": "部署方式", "left": { "title": "容器化", "items": [{ "label": "环境一致", "desc": "消除环境差异" }, { "label": "快速部署", "desc": "秒级启动" }] }, "right": { "title": "传统部署", "items": [{ "label": "稳定", "desc": "成熟可靠" }, { "label": "简单", "desc": "运维成本低" }] } }
+    },
+
+    {
+      "type": "Binary Horizontal Underline Text Fold (下划线折叠二元对比)",
+      "example_id": "compare-binary-horizontal-underline-text-fold",
+      "syntax": "infographic compare-binary-horizontal-underline-text-fold\\ndata\\n  title 数据库对比\\n  left\\n    title MySQL\\n    items\\n      - label 开源\\n        desc 免费使用\\n      - label 成熟\\n        desc 社区活跃\\n  right\\n    title PostgreSQL\\n    items\\n      - label 功能\\n        desc 支持更多特性\\n      - label 标准\\n        desc SQL标准更完整",
+      "data": { "title": "数据库对比", "left": { "title": "MySQL", "items": [{ "label": "开源", "desc": "免费使用" }, { "label": "成熟", "desc": "社区活跃" }] }, "right": { "title": "PostgreSQL", "items": [{ "label": "功能", "desc": "支持更多特性" }, { "label": "标准", "desc": "SQL标准更完整" }] } }
+    },
+
+    // ============================================
+    // BINARY HIERARCHY STYLES
+    // ============================================
+    {
+      "type": "Binary Hierarchy Left Right Circle Node Pill Badge (层级左右圆点徽章二元对比)",
+      "example_id": "compare-hierarchy-left-right-circle-node-pill-badge",
+      "syntax": "infographic compare-hierarchy-left-right-circle-node-pill-badge\\ndata\\n  title 组织架构\\n  left\\n    title 总部\\n    items\\n      - label 管理层\\n        desc 战略决策\\n      - label 职能部门\\n        desc HR、财务、IT\\n  right\\n    title 分公司\\n    items\\n      - label 业务团队\\n        desc 销售、实施\\n      - label 本地支持\\n        desc 客户服务",
+      "data": { "title": "组织架构", "left": { "title": "总部", "items": [{ "label": "管理层", "desc": "战略决策" }, { "label": "职能部门", "desc": "HR、财务、IT" }] }, "right": { "title": "分公司", "items": [{ "label": "业务团队", "desc": "销售、实施" }, { "label": "本地支持", "desc": "客户服务" }] } }
+    },
+
+    {
+      "type": "Binary Hierarchy Left Right Circle Node Plain Text (层级左右圆点纯文本二元对比)",
+      "example_id": "compare-hierarchy-left-right-circle-node-plain-text",
+      "syntax": "infographic compare-hierarchy-left-right-circle-node-plain-text\\ndata\\n  title 系统分层\\n  left\\n    title 前端\\n    items\\n      - label 展示层\\n        desc 用户界面\\n      - label 交互\\n        desc 响应操作\\n  right\\n    title 后端\\n    items\\n      - label 业务逻辑\\n        desc 数据处理\\n      - label 存储\\n        desc 数据持久化",
+      "data": { "title": "系统分层", "left": { "title": "前端", "items": [{ "label": "展示层", "desc": "用户界面" }, { "label": "交互", "desc": "响应操作" }] }, "right": { "title": "后端", "items": [{ "label": "业务逻辑", "desc": "数据处理" }, { "label": "存储", "desc": "数据持久化" }] } }
+    },
+
+    {
+      "type": "Binary Hierarchy Row Letter Card Compact Card (层级行字母卡片紧凑二元对比)",
+      "example_id": "compare-hierarchy-row-letter-card-compact-card",
+      "syntax": "infographic compare-hierarchy-row-letter-card-compact-card\\ndata\\n  title 产品定位\\n  left\\n    title 免费版\\n    items\\n      - label 个人\\n        desc 适合个人使用\\n      - label 限制\\n        desc 功能受限\\n  right\\n    title 企业版\\n    items\\n      - label 团队\\n        desc 支持多人协作\\n      - label 服务\\n        desc 专属技术支持",
+      "data": { "title": "产品定位", "left": { "title": "免费版", "items": [{ "label": "个人", "desc": "适合个人使用" }, { "label": "限制", "desc": "功能受限" }] }, "right": { "title": "企业版", "items": [{ "label": "团队", "desc": "支持多人协作" }, { "label": "服务", "desc": "专属技术支持" }] } }
+    },
+
+    // ============================================
     // ORIGINAL - BINARY COMPARISON (keep for compatibility)
     // ============================================
     {

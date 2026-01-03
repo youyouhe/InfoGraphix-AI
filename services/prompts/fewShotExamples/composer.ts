@@ -5,6 +5,8 @@ import { LIST_GRID_EXAMPLES } from './listGrid';
 import { CHART_EXAMPLES } from './chart';
 import { HIERARCHY_EXAMPLES } from './hierarchy';
 import { QUADRANT_EXAMPLES } from './quadrant';
+import { RELATION_EXAMPLES } from './relation';
+import { BASIC_EXAMPLES } from './basic';
 
 /**
  * All category examples
@@ -16,6 +18,8 @@ const ALL_CATEGORIES: CategoryExamples[] = [
   CHART_EXAMPLES,
   HIERARCHY_EXAMPLES,
   QUADRANT_EXAMPLES,
+  RELATION_EXAMPLES,
+  BASIC_EXAMPLES,
 ];
 
 /**
@@ -31,7 +35,7 @@ export interface ComposerConfig {
   /**
    * Specific categories to include. If not provided, uses all categories.
    */
-  categories?: Array<'sequence' | 'comparison' | 'listGrid' | 'chart' | 'hierarchy' | 'quadrant'>;
+  categories?: Array<'sequence' | 'comparison' | 'listGrid' | 'chart' | 'hierarchy' | 'quadrant' | 'relation' | 'basic'>;
 
   /**
    * Seed for reproducible random selection (useful for testing)
@@ -97,6 +101,8 @@ export function composeFewShot(config: ComposerConfig = {}): ComposedFewShot {
       chart: CHART_EXAMPLES,
       hierarchy: HIERARCHY_EXAMPLES,
       quadrant: QUADRANT_EXAMPLES,
+      relation: RELATION_EXAMPLES,
+      basic: BASIC_EXAMPLES,
     };
 
     categories = config.categories.map(c => categoryMap[c]).filter(Boolean) as CategoryExamples[];
@@ -149,4 +155,6 @@ export const CATEGORY_DATA = {
   chart: CHART_EXAMPLES,
   hierarchy: HIERARCHY_EXAMPLES,
   quadrant: QUADRANT_EXAMPLES,
+  relation: RELATION_EXAMPLES,
+  basic: BASIC_EXAMPLES,
 };

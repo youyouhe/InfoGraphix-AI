@@ -37,6 +37,8 @@ export { LIST_GRID_EXAMPLES } from './fewShotExamples/listGrid';
 export { CHART_EXAMPLES } from './fewShotExamples/chart';
 export { HIERARCHY_EXAMPLES } from './fewShotExamples/hierarchy';
 export { QUADRANT_EXAMPLES } from './fewShotExamples/quadrant';
+export { RELATION_EXAMPLES } from './fewShotExamples/relation';
+export { BASIC_EXAMPLES } from './fewShotExamples/basic';
 
 /**
  * Backward compatibility: Re-export default as getFewShotPrompt
@@ -116,7 +118,15 @@ const KEYWORD_TEMPLATE_MAP: Record<string, string> = {
   // Quadrant
   'quadrant': 'quadrant-quarter-simple-card',
   'matrix': 'quadrant-quarter-circular',
-  'priority': 'quadrant-quarter-simple-card'
+  'priority': 'quadrant-quarter-simple-card',
+
+  // Relation
+  'relation': 'relation-circle-icon-badge',
+  'ecosystem': 'relation-circle-icon-badge',
+  'surround': 'relation-circle-icon-badge',
+  'around': 'relation-circle-circular-progress',
+  'circular': 'relation-circle-circular-progress',
+  'skill': 'relation-circle-circular-progress'
 };
 
 /**

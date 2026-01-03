@@ -78,3 +78,9 @@ export {
   LineStep,
   LineDashed,
 } from './EnhancedLineChart';
+
+// WordCloudChart
+export {
+  WordCloudChart,
+  WordCloudSimple,
+} from './WordCloudChart';

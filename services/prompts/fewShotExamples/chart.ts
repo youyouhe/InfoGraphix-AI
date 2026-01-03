@@ -10,6 +10,7 @@
  * - PieChart (5): Simple, Donut, Interactive, Label, Rose
  * - AreaChart (4): Simple, Stacked, Percent, Gradient
  * - LineChart (5): Simple, Smooth, MultiSeries, Step, Dashed
+ * - WordCloud (1): Simple
  */
 
 import { CategoryExamples } from './types';
@@ -217,6 +218,16 @@ export const CHART_EXAMPLES: CategoryExamples = {
       "example_id": "scatter-shape",
       "syntax": "infographic scatter-shape\\ndata\\n  title 分类分析\\n  items\\n    - label 类别A\\n      x 30\\n      y 40\\n    - label 类别B\\n      x 50\\n      y 60\\n    - label 类别C\\n      x 40\\n      y 50\\n    - label 类别D\\n      x 60\\n      y 70",
       "data": [{ "x": 30, "y": 40 }, { "x": 50, "y": 60 }, { "x": 40, "y": 50 }, { "x": 60, "y": 70 }]
+    },
+
+    // ============================================
+    // WORD CLOUD
+    // ============================================
+    {
+      "type": "Word Cloud (词云图)",
+      "example_id": "chart-wordcloud",
+      "syntax": "infographic chart-wordcloud\\ndata\\n  title 热门关键词\\n  desc 用户搜索频率统计\\n  items\\n    - label 人工智能\\n      value 95\\n    - label 机器学习\\n      value 85\\n    - label 深度学习\\n      value 78\\n    - label 数据科学\\n      value 72\\n    - label Python\\n      value 68\\n    - label 算法\\n      value 65\\n    - label 云计算\\n      value 60\\n    - label 大数据\\n      value 55",
+      "data": [{ "name": "人工智能", "value": 95 }, { "name": "机器学习", "value": 85 }, { "name": "深度学习", "value": 78 }, { "name": "数据科学", "value": 72 }, { "name": "Python", "value": 68 }, { "name": "算法", "value": 65 }, { "name": "云计算", "value": 60 }, { "name": "大数据", "value": 55 }]
     }
   ]
 };

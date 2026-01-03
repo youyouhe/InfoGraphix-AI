@@ -95,11 +95,12 @@ ${recommendedTypesSection}
 - \`list-grid-badge-card\` - Grid layout for categories, services, products
 - \`list-grid-candy-card-lite\` - Colorful candy-style grid cards
 - \`list-grid-circular-progress\` - Grid with circular progress indicators
+- \`list-grid-ribbon-card\` - Grid with ribbon card style
 - \`list-row-horizontal-icon-arrow\` - Horizontal feature list with icons
 - \`list-row-horizontal-icon-line\` - Horizontal row with icon and line
-- \`list-row-simple-illus\` - Simple horizontal row list
 - \`list-row-circular-progress\` - Horizontal list with circular progress
-- \`list-zigzag-down-compact-card\` / \`list-zigzag-up-compact-card\` - Alternating zigzag lists
+- \`list-zigzag-down\` / \`list-zigzag-up\` - Alternating zigzag flow
+- \`list-zigzag-down-compact-card\` / \`list-zigzag-up-compact-card\` - Compact zigzag cards
 - \`list-column-vertical-icon-arrow\` - Vertical list with icons
 - \`list-column-done-list\` - Checklist/done-list style
 - \`list-column-simple-vertical-arrow\` - Simple vertical list
@@ -107,35 +108,60 @@ ${recommendedTypesSection}
 - \`list-pyramid-badge-card\` / \`list-pyramid-compact-card\` - Pyramid layout lists
 
 **CHART (图表类) - ONLY for quantitative metrics:**
-- \`chart-bar-plain-text\` - Bar chart for comparing values (horizontal bars)
-- \`chart-pie-plain-text\` - Pie chart for showing proportions/percentages
-- \`chart-column-simple\` - Column chart (vertical bars)
-- \`chart-line-plain-text\` - Line chart for trends over time
-- \`bar_chart\` - Legacy bar chart (use chart-bar-plain-text instead)
-- \`pie_chart\` - Legacy pie chart (use chart-pie-plain-text instead)
+- **Bar Charts:** \`bar-simple\`, \`bar-stacked\`, \`bar-horizontal\`, \`bar-percent\`, \`bar-rounded\`
+- **Pie Charts:** \`pie-simple\`, \`pie-donut\`, \`pie-interactive\`, \`pie-label\`, \`pie-rose\`
+- **Line Charts:** \`line-simple\`, \`line-smooth\`, \`line-multi-series\`, \`line-step\`, \`line-dashed\`
+- **Area Charts:** \`area-simple\`, \`area-stacked\`, \`area-percent\`, \`area-gradient\`
+- **Radial Bar:** \`radial-bar-simple\`, \`radial-bar-gauge\`, \`radial-bar-stacked\`
+- **Radar Charts:** \`radar-simple\`, \`radar-filled\`, \`radar-comparison\`
+- **Scatter Charts:** \`scatter-simple\`, \`scatter-bubble\`, \`scatter-multi-series\`, \`scatter-shape\`
+- **Word Cloud:** \`chart-wordcloud\` - Word frequency visualization
+- \`chart-bar-plain-text\` - Legacy bar chart (use bar-simple instead)
+- \`chart-pie-plain-text\` - Legacy pie chart (use pie-simple instead)
+- \`chart-line-plain-text\` - Legacy line chart (use line-simple instead)
+- \`bar_chart\` / \`pie_chart\` - Legacy types (use new bar-* / pie-* instead)
 
 **COMPARISON (对比类):**
-- \`compare-binary-horizontal-underline-text-vs\` - A vs B binary comparison with VS divider
-- \`compare-binary-horizontal-badge-card-vs\` - A vs B with badge cards and VS divider
-- \`compare-binary-horizontal-compact-card-arrow\` - A vs B with arrow connector
-- \`compare-binary-horizontal-compact-card-vs\` - A vs B compact cards with VS
-- \`compare-binary-horizontal-underline-text-arrow\` - A vs B with arrow connector
-- \`compare-binary-horizontal-underline-text-fold\` - A vs B foldable comparison
-- \`compare-binary-horizontal-simple-fold\` - A vs B simple fold style
-- \`compare-hierarchy-left-right-circle-node-plain-text\` - Hierarchical comparison with circles
-- \`compare-hierarchy-left-right-circle-node-pill-badge\` - Hierarchical with pill badges
-- \`compare-hierarchy-row-letter-card-compact-card\` - Letter card hierarchy
-- \`compare-swot\` - SWOT analysis (Strengths, Weaknesses, Opportunities, Threats)
-- \`comparison\` - Generic comparison items (legacy)
+- **Binary Comparison (A vs B):**
+  - \`compare-binary-horizontal-underline-text-vs\` - With VS divider
+  - \`compare-binary-horizontal-badge-card-vs\` - Badge cards with VS
+  - \`compare-binary-horizontal-compact-card-arrow\` - Compact with arrow
+  - \`compare-binary-horizontal-compact-card-vs\` - Compact cards with VS
+  - \`compare-binary-horizontal-underline-text-arrow\` - With arrow connector
+  - \`compare-binary-horizontal-underline-text-fold\` - Foldable style
+  - \`compare-binary-horizontal-simple-fold\` - Simple fold
+  - \`compare-binary-fold\` - Binary fold comparison
+- **Hierarchical Comparison:**
+  - \`compare-hierarchy-left-right-circle-node-pill-badge\` - With pill badges
+  - \`compare-hierarchy-left-right-circle-node-plain-text\` - Plain text circles
+  - \`compare-hierarchy-row-letter-card-compact-card\` - Letter card style
+- **Enhanced Comparison Types:**
+  - \`compare-pros-cons\` - Pros and cons list with color coding
+  - \`compare-score-card\` - Star rating comparison
+  - \`compare-triple\` - Three-way comparison
+  - \`compare-feature-table\` - Feature comparison with icons
+  - \`compare-timeline\` - Before/After timeline
+  - \`compare-metric-gauge\` - Progress bar comparison
+  - \`compare-card-stack\` - Stacked card comparison
+  - \`compare-swot\` - SWOT 2x2 analysis
+- \`comparison\` - Generic comparison (legacy)
 
 **HIERARCHY (层级结构类) - For tree structures, mind maps:**
-- \`hierarchy-tree-tech-style-capsule-item\` - Tech-style tree with capsule nodes
-- \`hierarchy-tree-tech-style-badge-card\` - Tech-style tree with badge cards
-- \`hierarchy-tree-curved-line-rounded-rect-node\` - Curved tree with rounded nodes
-- \`hierarchy-tree-bt-curved-line-*\` - Bottom-up curved tree variants
-- \`hierarchy-tree-lr-curved-line-badge-card\` - Left-to-right curved tree
-- \`hierarchy-tree-rl-distributed-origin-rounded-rect-node\` - Right-to-left distributed tree
-- \`hierarchy-mindmap-branch-gradient-*\` - Mindmap with gradient nodes
+- **Tech Style Trees:**
+  - \`hierarchy-tree-tech-style-capsule-item\` - With capsule nodes
+  - \`hierarchy-tree-tech-style-badge-card\` - With badge cards
+- **Curved Line Trees:**
+  - \`hierarchy-tree-curved-line-rounded-rect-node\` - Curved with rounded nodes
+  - \`hierarchy-tree-bt-curved-line-badge-card\` - Bottom-up with badge
+  - \`hierarchy-tree-bt-curved-line-compact-card\` - Bottom-up compact
+  - \`hierarchy-tree-bt-curved-line-ribbon-card\` - Bottom-up ribbon
+  - \`hierarchy-tree-bt-curved-line-rounded-rect-node\` - Bottom-up rounded
+  - \`hierarchy-tree-lr-curved-line-badge-card\` - Left-to-right
+  - \`hierarchy-tree-rl-distributed-origin-rounded-rect-node\` - Right-to-left
+- **Mindmap Styles:**
+  - \`hierarchy-mindmap-branch-gradient-capsule-item\` - Gradient capsule
+  - \`hierarchy-mindmap-branch-gradient-circle-progress\` - Circle progress
+  - \`hierarchy-mindmap-branch-gradient-compact-card\` - Compact card
 
 **OTHER:**
 - \`text\` - Narrative content without visual structure
@@ -145,7 +171,8 @@ ${recommendedTypesSection}
 - \`quadrant-quarter-circular\` - Circular quadrant layout
 - \`quadrant-simple-illus\` - Quadrant with illustrations
 - \`relation-circle-icon-badge\` - Circular relationship diagram
-- \`relation-circle-circular-progress\` - Progress circle
+- \`relation-circle-circular-progress\` - Progress circle relation
+- \`comparison\` - Generic comparison items (legacy)
 
 **⛔ CHART USAGE RULES (CRITICAL):**
 - **DO NOT** use chart types for: Years, Dates, Dynasty names (unless with numeric values)
@@ -155,20 +182,31 @@ ${recommendedTypesSection}
 - **USE** chart types for: Quantitative metrics ONLY (sales, population, %, counts)
 
 **SCHEMA MAPPING (CRITICAL):**
-*   **Chart types** (chart-bar-plain-text, chart-pie-plain-text, chart-column-simple, chart-line-plain-text):
+*   **Enhanced Chart types** (bar-*, pie-*, line-*, area-*, radial-bar-*, radar-*, scatter-*, chart-wordcloud):
+    *   \`data\` is an **Array**: \`[{ name: string, value: number, ... }]\`
+    *   Stacked/multi-series: \`{ name: string, seriesA: number, seriesB: number, ... }\`
+    *   Scatter with bubble: \`{ x: number, y: number, z?: number }\`
+    *   Word Cloud: \`[{ name: string, value: number }]\` (text size proportional to value)
+*   **Legacy chart types** (chart-bar-plain-text, chart-pie-plain-text, chart-line-plain-text):
     *   \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label: string, value: number, desc?: string, icon?: string }] }\`
-    *   **Recommended**: Include \`desc\` (item descriptions) and \`icon\` (lucide icon names) for richer visualizations
-*   **Legacy chart types** (bar_chart, pie_chart):
+*   **Very Legacy types** (bar_chart, pie_chart):
     *   \`data\` is an **Array**: \`[{ name: string, value: number }]\`
-*   **Comparison types** (compare-binary-horizontal-*, compare-hierarchy-*, compare-swot):
-    *   \`data\` is an **Object**: \`{ title?: string, items: [{ label: string, children: [{ label, desc, icon?: string }] }] }\`
+*   **Comparison types** (compare-binary-*, compare-hierarchy-*, compare-swot, compare-pros-cons, compare-score-card, etc.):
+    *   **Binary/Hierarchical**: \`data\` is an **Object**: \`{ title?: string, left: { title: string, items: [...] }, right: { title: string, items: [...] } }\`
+    *   **Pros/Cons**: \`data\` is an **Object**: \`{ title?: string, pros: [...], cons: [...] }\`
+    *   **Score Card**: \`data\` is an **Object**: \`{ title?: string, items: [{ label, leftScore, leftDesc, rightScore, rightDesc }] }\`
+    *   **Triple**: \`data\` is an **Object**: \`{ title?: string, items: [{ label, optionA, optionB, optionC }] }\`
+    *   **Feature Table**: \`data\` is an **Object**: \`{ title?: string, features: [{ label, icon, optionA, optionB, optionC }] }\`
+    *   **Timeline**: \`data\` is an **Object**: \`{ title?: string, items: [{ label, before, after, change }] }\`
+    *   **Metric Gauge**: \`data\` is an **Object**: \`{ title?: string, metrics: [{ label, optionA, optionB }] }\`
+    *   **Card Stack**: \`data\` is an **Object**: \`{ title?: string, stacks: [{ label, title, items: [...] }] }\`
+    *   **SWOT**: \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label, content }] }\`
 *   **Hierarchy types** (hierarchy-tree-*, hierarchy-mindmap-*):
-    *   \`data\` is an **Object**: \`{ desc?: string, items: [{ label, value, icon, children: [...] }] }\` (nested tree structure)
-*   **Most other types** (sequence, list):
-    *   \`data\` is an **Object**: \`{ title?: string, items: [{ label, desc, value, icon }] }\`
-*   **Quadrant types** (quadrant-quarter-simple-card, quadrant-quarter-circular, quadrant-simple-illus):
-    *   \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label: string, desc: string, icon?: string, illus?: string }] }\`
-    *   **Recommended**: Include \`icon\` (background icon) and \`illus\` (illustration) for visual enhancement
+    *   \`data\` is an **Object**: \`{ title?: string, items: [{ label, value?, icon?, children: [...] }] }\` (nested tree structure)
+*   **Relation types** (relation-circle-*):
+    *   \`data\` is an **Object**: \`{ title?: string, center: string, relations: [{ label, desc?, value? }] }\`
+*   **Most other types** (sequence, list, quadrant):
+    *   \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label, desc?, value?, icon? }] }\`
 *   **Legacy types**: \`process_flow\` uses \`steps\`, \`comparison\` uses \`comparisonItems\`, \`stat_highlight\` uses \`statValue\`
 
 **Process:**

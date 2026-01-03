@@ -82,6 +82,18 @@ export const LIST_GRID_EXAMPLES: CategoryExamples = {
       "data": { "title": "企业优势列表", "desc": "展示企业在不同维度上的核心优势与表现值", "items": [{ "label": "品牌影响力", "value": 85, "desc": "在目标用户群中具备较强认知与信任度", "time": "2021", "icon": "mingcute/diamond-2-fill" }, { "label": "技术研发力", "value": 90, "desc": "拥有自研核心系统与持续创新能力", "time": "2022", "icon": "mingcute/code-fill" }, { "label": "市场增长快", "value": 78, "desc": "近一年用户规模实现快速增长", "time": "2023", "icon": "mingcute/wallet-4-line" }, { "label": "服务满意度", "value": 88, "desc": "用户对服务体系整体评分较高", "time": "2020", "icon": "mingcute/happy-line" }, { "label": "数据资产全", "value": 92, "desc": "构建了完整用户标签与画像体系", "time": "2022", "icon": "mingcute/user-4-line" }, { "label": "创新能力强", "value": 83, "desc": "新产品上线频率高于行业平均", "time": "2023", "icon": "mingcute/rocket-line" }] }
     },
     {
+      "type": "Zigzag Down (向下锯齿)",
+      "example_id": "list-zigzag-down",
+      "syntax": "infographic list-zigzag-down\\ndata\\n  title 发展历程\\n  desc 公司从创立到成熟的发展阶段\\n  items\\n    - label 初创期\\n      desc 2020年成立\\n    - label 成长期\\n      desc 用户突破百万\\n    - label 扩张期\\n      desc 进军海外市场\\n    - label 成熟期\\n      desc 行业领导者",
+      "data": { "title": "发展历程", "desc": "公司从创立到成熟的发展阶段", "items": [{ "label": "初创期", "desc": "2020年成立" }, { "label": "成长期", "desc": "用户突破百万" }, { "label": "扩张期", "desc": "进军海外市场" }, { "label": "成熟期", "desc": "行业领导者" }] }
+    },
+    {
+      "type": "Zigzag Up (向上锯齿)",
+      "example_id": "list-zigzag-up",
+      "syntax": "infographic list-zigzag-up\\ndata\\n  title 攀登阶梯\\n  desc 一步步达成目标\\n  items\\n    - label 第一步\\n      desc 确立目标\\n    - label 第二步\\n      desc 制定计划\\n    - label 第三步\\n      desc 执行行动\\n    - label 第四步\\n      desc 达成成功",
+      "data": { "title": "攀登阶梯", "desc": "一步步达成目标", "items": [{ "label": "第一步", "desc": "确立目标" }, { "label": "第二步", "desc": "制定计划" }, { "label": "第三步", "desc": "执行行动" }, { "label": "第四步", "desc": "达成成功" }] }
+    },
+    {
       "type": "Zigzag Down Compact (向下锯齿紧凑卡片)",
       "example_id": "list-zigzag-down-compact-card",
       "syntax": "infographic list-zigzag-down-compact-card\\ndata\\n  title 企业优势列表\\n  desc 展示企业在不同维度上的核心优势与表现值\\n  items\\n    - label 品牌影响力\\n      value 85\\n      desc 在目标用户群中具备较强认知与信任度\\n      time 2021\\n      icon mingcute/diamond-2-fill\\n      illus creative-experiment\\n    - label 技术研发力\\n      value 90\\n      desc 拥有自研核心系统与持续创新能力\\n      time 2022\\n      icon mingcute/code-fill\\n      illus code-thinking\\n    - label 市场增长快\\n      value 78\\n      desc 近一年用户规模实现快速增长\\n      time 2023\\n      icon mingcute/wallet-4-line\\n      illus business-analytics\\n    - label 服务满意度\\n      value 88\\n      desc 用户对服务体系整体评分较高\\n      time 2020\\n      icon mingcute/happy-line\\n      illus feeling-happy\\n    - label 数据资产全\\n      value 92\\n      desc 构建了完整用户标签与画像体系\\n      time 2022\\n      icon mingcute/user-4-line\\n      illus mobile-photos\\n    - label 创新能力强\\n      value 83\\n      desc 新产品上线频率高于行业平均\\n      time 2023\\n      icon mingcute/rocket-line\\n      illus creativity\\ntheme light\\n  palette antv",

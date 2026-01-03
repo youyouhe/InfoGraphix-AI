@@ -56,6 +56,9 @@ export {
   LineMultiSeries,
   LineStep,
   LineDashed,
+  // WordCloud
+  WordCloudChart,
+  WordCloudSimple,
 } from './charts';
 
 // Sequence components
