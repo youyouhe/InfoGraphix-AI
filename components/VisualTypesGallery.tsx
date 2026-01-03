@@ -568,18 +568,18 @@ const MOCK_DATA: Record<string, any> = {
   'sequence-timeline-simple': {
     title: '项目里程碑',
     items: [
-      { label: '启动', date: '2024-01' },
-      { label: '开发', date: '2024-03' },
-      { label: '测试', date: '2024-05' },
-      { label: '发布', date: '2024-06' },
+      { label: '启动', desc: '2024年1月 - 项目启动' },
+      { label: '开发', desc: '2024年3月 - 核心开发' },
+      { label: '测试', desc: '2024年5月 - 测试验收' },
+      { label: '发布', desc: '2024年6月 - 正式发布' },
     ],
   },
   'sequence-zigzag-steps-underline-text': {
     title: '实施步骤',
-    steps: [
-      { step: '1', title: '需求分析', description: '收集用户需求' },
-      { step: '2', title: '系统设计', description: '架构设计' },
-      { step: '3', title: '开发实施', description: '编码实现' },
+    items: [
+      { label: '需求分析', desc: '收集用户需求' },
+      { label: '系统设计', desc: '架构设计' },
+      { label: '开发实施', desc: '编码实现' },
     ],
   },
   'sequence-circular-simple': {
@@ -594,9 +594,36 @@ const MOCK_DATA: Record<string, any> = {
   'sequence-roadmap-vertical-simple': {
     title: '产品路线图',
     items: [
-      { label: 'Q1', title: '基础功能', desc: '完成核心功能' },
-      { label: 'Q2', title: '增强功能', desc: '添加高级特性' },
-      { label: 'Q3', title: '优化', desc: '性能优化' },
+      { label: 'Q1 基础功能', desc: '完成核心功能开发' },
+      { label: 'Q2 增强功能', desc: '添加高级特性' },
+      { label: 'Q3 性能优化', desc: '系统性能调优' },
+    ],
+  },
+  'sequence-ascending-steps': {
+    title: '成长阶梯',
+    items: [
+      { label: '入门', desc: '掌握基础知识' },
+      { label: '熟练', desc: '独立完成工作' },
+      { label: '精通', desc: '解决复杂问题' },
+      { label: '专家', desc: '引领行业发展' },
+    ],
+  },
+  'sequence-horizontal-zigzag-underline-text': {
+    title: '迭代流程',
+    items: [
+      { label: '需求', desc: '明确产品需求' },
+      { label: '设计', desc: 'UI/UX设计' },
+      { label: '开发', desc: '前后端开发' },
+      { label: '上线', desc: '部署发布' },
+    ],
+  },
+  'sequence-snake-steps': {
+    title: '工作流程',
+    items: [
+      { label: '提交', desc: '提交工单' },
+      { label: '审核', desc: '主管审核' },
+      { label: '处理', desc: '技术处理' },
+      { label: '验收', desc: '结果验收' },
     ],
   },
 
@@ -1154,6 +1181,17 @@ const MOCK_DATA: Record<string, any> = {
       { name: 'JavaScript', value: 45 },
     ],
   },
+
+  // Process flow
+  'process_flow': {
+    title: '开发流程',
+    steps: [
+      { step: '1', title: '需求分析', description: '理解用户需求' },
+      { step: '2', title: '方案设计', description: '制定技术方案' },
+      { step: '3', title: '开发实现', description: '编码开发功能' },
+      { step: '4', title: '测试上线', description: '测试并部署' },
+    ],
+  },
 };
 
 export const VisualTypesGallery: React.FC = () => {
@@ -1231,6 +1269,22 @@ export const VisualTypesGallery: React.FC = () => {
       );
     }
 
+    // Special handling for 'process_flow': uses steps field at section level
+    if (type === 'process_flow') {
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        steps: mockData.steps,
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
     // Special handling for stat_highlight: fields are at section level, not in data
     if (type === 'stat_highlight') {
       // Simplified test with hardcoded values
@@ -1295,6 +1349,27 @@ export const VisualTypesGallery: React.FC = () => {
     const isListType = type.startsWith('list-');
     if (isListType) {
       // List mock data has: { title, items: [...] }
+      // Component expects: { data: { items: [...] } }
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        data: {
+          items: mockData.items, // Pass items directly
+        },
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
+    // Special handling for sequence types: expects data.items array
+    const isSequenceType = type.startsWith('sequence-');
+    if (isSequenceType) {
+      // Sequence mock data has: { title, items: [...] }
       // Component expects: { data: { items: [...] } }
       const section: InfographicSection = {
         id: 'preview',

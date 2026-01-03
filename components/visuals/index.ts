@@ -64,6 +64,10 @@ export {
   SequenceSteps,
   SequenceCircular,
   SequenceRoadmap,
+  SequenceSnake,
+  SequenceZigzagUnderline,
+  SequenceAscending,
+  SequenceHorizontalZigzag,
 } from './sequence';
 
 // List components

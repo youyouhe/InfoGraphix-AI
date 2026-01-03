@@ -9,7 +9,7 @@ import { StatHighlight } from '../../components/Visuals';
 import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
-import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap } from '../../components/Visuals';
+import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap, SequenceSnake, SequenceZigzagUnderline, SequenceAscending, SequenceHorizontalZigzag } from '../../components/Visuals';
 import { ListGrid, ListRow, ListColumn, ListSector, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
 import { ChartLinePlain, QuadrantQuarterCard, QuadrantCircular, QuadrantIllustrated, QuadrantMatrix, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
@@ -97,12 +97,12 @@ export function registerCoreSectionTypes(): void {
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
-  // Sequence Steps Section (for multiple sequence-* types)
+  // Sequence Steps with specialized components
   registerSectionType({
     type: 'sequence-zigzag-steps-underline-text',
-    displayName: 'Zigzag Steps',
+    displayName: 'Zigzag Underline',
     category: 'sequence',
-    component: SequenceSteps,
+    component: SequenceZigzagUnderline,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -112,7 +112,7 @@ export function registerCoreSectionTypes(): void {
     type: 'sequence-ascending-steps',
     displayName: 'Ascending Steps',
     category: 'sequence',
-    component: SequenceSteps,
+    component: SequenceAscending,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -122,7 +122,7 @@ export function registerCoreSectionTypes(): void {
     type: 'sequence-snake-steps',
     displayName: 'Snake Steps',
     category: 'sequence',
-    component: SequenceSteps,
+    component: SequenceSnake,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -344,9 +344,9 @@ export function registerCoreSectionTypes(): void {
 
   registerSectionType({
     type: 'sequence-horizontal-zigzag-underline-text',
-    displayName: 'Zigzag Timeline',
+    displayName: 'Horizontal Zigzag',
     category: 'sequence',
-    component: SequenceTimeline,
+    component: SequenceHorizontalZigzag,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
