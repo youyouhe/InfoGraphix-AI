@@ -13,8 +13,7 @@ import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap } fr
 import { ListGrid, ListRow, ListColumn, ListSector } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
 import { ChartLinePlain, QuadrantQuarterCard, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape } from '../../components/Visuals';
-import { RelationCircle } from '../../components/Visuals';
-import { HierarchyTree } from '../../components/Visuals';
+import { RelationCircle, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
 
 /**
  * Register all core section types
@@ -379,32 +378,138 @@ export function registerCoreSectionTypes(): void {
   });
 
   // ========================================
-  // HIERARCHY TYPES (12 types)
+  // HIERARCHY TYPES (12 types - with specialized components)
   // ========================================
-  const hierarchyTypes = [
-    'hierarchy-tree-tech-style-badge-card',
-    'hierarchy-tree-tech-style-capsule-item',
-    'hierarchy-tree-curved-line-rounded-rect-node',
-    'hierarchy-tree-bt-curved-line-badge-card',
-    'hierarchy-tree-bt-curved-line-compact-card',
-    'hierarchy-tree-bt-curved-line-ribbon-card',
-    'hierarchy-tree-bt-curved-line-rounded-rect-node',
-    'hierarchy-tree-lr-curved-line-badge-card',
-    'hierarchy-tree-rl-distributed-origin-rounded-rect-node',
-    'hierarchy-mindmap-branch-gradient-capsule-item',
-    'hierarchy-mindmap-branch-gradient-circle-progress',
-    'hierarchy-mindmap-branch-gradient-compact-card',
-  ];
-  hierarchyTypes.forEach(type => {
-    registerSectionType({
-      type,
-      displayName: type,
-      category: 'hierarchy',
-      component: HierarchyTree,
-      requiredFields: ['data'],
-      optionalFields: [],
-      forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
-    });
+  // Tech style badge -> HierarchyBadge
+  registerSectionType({
+    type: 'hierarchy-tree-tech-style-badge-card',
+    displayName: 'Tech Badge',
+    category: 'hierarchy',
+    component: HierarchyBadge,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Tech style capsule -> HierarchyCapsule
+  registerSectionType({
+    type: 'hierarchy-tree-tech-style-capsule-item',
+    displayName: 'Tech Capsule',
+    category: 'hierarchy',
+    component: HierarchyCapsule,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Curved line rounded rect -> HierarchyTree (default)
+  registerSectionType({
+    type: 'hierarchy-tree-curved-line-rounded-rect-node',
+    displayName: 'Curved Line Tree',
+    category: 'hierarchy',
+    component: HierarchyTree,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // BT badge -> HierarchyBadge
+  registerSectionType({
+    type: 'hierarchy-tree-bt-curved-line-badge-card',
+    displayName: 'BT Badge',
+    category: 'hierarchy',
+    component: HierarchyBadge,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // BT compact -> HierarchyTree (default)
+  registerSectionType({
+    type: 'hierarchy-tree-bt-curved-line-compact-card',
+    displayName: 'BT Compact',
+    category: 'hierarchy',
+    component: HierarchyTree,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // BT ribbon -> HierarchyRibbon
+  registerSectionType({
+    type: 'hierarchy-tree-bt-curved-line-ribbon-card',
+    displayName: 'BT Ribbon',
+    category: 'hierarchy',
+    component: HierarchyRibbon,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // BT rounded rect -> HierarchyTree (default)
+  registerSectionType({
+    type: 'hierarchy-tree-bt-curved-line-rounded-rect-node',
+    displayName: 'BT Rounded',
+    category: 'hierarchy',
+    component: HierarchyTree,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // LR badge -> HierarchyBadge
+  registerSectionType({
+    type: 'hierarchy-tree-lr-curved-line-badge-card',
+    displayName: 'LR Badge',
+    category: 'hierarchy',
+    component: HierarchyBadge,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // RL distributed -> HierarchyTree (default)
+  registerSectionType({
+    type: 'hierarchy-tree-rl-distributed-origin-rounded-rect-node',
+    displayName: 'RL Distributed',
+    category: 'hierarchy',
+    component: HierarchyTree,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Mindmap capsule -> HierarchyMindmap
+  registerSectionType({
+    type: 'hierarchy-mindmap-branch-gradient-capsule-item',
+    displayName: 'Mindmap Capsule',
+    category: 'hierarchy',
+    component: HierarchyMindmap,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Mindmap circle progress -> HierarchyCircleProgress
+  registerSectionType({
+    type: 'hierarchy-mindmap-branch-gradient-circle-progress',
+    displayName: 'Mindmap Progress',
+    category: 'hierarchy',
+    component: HierarchyCircleProgress,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
+  });
+
+  // Mindmap compact -> HierarchyMindmap
+  registerSectionType({
+    type: 'hierarchy-mindmap-branch-gradient-compact-card',
+    displayName: 'Mindmap Compact',
+    category: 'hierarchy',
+    component: HierarchyMindmap,
+    requiredFields: ['data'],
+    optionalFields: [],
+    forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
   // ========================================

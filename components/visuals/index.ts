@@ -91,6 +91,11 @@ export {
 export {
   HierarchyTree,
   RelationCircle,
+  HierarchyMindmap,
+  HierarchyCapsule,
+  HierarchyBadge,
+  HierarchyRibbon,
+  HierarchyCircleProgress,
 } from './hierarchy';
 
 // Other components

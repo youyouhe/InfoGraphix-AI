@@ -652,6 +652,241 @@ const MOCK_DATA: Record<string, any> = {
     },
   },
 
+  // Tech style variants
+  'hierarchy-tree-tech-style-badge-card': {
+    title: '技术栈',
+    data: {
+      label: '前端技术',
+      children: [
+        { label: '框架', children: [{ label: 'React' }, { label: 'Vue' }] },
+        { label: '构建', children: [{ label: 'Vite' }, { label: 'Webpack' }] },
+        { label: '样式', children: [{ label: 'Tailwind' }, { label: 'CSS' }] },
+      ],
+    },
+  },
+
+  // Curved line variants
+  'hierarchy-tree-curved-line-rounded-rect-node': {
+    title: '产品分类',
+    data: {
+      label: '全部产品',
+      children: [
+        {
+          label: '电子产品',
+          children: [
+            { label: '手机' },
+            { label: '电脑' },
+            { label: '平板' },
+          ],
+        },
+        {
+          label: '家居用品',
+          children: [
+            { label: '家具' },
+            { label: '装饰' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // Bottom-Top variants
+  'hierarchy-tree-bt-curved-line-badge-card': {
+    title: '基础架构',
+    data: {
+      label: '应用层',
+      children: [
+        {
+          label: '服务层',
+          children: [
+            { label: 'API网关' },
+            { label: '微服务' },
+          ],
+        },
+        {
+          label: '数据层',
+          children: [
+            { label: '数据库' },
+            { label: '缓存' },
+          ],
+        },
+        { label: '基础设施层' },
+      ],
+    },
+  },
+
+  'hierarchy-tree-bt-curved-line-compact-card': {
+    title: '知识体系',
+    data: {
+      label: '高级知识',
+      children: [
+        {
+          label: '中级知识',
+          children: [
+            { label: '基础知识' },
+            { label: '入门概念' },
+          ],
+        },
+        { label: '专家知识' },
+      ],
+    },
+  },
+
+  'hierarchy-tree-bt-curved-line-ribbon-card': {
+    title: '等级体系',
+    data: {
+      label: '钻石会员',
+      children: [
+        {
+          label: '黄金会员',
+          children: [
+            { label: '白银会员' },
+            { label: '青铜会员' },
+          ],
+        },
+        { label: '至尊会员' },
+      ],
+    },
+  },
+
+  'hierarchy-tree-bt-curved-line-rounded-rect-node': {
+    title: '文件系统',
+    data: {
+      label: '根目录',
+      children: [
+        {
+          label: '用户目录',
+          children: [
+            { label: '文档' },
+            { label: '图片' },
+          ],
+        },
+        { label: '系统目录' },
+      ],
+    },
+  },
+
+  // Left-Right variant
+  'hierarchy-tree-lr-curved-line-badge-card': {
+    title: '业务流程',
+    data: {
+      label: '开始',
+      children: [
+        {
+          label: '审批',
+          children: [
+            { label: '部门审批' },
+            { label: '财务审批' },
+          ],
+        },
+        { label: '执行' },
+        { label: '完成' },
+      ],
+    },
+  },
+
+  // Right-Left variant
+  'hierarchy-tree-rl-distributed-origin-rounded-rect-node': {
+    title: '逆向溯源',
+    data: {
+      label: '问题',
+      children: [
+        {
+          label: '直接原因',
+          children: [
+            { label: '操作失误' },
+            { label: '系统故障' },
+          ],
+        },
+        {
+          label: '根本原因',
+          children: [
+            { label: '流程缺陷' },
+            { label: '培训不足' },
+          ],
+        },
+      ],
+    },
+  },
+
+  // Mindmap variants
+  'hierarchy-mindmap-branch-gradient-capsule-item': {
+    title: '核心主题',
+    data: {
+      label: '中心思想',
+      children: [
+        {
+          label: '分支A',
+          children: [
+            { label: '子项A1' },
+            { label: '子项A2' },
+          ],
+        },
+        {
+          label: '分支B',
+          children: [
+            { label: '子项B1' },
+            { label: '子项B2' },
+          ],
+        },
+        {
+          label: '分支C',
+          children: [
+            { label: '子项C1' },
+          ],
+        },
+      ],
+    },
+  },
+
+  'hierarchy-mindmap-branch-gradient-circle-progress': {
+    title: '目标规划',
+    data: {
+      label: '年度目标',
+      children: [
+        {
+          label: '季度目标',
+          children: [
+            { label: '月度任务' },
+            { label: '周计划' },
+          ],
+        },
+        {
+          label: '学习成长',
+          children: [
+            { label: '技能提升' },
+            { label: '证书获取' },
+          ],
+        },
+      ],
+    },
+  },
+
+  'hierarchy-mindmap-branch-gradient-compact-card': {
+    title: '项目拆解',
+    data: {
+      label: '项目启动',
+      children: [
+        {
+          label: '需求阶段',
+          children: [
+            { label: '用户调研' },
+            { label: '需求文档' },
+          ],
+        },
+        {
+          label: '设计阶段',
+          children: [
+            { label: '原型设计' },
+            { label: 'UI设计' },
+          ],
+        },
+        {
+          label: '开发阶段' },
+      ],
+    },
+  },
+
   // Quadrant types
   'quadrant-quarter-simple-card': {
     title: '优先级矩阵',
@@ -839,6 +1074,28 @@ export const VisualTypesGallery: React.FC = () => {
         type: type as any,
         title: mockData.title,
         comparisonItems: mockData.comparisonItems,
+      };
+
+      return (
+        <div className="min-h-[200px] overflow-auto">
+          <Component section={section} isLoading={false} />
+        </div>
+      );
+    }
+
+    // Special handling for hierarchy types: expects data.items array
+    const isHierarchyType = type.startsWith('hierarchy-');
+    if (isHierarchyType) {
+      // Hierarchy mock data has: { title, data: { label, children } }
+      // But component expects: { data: { items: [{ label, children }] } }
+      const hierarchyNode = mockData.data; // { label, children }
+      const section: InfographicSection = {
+        id: 'preview',
+        type: type as any,
+        title: mockData.title,
+        data: {
+          items: [hierarchyNode], // Wrap in items array
+        },
       };
 
       return (
