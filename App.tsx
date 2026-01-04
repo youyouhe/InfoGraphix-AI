@@ -4,13 +4,15 @@ import SettingsModal from './components/SettingsModal';
 import { LLMServiceFactory, saveApiKey, getStoredApiKey } from './services/factory';
 import { HistoryItem, InfographicReport, SectionType, DisplayMode } from './types';
 import { TextSection, StatHighlight, ChartSection, ProcessFlow, ComparisonSection } from './components/Visuals';
-import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings, PanelLeftClose, PanelLeftOpen, Languages } from 'lucide-react';
+import { VisualTypesGallery } from './components/VisualTypesGallery';
+import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings, PanelLeftClose, PanelLeftOpen, Languages, Grid3x3 } from 'lucide-react';
 import { t, tp } from './i18n';
 import { registerCoreSectionTypes } from './services/registry/coreSections';
 import { sectionRegistry } from './services/registry/sectionRegistry';
 import { ImageExporter } from './services/export/svgExporter';
 import { loadHistory, saveHistory, clearHistoryStorage } from './services/historyStorage';
 import { Language, getInitialLanguage, saveLanguage, UILanguage, getInitialUILanguage, saveUILanguage } from './i18n';
+import { debugStore } from './services/debugStore';
 
 export default function App() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -19,6 +21,8 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showDebug, setShowDebug] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
+  const [debugMode, setDebugMode] = useState<'report' | 'fewshot' | 'recommended'>('report');
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [provider, setProvider] = useState(() => LLMServiceFactory.getDefaultProvider());
   const [model, setModel] = useState(() => {
@@ -57,6 +61,29 @@ export default function App() {
   // Initialize core section types on mount
   useEffect(() => {
     registerCoreSectionTypes();
+  }, []);
+
+  // Global error handlers to prevent app crashes
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('[App] Unhandled promise rejection:', event.reason);
+      event.preventDefault();
+      setError(event.reason?.message || 'An unexpected error occurred.');
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      console.error('[App] Unhandled error:', event.error);
+      event.preventDefault();
+      setError(event.error?.message || 'An unexpected error occurred.');
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+    };
   }, []);
 
   // Load history from localStorage on mount (only once)
@@ -262,11 +289,45 @@ export default function App() {
   // Normalize report fields - handle field name variations from LLM
   const normalizeReport = (report: any): InfographicReport => {
     if (!report) return report;
+
+    // Handle wrapped response: { infographic_report: { title, summary, sections }, title, summary }
+    if (report.infographic_report) {
+      report = report.infographic_report;
+    }
+
     return {
       ...report,
       // Map reportTitle/reportSummary to title/summary
       title: report.title || report.reportTitle || '',
       summary: report.summary || report.reportSummary || '',
+      // Normalize sections data - handle nested data objects from LLM
+      sections: report.sections?.map((section: any) => {
+        if (!section) return section;
+        // Handle nested data object: { title: "...", data: [...], unit: "..." }
+        // Only extract nestedData.data if it exists (for legacy format)
+        // Otherwise keep the original data object (for { title, items } format used by chart-column-simple, etc.)
+        if (section.data && typeof section.data === 'object' && !Array.isArray(section.data)) {
+          const nestedData = section.data;
+          // Only restructure if there's a 'data' property (legacy format)
+          // Otherwise keep the data object as-is (new format with items/relations/etc.)
+          if (nestedData.data && Array.isArray(nestedData.data)) {
+            return {
+              ...section,
+              title: nestedData.title || section.title,
+              data: nestedData.data,
+            };
+          }
+          // For new format { title, items, relations, etc. }, keep data intact
+          // but extract the title if it exists
+          if (nestedData.title) {
+            return {
+              ...section,
+              title: nestedData.title,
+            };
+          }
+        }
+        return section;
+      }),
     };
   };
 
@@ -311,6 +372,38 @@ export default function App() {
     }
   };
 
+  // Normalize section data to fix common LLM output issues
+  const normalizeSection = (section: any): any => {
+    if (!section) return section;
+
+    // Clone to avoid mutating original
+    const normalized = { ...section };
+
+    // Fix process_flow: steps may be nested in data.steps instead of at section level
+    if (section.type === 'process_flow' && section.data?.steps && !section.steps) {
+      normalized.steps = section.data.steps;
+    }
+
+    // Fix stat_highlight: fields may be nested in data
+    if (section.type === 'stat_highlight' && section.data) {
+      if (section.data.statValue && !section.statValue) normalized.statValue = section.data.statValue;
+      if (section.data.statLabel && !section.statLabel) normalized.statLabel = section.data.statLabel;
+      if (section.data.statTrend && !section.statTrend) normalized.statTrend = section.data.statTrend;
+    }
+
+    // Fix comparison: comparisonItems may be nested in data
+    if (section.type === 'comparison' && section.data?.comparisonItems && !section.comparisonItems) {
+      normalized.comparisonItems = section.data.comparisonItems;
+    }
+
+    // Fix text: content may be nested in data
+    if (section.type === 'text' && section.data?.content && !section.content) {
+      normalized.content = section.data.content;
+    }
+
+    return normalized;
+  };
+
   // Render a specific section based on its type (dynamic from registry)
   const renderSection = (section: any, index: number) => {
     // Defensive check for null/undefined section
@@ -322,6 +415,9 @@ export default function App() {
         </div>
       );
     }
+
+    // Normalize section data to fix common LLM output issues
+    section = normalizeSection(section);
 
     const props = { ...section, isDark: isDarkMode, isLoading: loading };
 
@@ -413,6 +509,13 @@ export default function App() {
           </div>
           <div className="flex gap-2 items-center">
              <button
+              onClick={() => setShowGallery(!showGallery)}
+              className={`p-2 rounded-lg transition-colors ${showGallery ? 'bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400' : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400'}`}
+              title="可视化类型库"
+            >
+              <Grid3x3 size={18} />
+            </button>
+            <button
               onClick={() => setShowDebug(!showDebug)}
               className={`p-2 rounded-lg transition-colors ${showDebug ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400' : 'hover:bg-gray-100 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400'}`}
               title={t('debugView', uiLanguage)}
@@ -488,7 +591,19 @@ export default function App() {
              <div className="flex flex-col items-center justify-center h-full text-red-500 dark:text-red-400">
                <div className="bg-red-50 dark:bg-red-500/10 p-6 rounded-xl border border-red-200 dark:border-red-500/20 max-w-lg text-center">
                   <h3 className="text-lg font-bold mb-2">{t('generationFailed', uiLanguage)}</h3>
-                  <p>{error}</p>
+                  <p className="text-sm mb-4">{error}</p>
+                  <button
+                    onClick={() => {
+                      setError(null);
+                      const lastInput = history.length > 0 ? history[0].query : '';
+                      if (lastInput) {
+                        handleGenerate(lastInput);
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors text-sm font-medium"
+                  >
+                    {t('retry', uiLanguage)}
+                  </button>
                </div>
              </div>
           )}
@@ -711,9 +826,40 @@ export default function App() {
         {showDebug && (
            <div className="absolute top-16 right-0 bottom-0 w-full md:w-[450px] bg-white/95 dark:bg-[#1a1b1e]/95 backdrop-blur-md border-l border-gray-200 dark:border-zinc-800 shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-200">
              <div className="p-3 border-b border-gray-200 dark:border-zinc-800 flex justify-between items-center bg-gray-50/50 dark:bg-zinc-900/50">
-               <div className="flex items-center gap-2">
+               <div className="flex items-center gap-3">
                  <Bug size={14} className="text-indigo-500" />
-                 <span className="text-xs font-bold uppercase tracking-wider text-gray-900 dark:text-white">{t('liveOutput', uiLanguage)}</span>
+                 <div className="flex gap-1 bg-gray-200 dark:bg-zinc-800 rounded-lg p-0.5">
+                   <button
+                     onClick={() => setDebugMode('report')}
+                     className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                       debugMode === 'report'
+                         ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                         : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+                     }`}
+                   >
+                     Report
+                   </button>
+                   <button
+                     onClick={() => setDebugMode('fewshot')}
+                     className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                       debugMode === 'fewshot'
+                         ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                         : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+                     }`}
+                   >
+                     Few Shot
+                   </button>
+                   <button
+                     onClick={() => setDebugMode('recommended')}
+                     className={`px-2 py-1 text-xs font-medium rounded transition-colors ${
+                       debugMode === 'recommended'
+                         ? 'bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm'
+                         : 'text-gray-600 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white'
+                     }`}
+                   >
+                     Recommended
+                   </button>
+                 </div>
                </div>
                <button
                  onClick={() => setShowDebug(false)}
@@ -723,18 +869,95 @@ export default function App() {
                </button>
              </div>
              <div className="flex-1 overflow-auto p-4 bg-gray-50 dark:bg-[#0c0c0e]">
-               {currentReport ? (
-                 <pre className="text-[10px] md:text-xs font-mono text-gray-600 dark:text-green-400 whitespace-pre-wrap break-all leading-relaxed">
-                   {JSON.stringify(currentReport, null, 2)}
-                 </pre>
+               {debugMode === 'report' ? (
+                 currentReport ? (
+                   <pre className="text-[10px] md:text-xs font-mono text-gray-600 dark:text-green-400 whitespace-pre-wrap break-all leading-relaxed">
+                     {JSON.stringify(currentReport, null, 2)}
+                   </pre>
+                 ) : (
+                   <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-zinc-600 italic gap-2">
+                     <Bug size={32} className="opacity-20" />
+                     <p>{t('noReportData', uiLanguage)}</p>
+                   </div>
+                 )
+               ) : debugMode === 'fewshot' ? (
+                 // Few Shot mode
+                 (() => {
+                   const fewShotParsed = debugStore.getFewShotPromptParsed();
+                   return fewShotParsed ? (
+                     <pre className="text-[10px] md:text-xs font-mono text-gray-600 dark:text-yellow-400 whitespace-pre-wrap break-all leading-relaxed">
+                       {JSON.stringify(fewShotParsed, null, 2)}
+                     </pre>
+                   ) : (
+                     <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-zinc-600 italic gap-2">
+                       <Sparkles size={32} className="opacity-20" />
+                       <p>No few shot prompt data available</p>
+                       <p className="text-xs opacity-60">Generate a report to see the few shot prompt</p>
+                     </div>
+                   );
+                 })()
                ) : (
-                 <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-zinc-600 italic gap-2">
-                   <Bug size={32} className="opacity-20" />
-                   <p>{t('noReportData', uiLanguage)}</p>
-                 </div>
+                 // Recommended types mode
+                 (() => {
+                   const debugInfo = debugStore.get();
+                   const recommendedTypes = debugInfo.recommendedTypes;
+                   return recommendedTypes && recommendedTypes.length > 0 ? (
+                     <div className="space-y-4">
+                       <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                         <Sparkles size={16} />
+                         <span className="text-sm font-semibold">Recommended Visual Types ({recommendedTypes.length})</span>
+                       </div>
+                       <div className="grid grid-cols-1 gap-2">
+                         {recommendedTypes.map((type, idx) => {
+                           // Extract category prefix for coloring
+                           const category = type.split('-')[0];
+                           const categoryColors: Record<string, string> = {
+                             sequence: 'text-blue-600 dark:text-blue-400',
+                             list: 'text-green-600 dark:text-green-400',
+                             chart: 'text-purple-600 dark:text-purple-400',
+                             compare: 'text-orange-600 dark:text-orange-400',
+                             hierarchy: 'text-pink-600 dark:text-pink-400',
+                             quadrant: 'text-cyan-600 dark:text-cyan-400',
+                           };
+                           const colorClass = categoryColors[category] || 'text-gray-600 dark:text-gray-400';
+                           return (
+                             <div key={idx} className={`text-xs font-mono ${colorClass} bg-white dark:bg-zinc-900 px-3 py-2 rounded-lg border border-gray-200 dark:border-zinc-800`}>
+                               {type}
+                             </div>
+                           );
+                         })}
+                       </div>
+                       <div className="pt-4 border-t border-gray-200 dark:border-zinc-800">
+                         <p className="text-xs text-gray-500 dark:text-zinc-500 italic">
+                           These types were extracted from the few-shot examples and are recommended for use in this session.
+                         </p>
+                       </div>
+                     </div>
+                   ) : (
+                     <div className="h-full flex flex-col items-center justify-center text-gray-400 dark:text-zinc-600 italic gap-2">
+                       <Sparkles size={32} className="opacity-20" />
+                       <p>No recommended types available</p>
+                       <p className="text-xs opacity-60">Generate a report to see recommended types</p>
+                     </div>
+                   );
+                 })()
                )}
              </div>
            </div>
+        )}
+
+        {/* Visual Types Gallery - Full screen overlay */}
+        {showGallery && (
+          <div className="fixed inset-0 z-50 animate-in fade-in duration-200">
+            <VisualTypesGallery />
+            <button
+              onClick={() => setShowGallery(false)}
+              className="fixed top-4 right-4 p-2 bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg shadow-lg text-gray-500 dark:text-zinc-400 transition-colors z-50"
+              title="关闭"
+            >
+              <X size={20} />
+            </button>
+          </div>
         )}
 
         {/* API Key Modal */}

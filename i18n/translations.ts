@@ -46,6 +46,7 @@ export const translations: Translations = {
 
     // Errors
     generationFailed: 'Generation Failed',
+    retry: 'Retry',
     apiKeyMissing: 'API key is missing',
     enterApiKey: 'Enter API Key',
     apiKeyDesc: '{provider} API Key is required',
@@ -128,6 +129,7 @@ export const translations: Translations = {
 
     // Errors
     generationFailed: '生成失败',
+    retry: '重试',
     apiKeyMissing: 'API 密钥缺失',
     enterApiKey: '输入 API 密钥',
     apiKeyDesc: '需要 {provider} API 密钥',

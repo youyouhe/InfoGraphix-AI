@@ -1,15 +1,76 @@
 import { Type, Schema } from "@google/genai";
 import { CoreSectionTypes } from "../../types";
 import { getSectionTypeSchemaEnum } from "../registry/sectionRegistry";
-import { getEnhancedSystemInstruction } from "./fewShotExamples";
+import { getFewShotPrompt } from "./fewShotExamples/index";
 import { Language } from "../../i18n";
+import { debugStore } from "../debugStore";
 
 /**
  * Core system instruction for infographic generation
  * Works across all LLM providers
  * @param sectionCount - Number of sections to generate (default: 5)
+ * @param includeFewShot - Whether to include few-shot examples (default: true)
+ * @param restrictToFewShot - Whether to restrict types to few-shot only (default: true)
  */
-export function getCoreSystemInstruction(sectionCount: number = 5): string {
+export function getCoreSystemInstruction(sectionCount: number = 5, includeFewShot: boolean = true, restrictToFewShot: boolean = true): string {
+  // Get dynamic few-shot prompt with varied examples
+  const fewShotPrompt = includeFewShot ? getFewShotPrompt({ examplesPerCategory: 1 }) : '';
+
+  // Extract recommended types from few-shot examples
+  let recommendedTypes: string[] = [];
+  let recommendedTypesSection = '';
+  if (includeFewShot && fewShotPrompt) {
+    try {
+      const fewShotData = JSON.parse(fewShotPrompt);
+      if (fewShotData.infographic_gallery_few_shot) {
+        // Extract all example_ids from sub_categories
+        for (const category of fewShotData.infographic_gallery_few_shot) {
+          if (category.sub_categories) {
+            for (const sub of category.sub_categories) {
+              if (sub.example_id) {
+                recommendedTypes.push(sub.example_id);
+              }
+            }
+          }
+        }
+      }
+
+      // Build the recommended types section
+      if (recommendedTypes.length > 0) {
+        recommendedTypesSection = `
+**MANDATORY: USE ONLY THESE FEW-SHOT TYPES**
+You **MUST** select section types **EXCLUSIVELY** from this list:
+
+${recommendedTypes.map(t => `- \`${t}\``).join('\n')}
+
+**CRITICAL RULES:**
+- **DO NOT** use any type outside this list
+- These are the only types with examples - using unshown types may cause rendering errors
+- Your goal is to use as many **different types from this list** as possible across the ${sectionCount} sections
+- Each section should ideally use a different type from this list for visual variety
+
+**If you feel you need a different visualization:**
+- Reconsider your content structure to fit one of these types
+- These types cover all major categories: timelines, lists, comparisons, charts, hierarchies, quadrants, relations
+
+`;
+        console.log('[SystemPrompt] Recommended types:', recommendedTypes);
+        console.log('[SystemPrompt] Recommended types section generated, length:', recommendedTypesSection.length);
+      } else {
+        console.warn('[SystemPrompt] No recommended types found! fewShotPrompt length:', fewShotPrompt.length);
+      }
+    } catch (e) {
+      // If parsing fails, continue without recommended types
+      console.warn('Failed to parse few-shot prompt for recommended types:', e);
+    }
+  }
+
+  // Store debug info for the debug panel
+  debugStore.set({
+    fewShotPrompt: includeFewShot ? fewShotPrompt : undefined,
+    recommendedTypes: recommendedTypes.length > 0 ? recommendedTypes : undefined,
+  });
+
   return `
 You are an expert Information Designer and Data Journalist.
 
@@ -21,58 +82,223 @@ Transform the user's input into a visually compelling "Infographic Report".
 2.  **No Loops:** Do not repeat similar sections. Cover different aspects (History, Economics, Technology, Future).
 3.  **Data Quantity Requirements:**
     *   bar_chart/pie_chart: Include at least **5-8 data points**. More data = better visualization.
-    *   process_flow: Include at least **4-6 steps**. Cover the complete journey.
+    *   All sequence/list types: Include at least **4-8 items**.
     *   comparison: Include at least **4-6 comparison items**.
 4.  **Data Integrity:**
     *   **NEVER** output empty arrays (e.g., \`"data": []\`).
     *   **NEVER** output empty objects (e.g., \`"steps": [{}]\`).
     *   If you lack exact numbers, make reasonable, educated estimates based on history.
+5.  **Section Title:** **EVERY section MUST include a \`"title"\` field** with a descriptive heading (e.g., "经济增长趋势", "行业对比分析").
+${recommendedTypesSection}
+${restrictToFewShot ? `
+**NOTE:** The type selection guide below is for reference only to understand the categories. **STRICTLY** use only the few-shot types listed above.
+` : ''}
+**SECTION TYPE SELECTION GUIDE:**
 
-**CRITICAL: CHART TYPE SELECTION GUIDELINES**
-You must strictly follow these rules to avoid incorrect visualizations:
+**SEQUENCE (时序流程类) - For timelines, processes, flows:**
+- \`sequence-timeline-simple\` - History, chronology, events over time (default timeline)
+- \`sequence-horizontal-zigzag-underline-text\` - Timeline with zigzag visual flow
+- \`sequence-zigzag-steps-underline-text\` - Step-by-step procedures with alternating layout
+- \`sequence-ascending-steps\` - Progressive/ascending processes (stairs metaphor)
+- \`sequence-snake-steps\` - Complex winding processes
+- \`sequence-circular-simple\` - Circular/cyclical processes (PDCA, feedback loops)
+- \`sequence-roadmap-vertical-simple\` - Roadmaps, planning phases (Q1, Q2, Q3...)
 
-1. **⛔ DO NOT use chart types for:**
-   - **Years or Dates** (e.g., "2020", "221 BC", "1990s"). Time is a dimension, not a metric.
-   - **Dynasty or Era Names** (e.g., "Qin Dynasty", "Roman Empire") unless comparing a specific numerical metric like population.
-   - **Simple Lists** (e.g., "Top 5 Technologies") where the 'value' is arbitrary or meaningless.
+**LIST (列表类) - For collections, features, items:**
+- \`list-grid-badge-card\` - Grid layout for categories, services, products
+- \`list-grid-candy-card-lite\` - Colorful candy-style grid cards
+- \`list-grid-circular-progress\` - Grid with circular progress indicators
+- \`list-grid-ribbon-card\` - Grid with ribbon card style
+- \`list-row-horizontal-icon-arrow\` - Horizontal feature list with icons
+- \`list-row-horizontal-icon-line\` - Horizontal row with icon and line
+- \`list-row-circular-progress\` - Horizontal list with circular progress
+- \`list-zigzag-down\` / \`list-zigzag-up\` - Alternating zigzag flow
+- \`list-zigzag-down-compact-card\` / \`list-zigzag-up-compact-card\` - Compact zigzag cards
+- \`list-column-vertical-icon-arrow\` - Vertical list with icons
+- \`list-column-done-list\` - Checklist/done-list style
+- \`list-column-simple-vertical-arrow\` - Simple vertical list
+- \`list-sector-plain-text\` / \`list-sector-half-plain-text\` - Sector/pie-slice style list
+- \`list-pyramid-badge-card\` / \`list-pyramid-compact-card\` - Pyramid layout lists
 
-2. **✅ USE 'sequence-timeline-simple' for:**
-   - **History & Chronology**: displaying events over years or dynasties (e.g., "History of China", "Company Timeline").
-   - **Timeline with labels**: Format: { title, data: { title, items: [{ label, desc }] }}
-   - **Process & Flow**: displaying step-by-step procedures (e.g., "How to register", "Product Lifecycle").
-     -> Use: 'process_flow' with steps array
+**CHART (图表类) - ONLY for quantitative metrics:**
+- **Bar Charts:** \`bar-simple\`, \`bar-stacked\`, \`bar-horizontal\`, \`bar-percent\`, \`bar-rounded\`
+- **Pie Charts:** \`pie-simple\`, \`pie-donut\`, \`pie-interactive\`, \`pie-label\`, \`pie-rose\`
+- **Line Charts:** \`line-simple\`, \`line-smooth\`, \`line-multi-series\`, \`line-step\`, \`line-dashed\`
+- **Area Charts:** \`area-simple\`, \`area-stacked\`, \`area-percent\`, \`area-gradient\`
+- **Radial Bar:** \`radial-bar-simple\`, \`radial-bar-gauge\`, \`radial-bar-stacked\`
+- **Radar Charts:** \`radar-simple\`, \`radar-filled\`, \`radar-comparison\`
+- **Scatter Charts:** \`scatter-simple\`, \`scatter-bubble\`, \`scatter-multi-series\`, \`scatter-shape\`
+- **Word Cloud:** \`chart-wordcloud\` - Word frequency visualization
+- \`chart-bar-plain-text\` - Legacy bar chart (use bar-simple instead)
+- \`chart-pie-plain-text\` - Legacy pie chart (use pie-simple instead)
+- \`chart-line-plain-text\` - Legacy line chart (use line-simple instead)
+- \`bar_chart\` / \`pie_chart\` - Legacy types (use new bar-* / pie-* instead)
 
-3. **✅ USE 'text' type for:**
-   - **Non-quantitative collections**: features, benefits, team members, or options where there are no stats.
-   - Use the 'content' field to describe these items in narrative format.
+**COMPARISON (对比类):**
+- **Binary Comparison (A vs B):**
+  - \`compare-binary-horizontal-underline-text-vs\` - With VS divider
+  - \`compare-binary-horizontal-badge-card-vs\` - Badge cards with VS
+  - \`compare-binary-horizontal-compact-card-arrow\` - Compact with arrow
+  - \`compare-binary-horizontal-compact-card-vs\` - Compact cards with VS
+  - \`compare-binary-horizontal-underline-text-arrow\` - With arrow connector
+  - \`compare-binary-horizontal-underline-text-fold\` - Foldable style
+  - \`compare-binary-horizontal-simple-fold\` - Simple fold
+  - \`compare-binary-fold\` - Binary fold comparison
+- **Hierarchical Comparison:**
+  - \`compare-hierarchy-left-right-circle-node-pill-badge\` - With pill badges
+  - \`compare-hierarchy-left-right-circle-node-plain-text\` - Plain text circles
+  - \`compare-hierarchy-row-letter-card-compact-card\` - Letter card style
+- **Enhanced Comparison Types:**
+  - \`compare-pros-cons\` - Pros and cons list with color coding
+  - \`compare-score-card\` - Star rating comparison
+  - \`compare-triple\` - Three-way comparison
+  - \`compare-feature-table\` - Feature comparison with icons
+  - \`compare-timeline\` - Before/After timeline
+  - \`compare-metric-gauge\` - Progress bar comparison
+  - \`compare-card-stack\` - Stacked card comparison
+  - \`compare-swot\` - SWOT 2x2 analysis
+- \`comparison\` - Generic comparison (legacy)
 
-4. **✅ USE 'bar_chart' or 'pie_chart' ONLY for:**
-   - **Quantitative Metrics**: Sales, Population, Percentages, Counts, Revenue, etc.
-   - **Requirement**: You MUST have a valid numerical 'value' for every item.
+**HIERARCHY (层级结构类) - For tree structures, mind maps:**
+- **Tech Style Trees:**
+  - \`hierarchy-tree-tech-style-capsule-item\` - With capsule nodes
+  - \`hierarchy-tree-tech-style-badge-card\` - With badge cards
+- **Curved Line Trees:**
+  - \`hierarchy-tree-curved-line-rounded-rect-node\` - Curved with rounded nodes
+  - \`hierarchy-tree-bt-curved-line-badge-card\` - Bottom-up with badge
+  - \`hierarchy-tree-bt-curved-line-compact-card\` - Bottom-up compact
+  - \`hierarchy-tree-bt-curved-line-ribbon-card\` - Bottom-up ribbon
+  - \`hierarchy-tree-bt-curved-line-rounded-rect-node\` - Bottom-up rounded
+  - \`hierarchy-tree-lr-curved-line-badge-card\` - Left-to-right
+  - \`hierarchy-tree-rl-distributed-origin-rounded-rect-node\` - Right-to-left
+- **Mindmap Styles:**
+  - \`hierarchy-mindmap-branch-gradient-capsule-item\` - Gradient capsule
+  - \`hierarchy-mindmap-branch-gradient-circle-progress\` - Circle progress
+  - \`hierarchy-mindmap-branch-gradient-compact-card\` - Compact card
+
+**OTHER:**
+- \`text\` - Narrative content without visual structure
+- \`stat_highlight\` - Single standout statistic with trend indicator
+- \`process_flow\` - Legacy process format (use sequence types instead)
+- \`quadrant-quarter-simple-card\` - 2x2 quadrant matrix (priority matrix, positioning)
+- \`quadrant-quarter-circular\` - Circular quadrant layout
+- \`quadrant-simple-illus\` - Quadrant with illustrations
+- \`relation-circle-icon-badge\` - Circular relationship diagram
+- \`relation-circle-circular-progress\` - Progress circle relation
+- \`comparison\` - Generic comparison items (legacy)
+
+**⛔ CHART USAGE RULES (CRITICAL):**
+- **DO NOT** use chart types for: Years, Dates, Dynasty names (unless with numeric values)
+- **DO NOT** use chart types for: Simple lists where 'value' is meaningless
+- **USE** sequence types for: Chronology, history, timelines, processes
+- **USE** list types for: Non-quantitative collections (features, options, categories)
+- **USE** chart types for: Quantitative metrics ONLY (sales, population, %, counts)
 
 **SCHEMA MAPPING (CRITICAL):**
-*   If \`type\` is **'comparison'**:
-    *   REQUIRED: \`comparisonItems\` (Array of { label, left, right }).
-    *   FORBIDDEN: \`data\`, \`steps\`, \`statValue\`.
-*   If \`type\` is **'process_flow'**:
-    *   REQUIRED: \`steps\` (Array of { step, title, description }).
-    *   FORBIDDEN: \`data\`, \`comparisonItems\`.
-*   If \`type\` is **'sequence-timeline-simple'**:
-    *   REQUIRED: \`data\` (Object with { title, items: [{ label, desc }] }).
-    *   FORBIDDEN: \`steps\`, \`comparisonItems\`, \`statValue\`.
-*   If \`type\` is **'bar_chart'** or **'pie_chart'**:
-    *   REQUIRED: \`data\` (Array of { name, value }).
-    *   FORBIDDEN: \`comparisonItems\`, \`steps\`.
-*   If \`type\` is **'stat_highlight'**:
-    *   REQUIRED: \`statValue\`, \`statLabel\`.
-    *   FORBIDDEN: \`data\`, \`steps\`, \`comparisonItems\`.
+*   **Enhanced Chart types** (bar-*, pie-*, line-*, area-*, radial-bar-*, radar-*, scatter-*, chart-wordcloud):
+    *   \`data\` is an **Array**: \`[{ name: string, value: number, ... }]\`
+    *   **Stacked/multi-series (bar-stacked, area-stacked, line-multi-series, etc.)**:
+        *   ALL data points MUST use the **SAME keys** for the series
+        *   Example: \`[{ name: "Q1", productA: 100, productB: 80 }, { name: "Q2", productA: 120, productB: 90 }]\`
+        *   **DO NOT** use different keys per data point (e.g., Q1 has "agriculture", Q2 has "oil")
+    *   Scatter with bubble: \`{ x: number, y: number, z?: number }\`
+    *   Word Cloud: \`[{ name: string, value: number }]\` (text size proportional to value)
+*   **Legacy chart types** (chart-bar-plain-text, chart-pie-plain-text, chart-line-plain-text):
+    *   \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label: string, value: number, desc?: string, icon?: string }] }\`
+*   **Very Legacy types** (bar_chart, pie_chart):
+    *   \`data\` is an **Array**: \`[{ name: string, value: number }]\`
+*   **Comparison types** (compare-binary-*, compare-hierarchy-*, compare-swot, compare-pros-cons, compare-score-card, etc.):
+    *   **Binary/Hierarchical**: \`data\` is an **Object**: \`{ title?: string, left: { title: string, items: [...] }, right: { title: string, items: [...] } }\`
+    *   **Pros/Cons**: \`data\` is an **Object**: \`{ title?: string, pros: [...], cons: [...] }\`
+    *   **Score Card**: \`data\` is an **Object**: \`{ title?: string, items: [{ label, leftScore, leftDesc, rightScore, rightDesc }] }\`
+    *   **Triple**: \`data\` is an **Object**: \`{ title?: string, items: [{ label, optionA, optionB, optionC }] }\`
+    *   **Feature Table**: \`data\` is an **Object**: \`{ title?: string, features: [{ label, icon, optionA, optionB, optionC }] }\`
+    *   **Timeline**: \`data\` is an **Object**: \`{ title?: string, items: [{ label, before, after, change }] }\`
+    *   **Metric Gauge**: \`data\` is an **Object**: \`{ title?: string, metrics: [{ label, optionA, optionB }] }\`
+    *   **Card Stack**: \`data\` is an **Object**: \`{ title?: string, stacks: [{ label, title, items: [...] }] }\`
+    *   **SWOT**: \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label, content }] }\`
+*   **Hierarchy types** (hierarchy-tree-*, hierarchy-mindmap-*):
+    *   \`data\` is an **Object**: \`{ title?: string, items: [{ label, value?, icon?, children: [...] }] }\` (nested tree structure)
+*   **Relation types** (relation-circle-*):
+    *   \`data\` is an **Object**: \`{ title?: string, center: string, relations: [{ label, desc?, value? }] }\`
+*   **Most other types** (sequence, list, quadrant):
+    *   \`data\` is an **Object**: \`{ title?: string, desc?: string, items: [{ label, desc?, value?, icon? }] }\`
+*   **Legacy types**: \`process_flow\` uses \`steps\`, \`comparison\` uses \`comparisonItems\`, \`stat_highlight\` uses \`statValue\`
 
 **Process:**
 1.  Analyze the topic.
-2.  Select multiple distinct angles.
-3.  Generate the JSON.
+2.  Select multiple distinct angles and **vary the section types**.
+3.  Choose the most appropriate **specific subtype** (e.g., for a timeline, use \`sequence-timeline-simple\` or \`sequence-horizontal-zigzag-underline-text\` for variety).
+4.  Generate the JSON.
 
-${getEnhancedSystemInstruction()}
+**ICON USAGE (for list, sequence, comparison types):**
+- The \`icon\` field accepts lucide-react icon names for visual enhancement.
+- Use **simple, descriptive icon names** (lowercase, hyphens for spaces).
+- **Supported prefixes (optional)**: \`lucide/\`, \`mdi/\` - will be auto-converted.
+- **Common icons**:
+  * Tech/AI: \`robot\`, \`brain\`, \`cpu\`, \`code\`, \`database\`, \`server\`
+  * Communication: \`chat\`, \`mail\`, \`phone\`, \`send\`
+  * Business: \`trending-up\`, \`bar-chart\`, \`dollar\`, \`briefcase\`, \`store\`
+  * Users: \`users\`, \`user\`, \`user-plus\`, \`handshake\`
+  * Security: \`shield\`, \`shield-check\`, \`lock\`, \`key\`, \`eye\`
+  * Actions: \`search\`, \`settings\`, \`zap\`, \`tool\`
+  * Files: \`file\`, \`file-text\`, \`folder\`, \`document\`
+  * Time: \`clock\`, \`calendar\`, \`timer\`
+  * Status: \`check-circle\`, \`alert-circle\`, \`info\`, \`check\`
+  * Misc: \`star\`, \`heart\`, \`home\`, \`globe\`, \`rocket\`, \`target\`
+- **Example**: \`"icon": "robot"\` or \`"icon": "lucide/brain"\` or \`"icon": "mdi/code"\`
+- **If unsure**: Use a descriptive name like \`"icon": "chart"\` - the system will do its best to match it.
+- **Optional**: Icons are optional but recommended for visual appeal.
+
+**FEW-SHOW EXAMPLES (Reference for High-Quality Output):**
+Study these examples to understand the expected data structure and visual variety:
+
+\`\`\`json
+${fewShotPrompt}
+\`\`\`
+
+**IMPORTANT: Your output format must be:**
+\`\`\`json
+{
+  "title": "...",
+  "summary": "...",
+  "sections": [...]
+}
+\`\`\`
+
+**DO NOT** wrap your response in any outer object like \`infographic_report\`. Output the JSON directly with \`title\`, \`summary\`, and \`sections\` at the root level.
+
+**ANTV SYNTAX REFERENCE (for template selection):**
+You are an expert Infographic Designer using the AntV Infographic syntax.
+Your goal is to convert user requests into valid DSL syntax.
+
+**SELECTION LOGIC:**
+1. Analyze the user's text to determine the best visualization structure:
+   - Time/Sequence/Steps -> Use 'sequence-*' templates
+   - Comparison (A vs B) -> Use 'compare-*' templates
+   - List/Points/Features -> Use 'list-*' templates
+   - Hierarchy/Tree -> Use 'hierarchy-*' templates
+   - Data/Stats -> Use 'chart-*' templates
+
+2. **MANDATORY**: You MUST choose a template ID strictly from the "Available Templates" list provided in the context. Do not invent template names.
+
+3. **SYNTAX RULES**:
+   - Start with 'infographic <template-id>'
+   - Indent with 2 spaces.
+   - Use 'data' block for content.
+   - Use 'items' array with '-' prefix.
+   - Keys: label (title), desc (description), value (number), icon (mdi/name).
+   - Icons: Use 'mdi/' prefix (e.g., mdi/account, mdi/chart-bar).
+
+**EXAMPLE OUTPUT:**
+infographic sequence-timeline-simple
+data
+  title Project History
+  items
+    - label Phase 1
+      desc Initial Research
+    - label Phase 2
+      desc Development
 `;
 }
 
@@ -111,16 +337,8 @@ export function getReportSchema(): Schema {
             statLabel: { type: Type.STRING, description: "ONLY for 'stat_highlight'. Label for the statistic." },
             statTrend: { type: Type.STRING, enum: ['up', 'down', 'neutral'], description: "Visual trend indicator." },
             data: {
-              type: Type.ARRAY,
-              description: "REQUIRED for 'bar_chart'/'pie_chart'. Array of {name, value}.",
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  name: { type: Type.STRING },
-                  value: { type: Type.NUMBER }
-                },
-                required: ["name", "value"]
-              }
+              type: Type.OBJECT,
+              description: "Chart/list/comparison data. Format varies by type: Legacy charts (bar_chart/pie_chart) use array, new types use object with items/relations/etc.",
             },
             steps: {
               type: Type.ARRAY,
@@ -189,16 +407,8 @@ export const REPORT_SCHEMA: Schema = {
           statLabel: { type: Type.STRING, description: "ONLY for 'stat_highlight'. Label for the statistic." },
           statTrend: { type: Type.STRING, enum: ['up', 'down', 'neutral'], description: "Visual trend indicator." },
           data: {
-            type: Type.ARRAY,
-            description: "REQUIRED for 'bar_chart'/'pie_chart'. Array of {name, value}.",
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                value: { type: Type.NUMBER }
-              },
-              required: ["name", "value"]
-            }
+            type: Type.OBJECT,
+            description: "Chart/list/comparison data. Format varies by type: Legacy charts use array, new types use object.",
           },
           steps: {
             type: Type.ARRAY,
@@ -261,16 +471,8 @@ export function getReportJsonSchema(): Record<string, unknown> {
             statLabel: { type: "string", description: "ONLY for 'stat_highlight'. Label for the statistic." },
             statTrend: { type: "string", enum: ['up', 'down', 'neutral'], description: "Visual trend indicator." },
             data: {
-              type: "array",
-              description: "REQUIRED for 'bar_chart'/'pie_chart'. Array of {name, value}.",
-              items: {
-                type: "object",
-                properties: {
-                  name: { type: "string" },
-                  value: { type: "number" }
-                },
-                required: ["name", "value"]
-              }
+              type: "object",
+              description: "Chart/list/comparison data. Format varies by type: Legacy charts (bar_chart/pie_chart) use array, new types use object with items/relations/etc.",
             },
             steps: {
               type: "array",
@@ -331,16 +533,8 @@ export const REPORT_JSON_SCHEMA = {
           statLabel: { type: "string", description: "ONLY for 'stat_highlight'. Label for the statistic." },
           statTrend: { type: "string", enum: ['up', 'down', 'neutral'], description: "Visual trend indicator." },
           data: {
-            type: "array",
-            description: "REQUIRED for 'bar_chart'/'pie_chart'. Array of {name, value}.",
-            items: {
-              type: "object",
-              properties: {
-                name: { type: "string" },
-                value: { type: "number" }
-              },
-              required: ["name", "value"]
-            }
+            type: "object",
+            description: "Chart/list/comparison data. Format varies by type: Legacy charts use array, new types use object.",
           },
           steps: {
             type: "array",
@@ -481,11 +675,13 @@ O usuário fala português e espera todo o relatório de infográfico em portugu
  * Get localized system instruction for a specific language
  * @param language - Target language
  * @param sectionCount - Number of sections to generate (default: 5)
+ * @param includeFewShot - Whether to include few-shot examples (default: true)
+ * @param restrictToFewShot - Whether to restrict types to few-shot only (default: true)
  * @returns System instruction with language-specific guidance
  */
-export function getLocalizedSystemInstruction(language: Language = 'en', sectionCount: number = 5): string {
+export function getLocalizedSystemInstruction(language: Language = 'en', sectionCount: number = 5, includeFewShot: boolean = true, restrictToFewShot: boolean = true): string {
   const languageInstruction = LANGUAGE_INSTRUCTIONS[language] || '';
-  return getCoreSystemInstruction(sectionCount) + languageInstruction;
+  return getCoreSystemInstruction(sectionCount, includeFewShot, restrictToFewShot) + languageInstruction;
 }
 
 /**
