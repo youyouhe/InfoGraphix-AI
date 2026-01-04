@@ -69,6 +69,34 @@ export function parsePartialJson(jsonStr: string): any {
     fixed += ' null';
   }
 
+  // Handle incomplete values after colon (truncated strings, numbers, booleans)
+  // Pattern: "...": "partial or "...": 123 or "...": tru
+  const incompleteValueMatch = fixed.match(/:\s*("[^"]*|[\d.]+|tru|fals|nul)$/);
+  if (incompleteValueMatch) {
+    const partial = incompleteValueMatch[1];
+    if (partial.startsWith('"')) {
+      // Incomplete string, close it
+      fixed += '"';
+    } else if (/^\d+(\.\d*)?$/.test(partial)) {
+      // Complete number, do nothing
+    } else if (partial === 'tru') {
+      fixed += 'e';
+    } else if (partial === 'fals') {
+      fixed += 'e';
+    } else if (partial === 'nul') {
+      fixed += 'l';
+    }
+  }
+
+  // Handle hanging array opener: "key": [
+  if (fixed.endsWith('[')) {
+    fixed += ']';
+  }
+  // Handle hanging object opener: "key": {
+  if (fixed.endsWith('{')) {
+    fixed += '}';
+  }
+
   // Close all open structures
   while (stack.length > 0) {
     fixed += stack.pop();

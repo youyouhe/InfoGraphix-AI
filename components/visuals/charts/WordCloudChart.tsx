@@ -103,12 +103,12 @@ export const WordCloudChart: React.FC<WordCloudChartProps> = ({
   // Normalize chart data
   const chartData = normalizeChartData(section.data);
 
+  // Layout words (must be before early return to keep hooks order consistent)
+  const positionedWords = useMemo(() => layoutWords(chartData?.items ?? []), [chartData?.items]);
+
   if (!chartData?.items || chartData.items.length === 0) {
     return <DataPlaceholder isLoading={isLoading} title={section.title} type="Chart" />;
   }
-
-  // Layout words
-  const positionedWords = useMemo(() => layoutWords(chartData.items), [chartData.items]);
 
   if (!isMounted) {
     return (

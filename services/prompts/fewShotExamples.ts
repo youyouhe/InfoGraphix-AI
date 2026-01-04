@@ -27,8 +27,9 @@ export {
   composeFewShot,
   formatComposedFewShot,
   getFewShotPrompt,
+  getSyntaxForExampleId,
   CATEGORY_DATA
-} from './fewShotExamples';
+} from './fewShotExamples/composer';
 
 // Re-export category data
 export { SEQUENCE_EXAMPLES } from './fewShotExamples/sequence';
@@ -73,14 +74,13 @@ const KEYWORD_TEMPLATE_MAP: Record<string, string> = {
   'triple': 'compare-triple',
   'three-way': 'compare-triple',
   'feature': 'compare-feature-table',
-  'timeline': 'compare-timeline',
+  'compare-timeline': 'compare-timeline',
   'before-after': 'compare-timeline',
   'improvement': 'compare-timeline',
-  'kpi': 'compare-metric-gauge',
+  'compare-metric': 'compare-metric-gauge',
   'metric': 'compare-metric-gauge',
-  'gauge': 'compare-metric-gauge',
-  'stack': 'compare-card-stack',
-  'card': 'compare-card-stack',
+  'card-stack': 'compare-card-stack',
+  'compare-card': 'compare-card-stack',
 
   // List / Grid
   'list': 'list-row-horizontal-icon-arrow',
@@ -98,7 +98,7 @@ const KEYWORD_TEMPLATE_MAP: Record<string, string> = {
   // Charts (基于自定义增强组件)
   'bar': 'bar-simple',
   'column': 'bar-simple',
-  'stack': 'bar-stacked',
+  'bar-stack': 'bar-stacked',
   'horizontal': 'bar-horizontal',
   'percent': 'bar-percent',
   'pie': 'pie-simple',
@@ -109,8 +109,8 @@ const KEYWORD_TEMPLATE_MAP: Record<string, string> = {
   'area': 'area-simple',
   'cumulative': 'area-gradient',
   'radial': 'radial-bar-simple',
-  'gauge': 'radial-bar-gauge',
-  'kpi': 'radial-bar-gauge',
+  'radial-gauge': 'radial-bar-gauge',
+  'radial-kpi': 'radial-bar-gauge',
   'radar': 'radar-simple',
   'scatter': 'scatter-simple',
   'bubble': 'scatter-bubble',

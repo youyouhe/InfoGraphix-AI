@@ -10,7 +10,7 @@ import { ChartSection } from '../../components/Visuals';
 import { ProcessFlow } from '../../components/Visuals';
 import { ComparisonSection } from '../../components/Visuals';
 import { SequenceTimeline, SequenceSteps, SequenceCircular, SequenceRoadmap, SequenceSnake, SequenceZigzagUnderline, SequenceAscending, SequenceHorizontalZigzag } from '../../components/Visuals';
-import { ListGrid, ListRow, ListColumn, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced } from '../../components/Visuals';
+import { ListGrid, ListRow, ListColumn, ListCircularProgress, ListRibbonCard, ListPyramid, ListZigzag, ListCandyCard, ListSectorEnhanced, ListSector } from '../../components/Visuals';
 import { CompareBinary, SWOTAnalysis, CompareProsCons, CompareScoreCard, CompareTriple, CompareFeatureTable, CompareTimeline, CompareMetricGauge, CompareCardStack } from '../../components/Visuals';
 import { ChartLinePlain, QuadrantQuarterCard, QuadrantCircular, QuadrantIllustrated, QuadrantMatrix, BarSimple, BarStacked, BarHorizontal, BarPercent, BarRounded, PieSimple, PieDonut, PieInteractive, PieLabel, PieRose, LineSimple, LineSmooth, LineMultiSeries, LineStep, LineDashed, AreaSimple, AreaStacked, AreaPercent, AreaGradient, RadialBarSimple, RadialBarGauge, RadialBarStacked, RadarSimple, RadarFilled, RadarComparison, ScatterSimple, ScatterBubble, ScatterMultiSeries, ScatterShape, WordCloudSimple } from '../../components/Visuals';
 import { RelationCircle, RelationCircularProgress, HierarchyTree, HierarchyMindmap, HierarchyCapsule, HierarchyBadge, HierarchyRibbon, HierarchyCircleProgress } from '../../components/Visuals';
@@ -608,12 +608,12 @@ export function registerCoreSectionTypes(): void {
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
   });
 
-  // Sector enhanced variants
+  // Sector variants (enhanced nested list style)
   registerSectionType({
     type: 'list-sector-plain-text',
-    displayName: 'Sector Chart',
+    displayName: 'Sector List',
     category: 'list',
-    component: ListSectorEnhanced,
+    component: ListSector,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],
@@ -621,9 +621,9 @@ export function registerCoreSectionTypes(): void {
 
   registerSectionType({
     type: 'list-sector-half-plain-text',
-    displayName: 'Sector Half',
+    displayName: 'Sector Half List',
     category: 'list',
-    component: ListSectorEnhanced,
+    component: ListSector,
     requiredFields: ['data'],
     optionalFields: [],
     forbiddenFields: ['steps', 'comparisonItems', 'statValue', 'statLabel', 'statTrend'],

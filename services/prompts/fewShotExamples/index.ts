@@ -37,6 +37,7 @@ export {
   composeFewShot,
   formatComposedFewShot,
   getFewShotPrompt,
+  getSyntaxForExampleId,
   CATEGORY_DATA
 } from './composer';
 

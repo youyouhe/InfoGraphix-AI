@@ -63,6 +63,29 @@ export default function App() {
     registerCoreSectionTypes();
   }, []);
 
+  // Global error handlers to prevent app crashes
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('[App] Unhandled promise rejection:', event.reason);
+      event.preventDefault();
+      setError(event.reason?.message || 'An unexpected error occurred.');
+    };
+
+    const handleError = (event: ErrorEvent) => {
+      console.error('[App] Unhandled error:', event.error);
+      event.preventDefault();
+      setError(event.error?.message || 'An unexpected error occurred.');
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    window.addEventListener('error', handleError);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+      window.removeEventListener('error', handleError);
+    };
+  }, []);
+
   // Load history from localStorage on mount (only once)
   useEffect(() => {
     if (!historyLoadedRef.current) {
@@ -349,6 +372,38 @@ export default function App() {
     }
   };
 
+  // Normalize section data to fix common LLM output issues
+  const normalizeSection = (section: any): any => {
+    if (!section) return section;
+
+    // Clone to avoid mutating original
+    const normalized = { ...section };
+
+    // Fix process_flow: steps may be nested in data.steps instead of at section level
+    if (section.type === 'process_flow' && section.data?.steps && !section.steps) {
+      normalized.steps = section.data.steps;
+    }
+
+    // Fix stat_highlight: fields may be nested in data
+    if (section.type === 'stat_highlight' && section.data) {
+      if (section.data.statValue && !section.statValue) normalized.statValue = section.data.statValue;
+      if (section.data.statLabel && !section.statLabel) normalized.statLabel = section.data.statLabel;
+      if (section.data.statTrend && !section.statTrend) normalized.statTrend = section.data.statTrend;
+    }
+
+    // Fix comparison: comparisonItems may be nested in data
+    if (section.type === 'comparison' && section.data?.comparisonItems && !section.comparisonItems) {
+      normalized.comparisonItems = section.data.comparisonItems;
+    }
+
+    // Fix text: content may be nested in data
+    if (section.type === 'text' && section.data?.content && !section.content) {
+      normalized.content = section.data.content;
+    }
+
+    return normalized;
+  };
+
   // Render a specific section based on its type (dynamic from registry)
   const renderSection = (section: any, index: number) => {
     // Defensive check for null/undefined section
@@ -360,6 +415,9 @@ export default function App() {
         </div>
       );
     }
+
+    // Normalize section data to fix common LLM output issues
+    section = normalizeSection(section);
 
     const props = { ...section, isDark: isDarkMode, isLoading: loading };
 
@@ -533,7 +591,19 @@ export default function App() {
              <div className="flex flex-col items-center justify-center h-full text-red-500 dark:text-red-400">
                <div className="bg-red-50 dark:bg-red-500/10 p-6 rounded-xl border border-red-200 dark:border-red-500/20 max-w-lg text-center">
                   <h3 className="text-lg font-bold mb-2">{t('generationFailed', uiLanguage)}</h3>
-                  <p>{error}</p>
+                  <p className="text-sm mb-4">{error}</p>
+                  <button
+                    onClick={() => {
+                      setError(null);
+                      const lastInput = history.length > 0 ? history[0].query : '';
+                      if (lastInput) {
+                        handleGenerate(lastInput);
+                      }
+                    }}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors text-sm font-medium"
+                  >
+                    {t('retry', uiLanguage)}
+                  </button>
                </div>
              </div>
           )}

@@ -147,6 +147,22 @@ export function getFewShotPrompt(config?: ComposerConfig): string {
   return formatComposedFewShot(composed);
 }
 
+/**
+ * Get syntax for a specific example_id from few-shot examples
+ * @param exampleId - The example_id to look up
+ * @returns The syntax string or null if not found
+ */
+export function getSyntaxForExampleId(exampleId: string): string | null {
+  for (const category of ALL_CATEGORIES) {
+    for (const sub of category.sub_categories) {
+      if (sub.example_id === exampleId) {
+        return sub.syntax;
+      }
+    }
+  }
+  return null;
+}
+
 // Export all category data for direct access if needed
 export const CATEGORY_DATA = {
   sequence: SEQUENCE_EXAMPLES,

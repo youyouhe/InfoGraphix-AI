@@ -10,8 +10,9 @@ import { debugStore } from "../debugStore";
  * Works across all LLM providers
  * @param sectionCount - Number of sections to generate (default: 5)
  * @param includeFewShot - Whether to include few-shot examples (default: true)
+ * @param restrictToFewShot - Whether to restrict types to few-shot only (default: true)
  */
-export function getCoreSystemInstruction(sectionCount: number = 5, includeFewShot: boolean = true): string {
+export function getCoreSystemInstruction(sectionCount: number = 5, includeFewShot: boolean = true, restrictToFewShot: boolean = true): string {
   // Get dynamic few-shot prompt with varied examples
   const fewShotPrompt = includeFewShot ? getFewShotPrompt({ examplesPerCategory: 1 }) : '';
 
@@ -37,18 +38,26 @@ export function getCoreSystemInstruction(sectionCount: number = 5, includeFewSho
       // Build the recommended types section
       if (recommendedTypes.length > 0) {
         recommendedTypesSection = `
-**RECOMMENDED VISUAL TYPES FOR THIS SESSION:**
-You have been provided with curated few-shot examples. **STRONGLY PREFER** using these types when selecting visualizations for your sections:
+**MANDATORY: USE ONLY THESE FEW-SHOT TYPES**
+You **MUST** select section types **EXCLUSIVELY** from this list:
 
 ${recommendedTypes.map(t => `- \`${t}\``).join('\n')}
 
-**Guidance:**
-- These types have been specifically selected to provide visual variety and high-quality infographics.
-- When choosing a section type, **first consider** whether one of the recommended types fits your content.
-- Only use types outside this list if the content strongly requires a different visualization approach.
-- Your goal is to use as many **different recommended types** as possible across the ${sectionCount} sections.
+**CRITICAL RULES:**
+- **DO NOT** use any type outside this list
+- These are the only types with examples - using unshown types may cause rendering errors
+- Your goal is to use as many **different types from this list** as possible across the ${sectionCount} sections
+- Each section should ideally use a different type from this list for visual variety
+
+**If you feel you need a different visualization:**
+- Reconsider your content structure to fit one of these types
+- These types cover all major categories: timelines, lists, comparisons, charts, hierarchies, quadrants, relations
 
 `;
+        console.log('[SystemPrompt] Recommended types:', recommendedTypes);
+        console.log('[SystemPrompt] Recommended types section generated, length:', recommendedTypesSection.length);
+      } else {
+        console.warn('[SystemPrompt] No recommended types found! fewShotPrompt length:', fewShotPrompt.length);
       }
     } catch (e) {
       // If parsing fails, continue without recommended types
@@ -79,7 +88,11 @@ Transform the user's input into a visually compelling "Infographic Report".
     *   **NEVER** output empty arrays (e.g., \`"data": []\`).
     *   **NEVER** output empty objects (e.g., \`"steps": [{}]\`).
     *   If you lack exact numbers, make reasonable, educated estimates based on history.
+5.  **Section Title:** **EVERY section MUST include a \`"title"\` field** with a descriptive heading (e.g., "经济增长趋势", "行业对比分析").
 ${recommendedTypesSection}
+${restrictToFewShot ? `
+**NOTE:** The type selection guide below is for reference only to understand the categories. **STRICTLY** use only the few-shot types listed above.
+` : ''}
 **SECTION TYPE SELECTION GUIDE:**
 
 **SEQUENCE (时序流程类) - For timelines, processes, flows:**
@@ -184,7 +197,10 @@ ${recommendedTypesSection}
 **SCHEMA MAPPING (CRITICAL):**
 *   **Enhanced Chart types** (bar-*, pie-*, line-*, area-*, radial-bar-*, radar-*, scatter-*, chart-wordcloud):
     *   \`data\` is an **Array**: \`[{ name: string, value: number, ... }]\`
-    *   Stacked/multi-series: \`{ name: string, seriesA: number, seriesB: number, ... }\`
+    *   **Stacked/multi-series (bar-stacked, area-stacked, line-multi-series, etc.)**:
+        *   ALL data points MUST use the **SAME keys** for the series
+        *   Example: \`[{ name: "Q1", productA: 100, productB: 80 }, { name: "Q2", productA: 120, productB: 90 }]\`
+        *   **DO NOT** use different keys per data point (e.g., Q1 has "agriculture", Q2 has "oil")
     *   Scatter with bubble: \`{ x: number, y: number, z?: number }\`
     *   Word Cloud: \`[{ name: string, value: number }]\` (text size proportional to value)
 *   **Legacy chart types** (chart-bar-plain-text, chart-pie-plain-text, chart-line-plain-text):
@@ -660,11 +676,12 @@ O usuário fala português e espera todo o relatório de infográfico em portugu
  * @param language - Target language
  * @param sectionCount - Number of sections to generate (default: 5)
  * @param includeFewShot - Whether to include few-shot examples (default: true)
+ * @param restrictToFewShot - Whether to restrict types to few-shot only (default: true)
  * @returns System instruction with language-specific guidance
  */
-export function getLocalizedSystemInstruction(language: Language = 'en', sectionCount: number = 5, includeFewShot: boolean = true): string {
+export function getLocalizedSystemInstruction(language: Language = 'en', sectionCount: number = 5, includeFewShot: boolean = true, restrictToFewShot: boolean = true): string {
   const languageInstruction = LANGUAGE_INSTRUCTIONS[language] || '';
-  return getCoreSystemInstruction(sectionCount, includeFewShot) + languageInstruction;
+  return getCoreSystemInstruction(sectionCount, includeFewShot, restrictToFewShot) + languageInstruction;
 }
 
 /**

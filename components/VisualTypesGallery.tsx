@@ -6,6 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { sectionRegistry } from '../services/registry/sectionRegistry';
 import { InfographicSection } from '../types';
+import { getSyntaxForExampleId } from '../services/prompts/fewShotExamples';
 
 interface CategoryGroup {
   category: string;
@@ -728,28 +729,40 @@ const MOCK_DATA: Record<string, any> = {
     ],
   },
 
-  // Sector variants
+  // Sector variants (nested list structure)
   'list-sector-plain-text': {
-    title: '时间分配',
+    title: '技能分类',
     items: [
-      { label: '工作', value: 8 },
-      { label: '睡眠', value: 7 },
-      { label: '学习', value: 3 },
-      { label: '娱乐', value: 3 },
-      { label: '运动', value: 2 },
-      { label: '其他', value: 1 },
+      {
+        label: '前端技能',
+        items: ['React', 'Vue', 'Angular', 'TypeScript']
+      },
+      {
+        label: '后端技能',
+        items: ['Node.js', 'Python', 'Java', 'Go']
+      },
+      {
+        label: '数据库',
+        items: ['MySQL', 'PostgreSQL', 'MongoDB', 'Redis']
+      },
     ],
   },
 
   'list-sector-half-plain-text': {
-    title: '预算分配',
+    title: '学习方法',
     items: [
-      { label: '房租', value: 30 },
-      { label: '餐饮', value: 20 },
-      { label: '交通', value: 15 },
-      { label: '购物', value: 15 },
-      { label: '娱乐', value: 10 },
-      { label: '储蓄', value: 10 },
+      {
+        label: '理论学习',
+        items: ['阅读文档', '观看视频', '参加课程']
+      },
+      {
+        label: '实践项目',
+        items: ['个人项目', '开源贡献', '实战演练']
+      },
+      {
+        label: '社区交流',
+        items: ['技术博客', '技术论坛', '技术会议']
+      },
     ],
   },
 
@@ -1221,6 +1234,12 @@ const MOCK_DATA: Record<string, any> = {
 export const VisualTypesGallery: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [tooltip, setTooltip] = useState<{
+    show: boolean;
+    x: number;
+    y: number;
+    syntax: string;
+  }>({ show: false, x: 0, y: 0, syntax: '' });
 
   // Group types by category
   const groupedTypes = useMemo(() => {
@@ -1469,6 +1488,25 @@ export const VisualTypesGallery: React.FC = () => {
     navigator.clipboard.writeText(type);
   };
 
+  // Handle mouse enter for tooltip
+  const handleMouseEnter = (e: React.MouseEvent, type: string) => {
+    const syntax = getSyntaxForExampleId(type);
+    if (syntax) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      setTooltip({
+        show: true,
+        x: rect.left + rect.width / 2,
+        y: rect.top,
+        syntax,
+      });
+    }
+  };
+
+  // Handle mouse leave for tooltip
+  const handleMouseLeave = () => {
+    setTooltip(prev => ({ ...prev, show: false }));
+  };
+
   // Export as JSON
   const exportAsJSON = () => {
     const data = sectionRegistry.getAll().map(t => ({
@@ -1564,6 +1602,8 @@ export const VisualTypesGallery: React.FC = () => {
                     <div
                       key={type.type}
                       className="border border-gray-200 dark:border-zinc-700 rounded-lg overflow-hidden hover:shadow-md transition-all"
+                      onMouseEnter={(e) => handleMouseEnter(e, type.type)}
+                      onMouseLeave={handleMouseLeave}
                     >
                       {/* Preview */}
                       <div className="bg-gray-50 dark:bg-zinc-800/50 p-3">
@@ -1619,6 +1659,26 @@ export const VisualTypesGallery: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Syntax Tooltip */}
+      {tooltip.show && (
+        <div
+          className="fixed z-50 max-w-md bg-white dark:bg-zinc-900 rounded-lg shadow-xl border border-gray-200 dark:border-zinc-700 p-4 pointer-events-none"
+          style={{
+            left: `${tooltip.x}px`,
+            top: `${tooltip.y - 8}px`,
+            transform: 'translate(-50%, -100%)',
+          }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Syntax 示例</h4>
+            <span className="text-xs text-gray-400 dark:text-zinc-500">悬停查看</span>
+          </div>
+          <pre className="text-xs bg-gray-50 dark:bg-zinc-800 p-3 rounded overflow-auto max-h-64 text-gray-700 dark:text-zinc-300 whitespace-pre-wrap break-all">
+            {tooltip.syntax}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };

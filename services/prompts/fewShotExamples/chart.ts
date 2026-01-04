@@ -30,8 +30,8 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Bar Chart - Stacked (堆叠柱状图)",
       "example_id": "bar-stacked",
-      "syntax": "infographic bar-stacked\\ndata\\n  title 产品销售构成\\n  items\\n    - label Q1\\n      productA 100\\n      productB 80\\n      productC 60\\n    - label Q2\\n      productA 120\\n      productB 90\\n      productC 70\\n    - label Q3\\n      productA 140\\n      productB 100\\n      productC 80",
-      "data": [{ "name": "Q1", "productA": 100, "productB": 80, "productC": 60 }, { "name": "Q2", "productA": 120, "productB": 90, "productC": 70 }, { "name": "Q3", "productA": 140, "productB": 100, "productC": 80 }]
+      "syntax": "infographic bar-stacked\\ndata\\n  title 产品销售构成\\n  desc 按季度展示各产品销售占比（注意：所有数据点必须使用相同的堆叠键）\\n  items\\n    - label Q1\\n      产品A 100\\n      产品B 80\\n      产品C 60\\n    - label Q2\\n      产品A 120\\n      产品B 90\\n      产品C 70\\n    - label Q3\\n      产品A 140\\n      产品B 100\\n      产品C 80\\n    - label Q4\\n      产品A 160\\n      产品B 110\\n      产品C 90",
+      "data": [{ "name": "Q1", "产品A": 100, "产品B": 80, "产品C": 60 }, { "name": "Q2", "产品A": 120, "产品B": 90, "产品C": 70 }, { "name": "Q3", "产品A": 140, "产品B": 100, "产品C": 80 }, { "name": "Q4", "产品A": 160, "产品B": 110, "产品C": 90 }]
     },
     {
       "type": "Bar Chart - Horizontal (水平柱状图)",
@@ -42,7 +42,7 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Bar Chart - Percent (百分比柱状图)",
       "example_id": "bar-percent",
-      "syntax": "infographic bar-percent\\ndata\\n  title 用户来源分布\\n  items\\n    - label 2023\\n      organic 40\\n      direct 30\\n      referral 20\\n      social 10\\n    - label 2024\\n      organic 45\\n      direct 25\\n      referral 18\\n      social 12",
+      "syntax": "infographic bar-percent\\ndata\\n  title 用户来源分布\\n  desc 按年份展示各来源占比（注意：所有数据点必须使用相同的堆叠键）\\n  items\\n    - label 2023\\n      organic 40\\n      direct 30\\n      referral 20\\n      social 10\\n    - label 2024\\n      organic 45\\n      direct 25\\n      referral 18\\n      social 12",
       "data": [{ "name": "2023", "organic": 40, "direct": 30, "referral": 20, "social": 10 }, { "name": "2024", "organic": 45, "direct": 25, "referral": 18, "social": 12 }]
     },
     {
@@ -104,7 +104,7 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Line Chart - Multi Series (多系列折线图)",
       "example_id": "line-multi-series",
-      "syntax": "infographic line-multi-series\\ndata\\n  title 产品对比\\n  items\\n    - label Q1\\n      productA 120\\n      productB 100\\n    - label Q2\\n      productA 140\\n      productB 110\\n    - label Q3\\n      productA 160\\n      productB 105\\n    - label Q4\\n      productA 180\\n      productB 115",
+      "syntax": "infographic line-multi-series\\ndata\\n  title 产品对比\\n  desc 多产品季度趋势对比（注意：所有数据点必须使用相同的系列键）\\n  items\\n    - label Q1\\n      productA 120\\n      productB 100\\n    - label Q2\\n      productA 140\\n      productB 110\\n    - label Q3\\n      productA 160\\n      productB 105\\n    - label Q4\\n      productA 180\\n      productB 115",
       "data": [{ "name": "Q1", "productA": 120, "productB": 100 }, { "name": "Q2", "productA": 140, "productB": 110 }, { "name": "Q3", "productA": 160, "productB": 105 }, { "name": "Q4", "productA": 180, "productB": 115 }]
     },
     {
@@ -116,7 +116,7 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Line Chart - Dashed (虚线折线图)",
       "example_id": "line-dashed",
-      "syntax": "infographic line-dashed\\ndata\\n  title 预测 vs 实际\\n  items\\n    - label 1月\\n      forecast 120\\n      actual 115\\n    - label 2月\\n      forecast 130\\n      actual 135\\n    - label 3月\\n      forecast 140\\n      actual 138\\n    - label 4月\\n      forecast 150\\n      actual 155",
+      "syntax": "infographic line-dashed\\ndata\\n  title 预测 vs 实际\\n  desc 预测值与实际值对比（注意：所有数据点必须使用相同的系列键）\\n  items\\n    - label 1月\\n      forecast 120\\n      actual 115\\n    - label 2月\\n      forecast 130\\n      actual 135\\n    - label 3月\\n      forecast 140\\n      actual 138\\n    - label 4月\\n      forecast 150\\n      actual 155",
       "data": [{ "name": "1月", "forecast": 120, "actual": 115 }, { "name": "2月", "forecast": 130, "actual": 135 }, { "name": "3月", "forecast": 140, "actual": 138 }, { "name": "4月", "forecast": 150, "actual": 155 }]
     },
 
@@ -132,13 +132,13 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Area Chart - Stacked (堆叠面积图)",
       "example_id": "area-stacked",
-      "syntax": "infographic area-stacked\\ndata\\n  title 多产品收入\\n  items\\n    - label Q1\\n      productA 100\\n      productB 80\\n    - label Q2\\n      productA 120\\n      productB 90\\n    - label Q3\\n      productA 130\\n      productB 95\\n    - label Q4\\n      productA 150\\n      productB 100",
+      "syntax": "infographic area-stacked\\ndata\\n  title 多产品收入\\n  desc 按季度展示各产品收入堆叠（注意：所有数据点必须使用相同的堆叠键）\\n  items\\n    - label Q1\\n      productA 100\\n      productB 80\\n    - label Q2\\n      productA 120\\n      productB 90\\n    - label Q3\\n      productA 130\\n      productB 95\\n    - label Q4\\n      productA 150\\n      productB 100",
       "data": [{ "name": "Q1", "productA": 100, "productB": 80 }, { "name": "Q2", "productA": 120, "productB": 90 }, { "name": "Q3", "productA": 130, "productB": 95 }, { "name": "Q4", "productA": 150, "productB": 100 }]
     },
     {
       "type": "Area Chart - Percent (百分比面积图)",
       "example_id": "area-percent",
-      "syntax": "infographic area-percent\\ndata\\n  title 流量来源占比\\n  items\\n    - label 1月\\n      organic 45\\n      direct 30\\n      referral 25\\n    - label 2月\\n      organic 50\\n      direct 25\\n      referral 25\\n    - label 3月\\n      organic 48\\n      direct 28\\n      referral 24",
+      "syntax": "infographic area-percent\\ndata\\n  title 流量来源占比\\n  desc 按月展示各来源占比（注意：所有数据点必须使用相同的堆叠键）\\n  items\\n    - label 1月\\n      organic 45\\n      direct 30\\n      referral 25\\n    - label 2月\\n      organic 50\\n      direct 25\\n      referral 25\\n    - label 3月\\n      organic 48\\n      direct 28\\n      referral 24",
       "data": [{ "name": "1月", "organic": 45, "direct": 30, "referral": 25 }, { "name": "2月", "organic": 50, "direct": 25, "referral": 25 }, { "name": "3月", "organic": 48, "direct": 28, "referral": 24 }]
     },
     {
@@ -166,7 +166,7 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Radial Bar Chart - Stacked (堆叠环形条形图)",
       "example_id": "radial-bar-stacked",
-      "syntax": "infographic radial-bar-stacked\\ndata\\n  title 团队技能分布\\n  items\\n    - label 前端\\n      basic 60\\n      advanced 80\\n    - label 后端\\n      basic 70\\n      advanced 75\\n    - label 算法\\n      basic 50\\n      advanced 65",
+      "syntax": "infographic radial-bar-stacked\\ndata\\n  title 团队技能分布\\n  desc 各团队基础与高级技能分布（注意：所有数据点必须使用相同的堆叠键）\\n  items\\n    - label 前端\\n      basic 60\\n      advanced 80\\n    - label 后端\\n      basic 70\\n      advanced 75\\n    - label 算法\\n      basic 50\\n      advanced 65",
       "data": [{ "name": "前端", "basic": 60, "advanced": 80 }, { "name": "后端", "basic": 70, "advanced": 75 }, { "name": "算法", "basic": 50, "advanced": 65 }]
     },
 
@@ -182,13 +182,13 @@ export const CHART_EXAMPLES: CategoryExamples = {
     {
       "type": "Radar Chart - Filled (填充雷达图)",
       "example_id": "radar-filled",
-      "syntax": "infographic radar-filled\\ndata\\n  title 产品特性对比\\n  items\\n    - label 性能\\n      productA 90\\n      productB 80\\n    - label 易用性\\n      productA 85\\n      productB 90\\n    - label 稳定性\\n      productA 88\\n      productB 85\\n    - label 扩展性\\n      productA 82\\n      productB 88",
+      "syntax": "infographic radar-filled\\ndata\\n  title 产品特性对比\\n  desc 多产品多维度特性对比（注意：所有数据点必须使用相同的系列键）\\n  items\\n    - label 性能\\n      productA 90\\n      productB 80\\n    - label 易用性\\n      productA 85\\n      productB 90\\n    - label 稳定性\\n      productA 88\\n      productB 85\\n    - label 扩展性\\n      productA 82\\n      productB 88",
       "data": [{ "label": "性能", "productA": 90, "productB": 80 }, { "label": "易用性", "productA": 85, "productB": 90 }, { "label": "稳定性", "productA": 88, "productB": 85 }, { "label": "扩展性", "productA": 82, "productB": 88 }]
     },
     {
       "type": "Radar Chart - Comparison (对比雷达图)",
       "example_id": "radar-comparison",
-      "syntax": "infographic radar-comparison\\ndata\\n  title 竞品分析\\n  items\\n    - label 功能\\n      ours 95\\n      competitor 85\\n    - label 价格\\n      ours 80\\n      competitor 90\\n    - label 服务\\n      ours 92\\n      competitor 78\\n    - label 品牌\\n      ours 75\\n      competitor 88\\n    - label 创新\\n      ours 90\\n      competitor 80",
+      "syntax": "infographic radar-comparison\\ndata\\n  title 竞品分析\\n  desc 我方产品与竞品多维度对比（注意：所有数据点必须使用相同的系列键）\\n  items\\n    - label 功能\\n      ours 95\\n      competitor 85\\n    - label 价格\\n      ours 80\\n      competitor 90\\n    - label 服务\\n      ours 92\\n      competitor 78\\n    - label 品牌\\n      ours 75\\n      competitor 88\\n    - label 创新\\n      ours 90\\n      competitor 80",
       "data": [{ "label": "功能", "ours": 95, "competitor": 85 }, { "label": "价格", "ours": 80, "competitor": 90 }, { "label": "服务", "ours": 92, "competitor": 78 }, { "label": "品牌", "ours": 75, "competitor": 88 }, { "label": "创新", "ours": 90, "competitor": 80 }]
     },
 

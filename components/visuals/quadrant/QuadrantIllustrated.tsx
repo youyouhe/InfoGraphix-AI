@@ -42,9 +42,10 @@ interface IllustratedQuadrantProps {
 
 const IllustratedQuadrant: React.FC<IllustratedQuadrantProps> = ({ item, index }) => {
   // Extract emoji from label if present
-  const emojiMatch = item.label.match(/^(\p{Emoji}+)\s/u);
+  const label = item.label || `Quadrant ${index + 1}`;
+  const emojiMatch = label.match(/^(\p{Emoji}+)\s/u);
   const emoji = emojiMatch ? emojiMatch[1] : ['🎯', '💡', '🔧', '🏆', '⭐', '🚀', '💎', '🎨'][index % 8];
-  const labelWithoutEmoji = item.label.replace(/^\p{Emoji}+\s/u, '');
+  const labelWithoutEmoji = label.replace(/^\p{Emoji}+\s/u, '');
 
   const bgColors = [
     'bg-gradient-to-br from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border-pink-200 dark:border-pink-800',
