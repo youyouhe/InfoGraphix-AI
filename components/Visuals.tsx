@@ -4,4 +4,4 @@
  */
 
 // Re-export everything from the new modular structure
-export * from './visuals';
+export * from './visuals/index';

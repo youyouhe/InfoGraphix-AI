@@ -59,7 +59,7 @@ export {
   // WordCloud
   WordCloudChart,
   WordCloudSimple,
-} from './charts';
+} from './charts/index';
 
 // Sequence components
 export {
@@ -71,7 +71,7 @@ export {
   SequenceZigzagUnderline,
   SequenceAscending,
   SequenceHorizontalZigzag,
-} from './sequence';
+} from './sequence/index';
 
 // List components
 export {
@@ -85,7 +85,7 @@ export {
   ListZigzag,
   ListCandyCard,
   ListSectorEnhanced,
-} from './list';
+} from './list/index';
 
 // Comparison components
 export {
@@ -98,7 +98,7 @@ export {
   CompareTimeline,
   CompareMetricGauge,
   CompareCardStack,
-} from './comparison';
+} from './comparison/index';
 
 // Hierarchy components
 export {
@@ -110,14 +110,14 @@ export {
   HierarchyBadge,
   HierarchyRibbon,
   HierarchyCircleProgress,
-} from './hierarchy';
+} from './hierarchy/index';
 
 // Quadrant components
 export {
   QuadrantCircular,
   QuadrantIllustrated,
   QuadrantMatrix,
-} from './quadrant';
+} from './quadrant/index';
 
 // Other components
 export {
@@ -126,4 +126,4 @@ export {
   ProcessFlow,
   QuadrantQuarterCard,
   ComparisonSection,
-} from './other';
+} from './other/index';
