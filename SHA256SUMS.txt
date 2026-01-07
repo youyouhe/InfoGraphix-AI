@@ -1,6 +1,6 @@
-# SHA256 Checksums for InfoGraphix AI v0.0.3
+# SHA256 Checksums for InfoGraphix AI v0.0.4
 # Generated on 2026-01-07
 
-de5133dd496cc098711d67d3a6c808a550c37b133149111222ab43d10e025525  app.exe
-db63ccec814e27d130cceb5347ee24dd87fac932a8e42aec671528759392c076  InfoGraphix AI_0.0.3_x64-setup.exe
-1e33d072203ae0a2e84c97a79fe1b903ce49e67767e0606604eda8d9381b096c  InfoGraphix AI_0.0.3_x64_en-US.msi
+5030d2466361334825a80be3c5b07dae833ff5ad744d433970f635ff14cfb45c  app.exe
+2a024c54f7eee1b5e01d5a007586a167bc9314328ec71d1b9eac4cdfe90011a4  InfoGraphix AI_0.0.4_x64-setup.exe
+a58640600eba9aaf68e2c413bad3b7f3f793494bd586df6efb461fb7fb1278c4  InfoGraphix AI_0.0.4_x64_en-US.msi
