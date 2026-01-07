@@ -6,6 +6,7 @@ import { HistoryItem, InfographicReport, SectionType, DisplayMode } from './type
 import { TextSection, StatHighlight, ChartSection, ProcessFlow, ComparisonSection } from './components/Visuals';
 import { VisualTypesGallery } from './components/VisualTypesGallery';
 import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings, PanelLeftClose, PanelLeftOpen, Languages, Grid3x3 } from 'lucide-react';
+import { ZoomControls } from './components/ZoomControls';
 import { t, tp } from './i18n';
 import { registerCoreSectionTypes } from './services/registry/coreSections';
 import { sectionRegistry } from './services/registry/sectionRegistry';
@@ -46,6 +47,12 @@ export default function App() {
   // Display Mode state
   const [displayMode, setDisplayMode] = useState<DisplayMode>('scroll-vertical');
   const [currentPage, setCurrentPage] = useState(0);
+
+  // Zoom state
+  const [zoomLevel, setZoomLevel] = useState(100);
+  const handleZoomIn = () => setZoomLevel(prev => Math.min(200, prev + 10));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(50, prev - 10));
+  const handleZoomReset = () => setZoomLevel(100);
 
   // API Key Modal state
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
@@ -136,6 +143,24 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [isDarkMode]);
+
+  // Keyboard shortcuts for zoom
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === '=' && !e.shiftKey) {
+        e.preventDefault();
+        handleZoomIn();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+        e.preventDefault();
+        handleZoomOut();
+      } else if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+        e.preventDefault();
+        handleZoomReset();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Smooth scroll to bottom (vertical) or right (horizontal) when new sections are added during streaming
   useEffect(() => {
@@ -523,6 +548,13 @@ export default function App() {
               <Bug size={18} />
             </button>
             <div className="w-px h-4 bg-gray-300 dark:bg-zinc-700 mx-1"></div>
+            <ZoomControls
+              zoomLevel={zoomLevel}
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+              onZoomReset={handleZoomReset}
+            />
+            <div className="w-px h-4 bg-gray-300 dark:bg-zinc-700 mx-1"></div>
              <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="p-2 hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-lg text-gray-500 dark:text-zinc-400 transition-colors"
@@ -613,7 +645,15 @@ export default function App() {
             <>
               {/* Vertical Scroll Mode */}
               {displayMode === 'scroll-vertical' && (
-                <div ref={contentRef} className="max-w-4xl mx-auto space-y-8 pb-20 animate-fade-in">
+                <div className="flex justify-center">
+                  <div
+                    ref={contentRef}
+                    className="max-w-4xl space-y-8 pb-20 animate-fade-in transition-transform duration-200 ease-out origin-top"
+                    style={{
+                      transform: `scale(${zoomLevel / 100})`,
+                      width: zoomLevel !== 100 ? `${(10000 / zoomLevel)}%` : '100%'
+                    }}
+                  >
               {/* Report Header */}
               <div className="text-center mb-16 relative">
                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
@@ -679,12 +719,22 @@ export default function App() {
                 </div>
               )}
               </div>
+                </div>
             )}
               {/* End Vertical Scroll Mode */}
 
               {/* Horizontal Scroll Mode */}
               {displayMode === 'scroll-horizontal' && (
-                <div ref={horizontalScrollRef} className="flex overflow-x-auto gap-8 p-8 snap-x snap-mandatory h-full items-center">
+                <div className="overflow-x-auto h-full items-center">
+                  <div
+                    ref={horizontalScrollRef}
+                    className="flex gap-8 p-8 snap-x snap-mandatory transition-transform duration-200 ease-out origin-top"
+                    style={{
+                      transform: `scale(${zoomLevel / 100})`,
+                      width: zoomLevel !== 100 ? `${(10000 / zoomLevel)}%` : '100%',
+                      minWidth: zoomLevel !== 100 ? `${(10000 / zoomLevel)}%` : '100%'
+                    }}
+                  >
                   {/* Summary Card */}
                   <div className="flex-shrink-0 w-[85vw] max-w-4xl snap-center">
                     <div className="text-center bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl">
@@ -726,6 +776,7 @@ export default function App() {
                     </div>
                   )}
                 </div>
+                  </div>
               )}
               {/* End Horizontal Scroll Mode */}
 
@@ -733,7 +784,14 @@ export default function App() {
               {displayMode === 'pagination' && (
                 <div className="flex flex-col h-full">
                   {/* Current Page Content */}
-                  <div className="flex-1 flex items-center justify-center p-8">
+                  <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
+                    <div
+                      className="transition-transform duration-200 ease-out origin-top"
+                      style={{
+                        transform: `scale(${zoomLevel / 100})`,
+                        width: zoomLevel !== 100 ? `${(10000 / zoomLevel)}%` : '100%'
+                      }}
+                    >
                     {currentPage === 0 ? (
                       /* Summary Page */
                       <div className="w-full max-w-4xl text-center bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl animate-fade-in">
@@ -770,6 +828,7 @@ export default function App() {
                       </div>
                     )}
                   </div>
+                    </div>
 
                   {/* Pagination Navigation */}
                   <div className="flex justify-center items-center gap-4 p-4 bg-white dark:bg-[#1a1b1e] border-t border-gray-200 dark:border-zinc-800">
