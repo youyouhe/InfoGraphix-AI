@@ -141,44 +141,48 @@
         opacity: 0.15;
       }
 
-      /* Light theme blobs - subtle pastels */
-      .light .ambient-glow-blob-1 {
+      /* Light theme blobs - subtle pastels (when html has no dark class) */
+      html:not(.dark) .ambient-glow-blob-1,
+      :not(html):not(.dark) .ambient-glow-blob-1 {
         background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
         animation: liquidBlob1 5s ease-in-out infinite, liquidFlow1 7s ease-in-out infinite;
       }
 
-      .light .ambient-glow-blob-2 {
+      html:not(.dark) .ambient-glow-blob-2,
+      :not(html):not(.dark) .ambient-glow-blob-2 {
         background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
         animation: liquidBlob2 6s ease-in-out infinite, liquidFlow2 8s ease-in-out infinite;
       }
 
-      .light .ambient-glow-blob-3 {
+      html:not(.dark) .ambient-glow-blob-3,
+      :not(html):not(.dark) .ambient-glow-blob-3 {
         background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, transparent 70%);
         animation: liquidBlob3 7s ease-in-out infinite, liquidFlow3 9s ease-in-out infinite;
       }
 
-      .light .ambient-glow-blob-4 {
+      html:not(.dark) .ambient-glow-blob-4,
+      :not(html):not(.dark) .ambient-glow-blob-4 {
         background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%);
         animation: liquidBlob4 8s ease-in-out infinite, liquidFlow4 10s ease-in-out infinite;
       }
 
       /* Dark theme blobs - vibrant neon gradients */
-      .dark .ambient-glow-blob-1 {
+      html.dark .ambient-glow-blob-1 {
         background: radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%);
         animation: liquidBlob1 5s ease-in-out infinite, liquidFlow1 7s ease-in-out infinite;
       }
 
-      .dark .ambient-glow-blob-2 {
+      html.dark .ambient-glow-blob-2 {
         background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, transparent 70%);
         animation: liquidBlob2 6s ease-in-out infinite, liquidFlow2 8s ease-in-out infinite;
       }
 
-      .dark .ambient-glow-blob-3 {
+      html.dark .ambient-glow-blob-3 {
         background: radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, transparent 70%);
         animation: liquidBlob3 7s ease-in-out infinite, liquidFlow3 9s ease-in-out infinite;
       }
 
-      .dark .ambient-glow-blob-4 {
+      html.dark .ambient-glow-blob-4 {
         background: radial-gradient(circle, rgba(34, 211, 238, 0.5) 0%, transparent 70%);
         animation: liquidBlob4 8s ease-in-out infinite, liquidFlow4 10s ease-in-out infinite;
       }
