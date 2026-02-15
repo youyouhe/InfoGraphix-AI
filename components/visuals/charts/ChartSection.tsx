@@ -99,8 +99,8 @@ export const ChartSection: React.FC<VisualProps> = ({ section, isDark = true, is
   };
 
   return (
-    <div className="mb-8 p-6 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-lg">
-      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center">{section.title}</h3>
+    <div className="mb-8 p-6 bg-white dark:bg-zinc-900 rounded-xl border-2 border-indigo-300 dark:border-indigo-700 shadow-xl card-neon-hover neon-border-blue">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 text-center neon-text-blue">{section.title}</h3>
       <div className="w-full min-w-0" style={{ aspectRatio: '16 / 9', minHeight: '250px' }}>
         <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           {isBarChart ? (
@@ -112,6 +112,11 @@ export const ChartSection: React.FC<VisualProps> = ({ section, isDark = true, is
                     <stop offset="5%" stopColor="#6366f1" stopOpacity={0.9} />
                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.3} />
                   </linearGradient>
+                  <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+                    <feMerge in="SourceGraphic" in2="blur" />
+                    <feMerge in="SourceGraphic" in2="blur" mode="screen" />
+                  </filter>
                 </defs>
               </svg>
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -127,7 +132,11 @@ export const ChartSection: React.FC<VisualProps> = ({ section, isDark = true, is
                   animationEasing="ease-in-out"
                 >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                      style={{ filter: 'url(#neonGlow)' }}
+                    />
                   ))}
                 </Bar>
               </BarChart>
@@ -156,7 +165,11 @@ export const ChartSection: React.FC<VisualProps> = ({ section, isDark = true, is
                 animationEasing="ease-out"
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={COLORS[index % COLORS.length]}
+                    style={{ filter: 'drop-shadow(0 0 8px ' + COLORS[index % COLORS.length] + ') drop-shadow(0 0 16px ' + COLORS[index % COLORS.length] + ')' }}
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />

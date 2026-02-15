@@ -31,17 +31,295 @@
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: transparent; 
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #a1a1aa; 
+        background: #a1a1aa;
         border-radius: 4px;
       }
       .dark ::-webkit-scrollbar-thumb {
         background: #52525b;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #71717a; 
+        background: #71717a;
+      }
+
+      /* Neon Glow Effects */
+      @keyframes neonPulse {
+        0%, 100% {
+          filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 16px currentColor);
+        }
+        50% {
+          filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 24px currentColor) drop-shadow(0 0 32px currentColor);
+        }
+      }
+
+      @keyframes neonFlicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+          text-shadow:
+            0 0 4px #fff,
+            0 0 8px #fff,
+            0 0 12px currentColor,
+            0 0 16px currentColor,
+            0 0 20px currentColor,
+            0 0 24px currentColor;
+        }
+        20%, 24%, 55% {
+          text-shadow: none;
+        }
+      }
+
+      @keyframes borderGlow {
+        0%, 100% {
+          box-shadow:
+            0 0 8px currentColor,
+            0 0 16px currentColor,
+            inset 0 0 8px currentColor;
+        }
+        50% {
+          box-shadow:
+            0 0 12px currentColor,
+            0 0 24px currentColor,
+            0 0 36px currentColor,
+            inset 0 0 12px currentColor;
+        }
+      }
+
+      @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      /* Neon Text Glow */
+      .neon-text {
+        animation: neonPulse 2s ease-in-out infinite;
+      }
+
+      .neon-text-pink {
+        color: #ff6b9f;
+        animation: neonPulse 1.5s ease-in-out infinite;
+      }
+
+      .neon-text-blue {
+        color: #00f0ff;
+        animation: neonPulse 1.5s ease-in-out infinite;
+      }
+
+      .neon-text-green {
+        color: #39ff14;
+        animation: neonPulse 1.5s ease-in-out infinite;
+      }
+
+      .neon-text-orange {
+        color: #ff9500;
+        animation: neonPulse 1.5s ease-in-out infinite;
+      }
+
+      .neon-text-purple {
+        color: #bf00ff;
+        animation: neonPulse 1.5s ease-in-out infinite;
+      }
+
+      /* Neon Border Glow */
+      .neon-border {
+        animation: borderGlow 2s ease-in-out infinite;
+      }
+
+      .neon-border-pink {
+        border-color: #ff6b9f;
+        color: #ff6b9f;
+        animation: borderGlow 1.5s ease-in-out infinite;
+      }
+
+      .neon-border-blue {
+        border-color: #00f0ff;
+        color: #00f0ff;
+        animation: borderGlow 1.5s ease-in-out infinite;
+      }
+
+      .neon-border-green {
+        border-color: #39ff14;
+        color: #39ff14;
+        animation: borderGlow 1.5s ease-in-out infinite;
+      }
+
+      /* Neon Badge */
+      .neon-badge {
+        position: relative;
+        background: linear-gradient(135deg, currentColor, transparent 60%);
+        border: 2px solid currentColor;
+        animation: borderGlow 1.5s ease-in-out infinite;
+      }
+
+      .neon-badge::before {
+        content: '';
+        position: absolute;
+        inset: -2px;
+        border-radius: inherit;
+        padding: 2px;
+        background: linear-gradient(45deg, currentColor, transparent, currentColor);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.5;
+        animation: neonPulse 2s ease-in-out infinite;
+      }
+
+      /* Neon Chart Bar */
+      .neon-chart-bar {
+        filter: drop-shadow(0 0 8px currentColor);
+        animation: neonPulse 3s ease-in-out infinite;
+      }
+
+      /* Neon Icon */
+      .neon-icon {
+        filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 16px currentColor);
+        animation: neonFlicker 3s linear infinite;
+      }
+
+      /* Gradient Animations */
+      .gradient-animated {
+        background-size: 200% 200%;
+        animation: gradientShift 3s ease infinite;
+      }
+
+      .gradient-neon-pink {
+        background: linear-gradient(90deg, #ff6b9f, #c084fc, #ff6b9f, #c084fc);
+        background-size: 300% 100%;
+        animation: gradientShift 4s linear infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .gradient-neon-blue {
+        background: linear-gradient(90deg, #00f0ff, #0080ff, #00f0ff, #0080ff);
+        background-size: 300% 100%;
+        animation: gradientShift 4s linear infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .gradient-neon-green {
+        background: linear-gradient(90deg, #39ff14, #00ff80, #39ff14, #00ff80);
+        background-size: 300% 100%;
+        animation: gradientShift 4s linear infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .gradient-neon-orange {
+        background: linear-gradient(90deg, #ff9500, #ff6600, #ff9500, #ff6600);
+        background-size: 300% 100%;
+        animation: gradientShift 4s linear infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .gradient-neon-purple {
+        background: linear-gradient(90deg, #bf00ff, #8000ff, #bf00ff, #8000ff);
+        background-size: 300% 100%;
+        animation: gradientShift 4s linear infinite;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Glow Card Effect */
+      .glow-card {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .glow-card::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        background: linear-gradient(45deg, #ff6b9f, #00f0ff, #39ff14, #ff9500, #bf00ff);
+        background-size: 400% 400%;
+        animation: gradientShift 8s ease infinite;
+        opacity: 0.3;
+        filter: blur(16px);
+        z-index: -1;
+      }
+
+      /* Stat Value Neon Enhancement */
+      .neon-stat-value {
+        font-size: 4rem;
+        font-weight: 900;
+        line-height: 1;
+        filter: drop-shadow(0 0 20px currentColor) drop-shadow(0 0 40px currentColor);
+        animation: neonPulse 2s ease-in-out infinite;
+      }
+
+      /* Progress Bar Neon */
+      .neon-progress {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .neon-progress-bar {
+        position: relative;
+        z-index: 1;
+        animation: neonPulse 2s ease-in-out infinite;
+      }
+
+      .neon-progress::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: inherit;
+        filter: blur(8px);
+        opacity: 0.5;
+        z-index: 0;
+      }
+
+      /* Tag/Badge Neon Variants */
+      .neon-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .neon-tag::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: currentColor;
+        opacity: 0.2;
+        filter: blur(8px);
+        animation: neonPulse 2s ease-in-out infinite;
+      }
+
+      /* Card Hover Neon Effect */
+      .card-neon-hover {
+        transition: all 0.3s ease;
+      }
+
+      .card-neon-hover:hover {
+        box-shadow:
+          0 0 20px currentColor,
+          0 0 40px currentColor,
+          inset 0 0 20px currentColor;
+        border-color: currentColor;
+        transform: translateY(-2px);
+      }
+
+      /* Icon Glow in Lists */
+      .neon-list-icon {
+        filter: drop-shadow(0 0 4px currentColor);
+        animation: neonPulse 3s ease-in-out infinite;
       }
     </style>
   <script type="importmap">
