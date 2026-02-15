@@ -9,29 +9,76 @@ export class ImageExporter {
   private readonly SCALE = 3; // High resolution for better quality
 
   /**
+   * Find the actual content bounds by traversing children
+   * Returns the tightest bounding box containing all visible content
+   */
+  private getContentBounds(element: HTMLElement): { left: number; top: number; right: number; bottom: number; width: number; height: number } {
+    const children = Array.from(element.children);
+    if (children.length === 0) {
+      return { left: 0, top: 0, right: element.scrollWidth, bottom: element.scrollHeight, width: element.scrollWidth, height: element.scrollHeight };
+    }
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+    for (const child of children) {
+      const rect = child.getBoundingClientRect();
+      const elementRect = element.getBoundingClientRect();
+      // Calculate position relative to the element
+      const relativeX = rect.left - elementRect.left + element.scrollLeft;
+      const relativeY = rect.top - elementRect.top + element.scrollTop;
+
+      if (rect.width > 0 && rect.height > 0) {
+        minX = Math.min(minX, relativeX);
+        minY = Math.min(minY, relativeY);
+        maxX = Math.max(maxX, relativeX + rect.width);
+        maxY = Math.max(maxY, relativeY + rect.height);
+      }
+    }
+
+    // Fallback if no visible content found
+    if (minX === Infinity) {
+      return { left: 0, top: 0, right: element.scrollWidth, bottom: element.scrollHeight, width: element.scrollWidth, height: element.scrollHeight };
+    }
+
+    // Add padding (10px on each side)
+    const padding = 10;
+    minX = Math.max(0, minX - padding);
+    minY = Math.max(0, minY - padding);
+    maxX = Math.min(element.scrollWidth, maxX + padding);
+    maxY = Math.min(element.scrollHeight, maxY + padding);
+
+    return {
+      left: minX,
+      top: minY,
+      right: maxX,
+      bottom: maxY,
+      width: maxX - minX,
+      height: maxY - minY
+    };
+  }
+
+  /**
    * Export a single page element as PNG
    * @param element - The DOM element to capture
-   * @param filename - The filename for the exported image
-   * @param backgroundColor - Background color for the image
+   * @param filename - The filename for exported image
+   * @param backgroundColor - Background color for image
    */
   async exportPageAsPng(
     element: HTMLElement,
     filename: string,
     backgroundColor: string = '#ffffff'
   ): Promise<void> {
-    // Get the actual rendered dimensions of the element content
-    const contentWidth = element.scrollWidth;
-    const contentHeight = element.scrollHeight;
+    // Get actual content bounds to crop empty whitespace
+    const bounds = this.getContentBounds(element);
 
-    console.log('[ImageExporter] Capturing element:', {
-      scrollWidth: contentWidth,
-      scrollHeight: contentHeight,
-      offsetWidth: element.offsetWidth,
-      offsetHeight: element.offsetHeight,
+    console.log('[ImageExporter] Content bounds:', {
+      elementScroll: { width: element.scrollWidth, height: element.scrollHeight },
+      contentBounds: bounds,
+      cropped: bounds.width !== element.scrollWidth || bounds.height !== element.scrollHeight
     });
 
-    if (contentWidth === 0 || contentHeight === 0) {
-      console.error('[ImageExporter] Element has zero dimensions!', { contentWidth, contentHeight });
+    if (bounds.width === 0 || bounds.height === 0) {
+      console.error('[ImageExporter] Element has zero dimensions!', bounds);
       throw new Error('Element has zero dimensions - cannot capture');
     }
 
@@ -43,19 +90,45 @@ export class ImageExporter {
       // Temporarily make visible for capture
       if (captureContainer) {
         captureContainer.style.visibility = 'visible';
-        // Small delay to ensure the browser has rendered the visible state
+        // Small delay to ensure browser has rendered the visible state
         await new Promise(resolve => setTimeout(resolve, 100));
       }
 
+      // Create a wrapper to crop the content
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+      wrapper.style.overflow = 'hidden';
+      wrapper.style.backgroundColor = backgroundColor;
+      wrapper.style.width = `${bounds.width}px`;
+      wrapper.style.height = `${bounds.height}px`;
+
+      // Clone the element and position it to show only the content bounds
+      const clone = element.cloneNode(true) as HTMLElement;
+      clone.style.position = 'absolute';
+      clone.style.left = `${-bounds.left}px`;
+      clone.style.top = `${-bounds.top}px`;
+      clone.style.width = `${element.scrollWidth}px`;
+      clone.style.height = `${element.scrollHeight}px`;
+      clone.style.margin = '0';
+
+      wrapper.appendChild(clone);
+      captureContainer?.appendChild(wrapper);
+
+      // Small delay to ensure the clone is rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // Capture as PNG with high scale for better quality
-      const pngDataUrl = await domToPng(element, {
+      const pngDataUrl = await domToPng(wrapper, {
         scale: this.SCALE,
         backgroundColor,
-        width: contentWidth,
-        height: contentHeight,
+        width: bounds.width,
+        height: bounds.height,
       });
 
       console.log('[ImageExporter] Capture successful, data URL length:', pngDataUrl.length);
+
+      // Clean up the wrapper
+      wrapper.remove();
 
       // Download the PNG
       this.downloadDataUrl(pngDataUrl, filename);
@@ -159,7 +232,7 @@ export class ImageExporter {
       element = getSectionElement('title');
       filename = `${sanitizedBasename}_cover.png`;
     } else if (pageIndex <= report.sections.length) {
-      // Pages 1 to sections.length are the sections
+      // Pages 1 to sections.length are sections
       element = getSectionElement('section', pageIndex - 1);
       filename = `${sanitizedBasename}_page_${pageIndex}.png`;
     } else if (pageIndex === report.sections.length + 1 && report.sources && report.sources.length > 0) {
