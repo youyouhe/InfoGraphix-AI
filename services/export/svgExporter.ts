@@ -149,12 +149,14 @@ export class ImageExporter {
    * @param getSectionElement - Function to get the DOM element for each section
    * @param basename - Base name for the files (defaults to report title)
    * @param isDarkMode - Current dark mode state
+   * @param mode - Export mode: 'separate' for individual files, 'combined' for single long image
    */
   async exportAllPages(
     report: InfographicReport,
     getSectionElement: (type: 'title' | 'section' | 'sources', index?: number) => HTMLElement | null,
     basename?: string,
-    isDarkMode?: boolean
+    isDarkMode?: boolean,
+    mode: 'separate' | 'combined' = 'separate'
   ): Promise<void> {
     const sanitizedBasename = (basename || report.title)
       .replace(/[<>:"/\\|?*]/g, '')
@@ -164,7 +166,7 @@ export class ImageExporter {
 
     const pages: { element: HTMLElement; filename: string }[] = [];
 
-    // Capture title + summary page
+    // Collect title + summary page
     const titleElement = getSectionElement('title');
     if (titleElement) {
       pages.push({
@@ -173,7 +175,7 @@ export class ImageExporter {
       });
     }
 
-    // Capture each section
+    // Collect each section
     for (let i = 0; i < report.sections.length; i++) {
       const sectionElement = getSectionElement('section', i);
       if (sectionElement) {
@@ -184,7 +186,7 @@ export class ImageExporter {
       }
     }
 
-    // Capture sources page if available
+    // Collect sources page if available
     if (report.sources && report.sources.length > 0) {
       const sourcesElement = getSectionElement('sources');
       if (sourcesElement) {
@@ -195,11 +197,111 @@ export class ImageExporter {
       }
     }
 
-    // Export all pages with a small delay between each to avoid overwhelming the browser
-    for (const page of pages) {
-      await this.exportPageAsPng(page.element, page.filename, backgroundColor);
-      // Small delay between downloads
-      await new Promise(resolve => setTimeout(resolve, 300));
+    if (mode === 'combined') {
+      // Export as single combined long image
+      await this.exportCombinedPages(pages, sanitizedBasename, backgroundColor);
+    } else {
+      // Export as separate files
+      for (const page of pages) {
+        await this.exportPageAsPng(page.element, page.filename, backgroundColor);
+        // Small delay between downloads
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+    }
+  }
+
+  /**
+   * Export all pages combined into a single long PNG image
+   * Fixed width, height grows dynamically
+   */
+  private async exportCombinedPages(
+    pages: { element: HTMLElement; filename: string }[],
+    basename: string,
+    backgroundColor: string
+  ): Promise<void> {
+    const captureContainer = pages[0]?.element.closest('[style*="visibility: hidden"]') as HTMLElement;
+    const originalVisibility = captureContainer?.style.visibility;
+
+    try {
+      // Temporarily make visible for capture
+      if (captureContainer) {
+        captureContainer.style.visibility = 'visible';
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      // Calculate bounds for all pages
+      type ContentBounds = { left: number; top: number; right: number; bottom: number; width: number; height: number };
+      const pageBounds: Array<{ bounds: ContentBounds; original: HTMLElement }> = [];
+      let maxWidth = 0;
+      let totalHeight = 0;
+
+      for (const page of pages) {
+        const bounds = this.getContentBounds(page.element);
+        pageBounds.push({ bounds, original: page.element });
+        maxWidth = Math.max(maxWidth, bounds.width);
+        totalHeight += bounds.height;
+      }
+
+      console.log('[ImageExporter] Combined export:', {
+        pageCount: pages.length,
+        maxWidth,
+        totalHeight,
+        pageBounds: pageBounds.map(b => ({ width: b.bounds.width, height: b.bounds.height }))
+      });
+
+      // Create a combined wrapper
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+      wrapper.style.overflow = 'hidden';
+      wrapper.style.backgroundColor = backgroundColor;
+      wrapper.style.width = `${maxWidth}px`;
+      wrapper.style.height = `${totalHeight}px`;
+
+      // Add each page clone to the wrapper
+      let currentY = 0;
+      for (let i = 0; i < pageBounds.length; i++) {
+        const { bounds, original } = pageBounds[i];
+        const clone = original.cloneNode(true) as HTMLElement;
+
+        clone.style.position = 'absolute';
+        clone.style.left = `${-bounds.left + (maxWidth - bounds.width) / 2}px`; // Center horizontally
+        clone.style.top = `${-bounds.top + currentY}px`;
+        clone.style.width = `${original.scrollWidth}px`;
+        clone.style.height = `${original.scrollHeight}px`;
+        clone.style.margin = '0';
+
+        wrapper.appendChild(clone);
+        currentY += bounds.height;
+      }
+
+      captureContainer?.appendChild(wrapper);
+
+      // Small delay to ensure wrapper is rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Capture as PNG
+      const pngDataUrl = await domToPng(wrapper, {
+        scale: this.SCALE,
+        backgroundColor,
+        width: maxWidth,
+        height: totalHeight,
+      });
+
+      console.log('[ImageExporter] Combined capture successful, data URL length:', pngDataUrl.length);
+
+      // Clean up wrapper
+      wrapper.remove();
+
+      // Download combined PNG
+      this.downloadDataUrl(pngDataUrl, `${basename}_combined.png`);
+    } catch (error) {
+      console.error('Combined PNG export error:', error);
+      throw new Error(`Failed to export combined PNG: ${error}`);
+    } finally {
+      // Restore original visibility
+      if (captureContainer && originalVisibility !== undefined) {
+        captureContainer.style.visibility = originalVisibility;
+      }
     }
   }
 

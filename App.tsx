@@ -356,8 +356,8 @@ export default function App() {
     };
   };
 
-  // Handle PNG export - export current page or all pages
-  const handleExportJpg = async (mode: 'current' | 'all' = 'current') => {
+  // Handle PNG export - export current page, all pages (separate), or all pages (combined)
+  const handleExportJpg = async (mode: 'current' | 'all' | 'combined' = 'current') => {
     if (!currentReport || !captureContainerRef.current) return;
 
     try {
@@ -387,9 +387,12 @@ export default function App() {
       if (mode === 'current') {
         // Export current page only
         await exporter.exportSinglePage(currentReport, currentPage, getSectionElement, sanitizedTitle, isDarkMode);
+      } else if (mode === 'combined') {
+        // Export all pages combined into single long image
+        await exporter.exportAllPages(currentReport, getSectionElement, sanitizedTitle, isDarkMode, 'combined');
       } else {
-        // Export all pages
-        await exporter.exportAllPages(currentReport, getSectionElement, sanitizedTitle, isDarkMode);
+        // Export all pages as separate files
+        await exporter.exportAllPages(currentReport, getSectionElement, sanitizedTitle, isDarkMode, 'separate');
       }
     } catch (err: any) {
       console.error('PNG export failed:', err);
@@ -873,6 +876,15 @@ export default function App() {
                     >
                       <Download size={16} />
                       {t('exportAll', uiLanguage)}
+                    </button>
+                    <button
+                      onClick={() => handleExportJpg('combined')}
+                      disabled={!currentReport}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex items-center gap-2"
+                      title="Export all pages as single long PNG"
+                    >
+                      <Download size={16} />
+                      {t('exportLongImage', uiLanguage)}
                     </button>
                   </div>
                 </div>

@@ -61,6 +61,7 @@ export const translations: Translations = {
     // Export
     exportCurrent: 'Export This Page (PNG)',
     exportAll: 'Export All Pages (PNG)',
+    exportLongImage: 'Export Long Image',
     exportTitle: 'Export PNG',
     exportSuccess: 'PNG exported successfully!',
 
@@ -144,6 +145,7 @@ export const translations: Translations = {
     // Export
     exportCurrent: '导出当前页 (PNG)',
     exportAll: '导出所有页 (PNG)',
+    exportLongImage: '导出长图',
     exportTitle: '导出 PNG',
     exportSuccess: 'PNG 导出成功！',
 
