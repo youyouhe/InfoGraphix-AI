@@ -44,6 +44,145 @@
         background: #71717a;
       }
 
+      /* Liquid Blob Animations - Background Glow Effect */
+      @keyframes liquidBlob1 {
+        0%, 100% { border-radius: 40% 60% 50% 50% / 50% 50%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        12.5% { border-radius: 20% 80% 70% 30% / 30% 70%; transform: scaleX(1.6) scaleY(0.4) rotate(25deg); }
+        25% { border-radius: 60% 40% 30% 70% / 70% 30%; transform: scaleX(0.8) scaleY(1.2) rotate(-15deg); }
+        37.5% { border-radius: 80% 50% 60% 20% / 20% 60%; transform: scaleX(1.1) scaleY(0.9) rotate(10deg); }
+        50% { border-radius: 50% 50% 50% 50% / 50% 50%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        62.5% { border-radius: 30% 70% 40% 60% / 60% 40%; transform: scaleX(0.9) scaleY(1.1) rotate(-20deg); }
+        75% { border-radius: 70% 30% 60% 40% / 40% 60%; transform: scaleX(1.2) scaleY(0.8) rotate(15deg); }
+        87.5% { border-radius: 40% 60% 30% 70% / 70% 30%; transform: scaleX(0.7) scaleY(1.3) rotate(-10deg); }
+      }
+
+      @keyframes liquidBlob2 {
+        0%, 100% { border-radius: 60% 40% 30% 70% / 70% 30%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        12.5% { border-radius: 50% 50% 60% 40% / 40% 60%; transform: scaleX(0.9) scaleY(1.1) rotate(-20deg); }
+        25% { border-radius: 30% 70% 40% 60% / 60% 40%; transform: scaleX(1.3) scaleY(0.7) rotate(15deg); }
+        37.5% { border-radius: 40% 60% 50% 50% / 50% 50%; transform: scaleX(1.1) scaleY(0.9) rotate(-10deg); }
+        50% { border-radius: 60% 40% 30% 70% / 70% 30%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        62.5% { border-radius: 50% 50% 40% 60% / 60% 40%; transform: scaleX(0.8) scaleY(1.2) rotate(20deg); }
+        75% { border-radius: 70% 30% 50% 50% / 50% 50%; transform: scaleX(1.2) scaleY(0.8) rotate(-15deg); }
+        87.5% { border-radius: 40% 60% 70% 30% / 30% 70%; transform: scaleX(0.9) scaleY(1.1) rotate(10deg); }
+      }
+
+      @keyframes liquidBlob3 {
+        0%, 100% { border-radius: 50% 50% 50% 50% / 50% 50%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        12.5% { border-radius: 70% 30% 40% 60% / 60% 40%; transform: scaleX(0.8) scaleY(1.2) rotate(15deg); }
+        25% { border-radius: 40% 60% 50% 50% / 50% 50%; transform: scaleX(1.1) scaleY(0.9) rotate(-25deg); }
+        37.5% { border-radius: 60% 40% 30% 70% / 70% 30%; transform: scaleX(1.2) scaleY(0.8) rotate(10deg); }
+        50% { border-radius: 50% 50% 50% 50% / 50% 50%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        62.5% { border-radius: 30% 70% 60% 40% / 40% 60%; transform: scaleX(0.9) scaleY(1.1) rotate(-15deg); }
+        75% { border-radius: 50% 50% 40% 60% / 60% 40%; transform: scaleX(1.3) scaleY(0.7) rotate(20deg); }
+        87.5% { border-radius: 70% 30% 60% 40% / 40% 60%; transform: scaleX(0.7) scaleY(1.3) rotate(-10deg); }
+      }
+
+      @keyframes liquidBlob4 {
+        0%, 100% { border-radius: 40% 60% 30% 70% / 70% 30%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        12.5% { border-radius: 60% 40% 50% 50% / 50% 50%; transform: scaleX(1.1) scaleY(0.9) rotate(-15deg); }
+        25% { border-radius: 50% 50% 60% 40% / 40% 60%; transform: scaleX(0.9) scaleY(1.1) rotate(20deg); }
+        37.5% { border-radius: 70% 30% 40% 60% / 60% 40%; transform: scaleX(1.2) scaleY(0.8) rotate(-10deg); }
+        50% { border-radius: 40% 60% 30% 70% / 70% 30%; transform: scaleX(1) scaleY(1) rotate(0deg); }
+        62.5% { border-radius: 30% 70% 50% 50% / 50% 50%; transform: scaleX(0.8) scaleY(1.2) rotate(15deg); }
+        75% { border-radius: 60% 40% 70% 30% / 30% 70%; transform: scaleX(1.3) scaleY(0.7) rotate(-20deg); }
+        87.5% { border-radius: 50% 50% 40% 60% / 60% 40%; transform: scaleX(0.7) scaleY(1.3) rotate(10deg); }
+      }
+
+      @keyframes liquidFlow1 {
+        0%, 100% { transform: translate(0, 0); }
+        16% { transform: translate(60px, -40px); }
+        32% { transform: translate(-30px, 60px); }
+        48% { transform: translate(-60px, -30px); }
+        64% { transform: translate(40px, 50px); }
+        80% { transform: translate(-50px, -60px); }
+      }
+
+      @keyframes liquidFlow2 {
+        0%, 100% { transform: translate(0, 0); }
+        16% { transform: translate(-50px, 40px); }
+        32% { transform: translate(40px, -50px); }
+        48% { transform: translate(-40px, -30px); }
+        64% { transform: translate(60px, 40px); }
+        80% { transform: translate(-30px, 60px); }
+      }
+
+      @keyframes liquidFlow3 {
+        0%, 100% { transform: translate(0, 0); }
+        16% { transform: translate(30px, 50px); }
+        32% { transform: translate(-60px, -40px); }
+        48% { transform: translate(50px, -60px); }
+        64% { transform: translate(-40px, 30px); }
+        80% { transform: translate(60px, -50px); }
+      }
+
+      @keyframes liquidFlow4 {
+        0%, 100% { transform: translate(0, 0); }
+        16% { transform: translate(-40px, -30px); }
+        32% { transform: translate(50px, 40px); }
+        48% { transform: translate(-30px, 60px); }
+        64% { transform: translate(60px, -40px); }
+        80% { transform: translate(-50px, -50px); }
+      }
+
+      /* Ambient Glow Background */
+      .ambient-glow {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+      }
+
+      .ambient-glow-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+      }
+
+      /* Light theme blobs - subtle pastels */
+      .light .ambient-glow-blob-1 {
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);
+        animation: liquidBlob1 5s ease-in-out infinite, liquidFlow1 7s ease-in-out infinite;
+      }
+
+      .light .ambient-glow-blob-2 {
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+        animation: liquidBlob2 6s ease-in-out infinite, liquidFlow2 8s ease-in-out infinite;
+      }
+
+      .light .ambient-glow-blob-3 {
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.25) 0%, transparent 70%);
+        animation: liquidBlob3 7s ease-in-out infinite, liquidFlow3 9s ease-in-out infinite;
+      }
+
+      .light .ambient-glow-blob-4 {
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%);
+        animation: liquidBlob4 8s ease-in-out infinite, liquidFlow4 10s ease-in-out infinite;
+      }
+
+      /* Dark theme blobs - vibrant neon gradients */
+      .dark .ambient-glow-blob-1 {
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.5) 0%, transparent 70%);
+        animation: liquidBlob1 5s ease-in-out infinite, liquidFlow1 7s ease-in-out infinite;
+      }
+
+      .dark .ambient-glow-blob-2 {
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.4) 0%, transparent 70%);
+        animation: liquidBlob2 6s ease-in-out infinite, liquidFlow2 8s ease-in-out infinite;
+      }
+
+      .dark .ambient-glow-blob-3 {
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.45) 0%, transparent 70%);
+        animation: liquidBlob3 7s ease-in-out infinite, liquidFlow3 9s ease-in-out infinite;
+      }
+
+      .dark .ambient-glow-blob-4 {
+        background: radial-gradient(circle, rgba(34, 211, 238, 0.5) 0%, transparent 70%);
+        animation: liquidBlob4 8s ease-in-out infinite, liquidFlow4 10s ease-in-out infinite;
+      }
+
       /* Neon Glow Effects */
       @keyframes neonPulse {
         0%, 100% {

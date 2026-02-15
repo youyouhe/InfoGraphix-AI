@@ -484,7 +484,15 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 dark:bg-[#161618] overflow-hidden text-gray-900 dark:text-white transition-colors duration-300">
+    <div className="flex flex-col md:flex-row h-screen w-full bg-gray-50 dark:bg-[#161618] overflow-hidden text-gray-900 dark:text-white transition-colors duration-300 relative">
+      {/* Ambient Glow Background */}
+      <div className="ambient-glow">
+        <div className="ambient-glow-blob ambient-glow-blob-1 w-96 h-96 -top-48 -left-48"></div>
+        <div className="ambient-glow-blob ambient-glow-blob-2 w-80 h-80 top-20 -right-40"></div>
+        <div className="ambient-glow-blob ambient-glow-blob-3 w-64 h-64 bottom-20 -left-32"></div>
+        <div className="ambient-glow-blob ambient-glow-blob-4 w-72 h-72 -bottom-36 right-20"></div>
+      </div>
+
       {/* Left Sidebar */}
       {sidebarVisible && <Sidebar
         history={history}
