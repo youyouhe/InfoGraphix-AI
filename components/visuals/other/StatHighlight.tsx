@@ -17,9 +17,6 @@ export const StatHighlight: React.FC<VisualProps> = ({ section }) => {
   const statValue = section.statValue as BilingualText | undefined;
   const content = section.content as BilingualText | undefined;
 
-  // Check if this is bilingual content
-  const isBilingual = statLabel && isBilingualText(statLabel);
-
   // Render single language version
   const renderSingleLanguage = (lang: 'en' | 'zh') => (
     <div className="p-8 bg-gradient-to-br from-gray-50 to-white dark:from-zinc-800 dark:to-zinc-900 rounded-2xl border-2 border-indigo-300 dark:border-indigo-700 shadow-2xl relative overflow-hidden group card-neon-hover neon-border-purple">
@@ -47,7 +44,8 @@ export const StatHighlight: React.FC<VisualProps> = ({ section }) => {
     </div>
   );
 
-  if (isBilingual) {
+  // Check if this is bilingual content (has both en and zh)
+  if (statLabel && isBilingualText(statLabel) && statLabel.en && statLabel.zh) {
     return (
       <div className="mb-8">
         <BilingualSection
@@ -59,6 +57,7 @@ export const StatHighlight: React.FC<VisualProps> = ({ section }) => {
     );
   }
 
+  // Single language rendering
   return (
     <div className="mb-8">
       {renderSingleLanguage('en')}

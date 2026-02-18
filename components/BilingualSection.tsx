@@ -105,7 +105,7 @@ export const BilingualSection: React.FC<BilingualSectionProps> = ({
 /**
  * Helper component to render bilingual text
  */
-export const BilingualText: React.FC<{
+export const BilingualTextSpan: React.FC<{
   text: BilingualText;
   lang?: 'en' | 'zh';
   className?: string;

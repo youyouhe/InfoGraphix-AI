@@ -6,7 +6,7 @@
 import React from 'react';
 import { VisualProps } from '../shared/types';
 import { BilingualText, getBilingualText, isBilingualText } from '../../../types';
-import { BilingualSection, getBilingualLayout } from '../../BilingualSection';
+import { BilingualSection } from '../../BilingualSection';
 
 export const TextSection: React.FC<VisualProps> = ({ section, isLoading = false }) => {
   const content = section.content as BilingualText | undefined;
@@ -28,19 +28,14 @@ export const TextSection: React.FC<VisualProps> = ({ section, isLoading = false 
   );
 
   // Check if this is bilingual content
-  const isBilingual = title && isBilingualText(title);
-
-  if (isBilingual && title && isBilingualText(title)) {
-    // Get the layout mode (would need to be passed in or accessed from context)
-    // For now, default to side-by-side
-    const layout = 'side-by-side' as const;
-
+  if (title && isBilingualText(title) && title.en && title.zh) {
+    // Render both languages side-by-side
     return (
       <div className="mb-8">
         <BilingualSection
           en={renderSingleLanguage('en')}
           zh={renderSingleLanguage('zh')}
-          layout={layout}
+          layout="side-by-side"
         />
       </div>
     );

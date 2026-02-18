@@ -322,14 +322,22 @@ export default function App() {
 
   // Render bilingual text
   const renderBilingualText = (text: BilingualText): React.ReactNode => {
+    if (!text) {
+      return null;
+    }
     if (isBilingualText(text)) {
-      return (
-        <BilingualSection
-          en={<span>{text.en}</span>}
-          zh={<span>{text.zh}</span>}
-          layout={getBilingualLayout(displayMode)}
-        />
-      );
+      // Ensure both en and zh exist before rendering
+      if (text.en && text.zh) {
+        return (
+          <BilingualSection
+            en={<span>{text.en}</span>}
+            zh={<span>{text.zh}</span>}
+            layout={getBilingualLayout(displayMode)}
+          />
+        );
+      }
+      // Fallback to showing whichever language exists
+      return <span>{text.en || text.zh || ''}</span>;
     }
     return <span>{text}</span>;
   };
@@ -804,7 +812,7 @@ export default function App() {
                         className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-xs text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300 shadow-sm dark:shadow-none"
                       >
                         <ExternalLink size={12} />
-                        <span className="truncate max-w-[200px]">{isBilingualText(source.title) ? source.title[language === 'zh' ? 'zh' : 'en'] : source.title}</span>
+                        <span className="truncate max-w-[200px]">{getBilingualText(source.title, language === 'zh' ? 'zh' : 'en')}</span>
                       </a>
                     ))}
                   </div>
@@ -861,7 +869,7 @@ export default function App() {
                             className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:border-indigo-500/50 transition-colors text-xs text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300"
                           >
                             <ExternalLink size={12} />
-                            <span className="truncate max-w-[200px]">{isBilingualText(source.title) ? source.title[language === 'zh' ? 'zh' : 'en'] : source.title}</span>
+                            <span className="truncate max-w-[200px]">{getBilingualText(source.title, language === 'zh' ? 'zh' : 'en')}</span>
                           </a>
                         ))}
                       </div>
@@ -913,7 +921,7 @@ export default function App() {
                               className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:border-indigo-500/50 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors text-sm text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300"
                             >
                               <ExternalLink size={14} />
-                              <span className="truncate">{isBilingualText(source.title) ? source.title[language === 'zh' ? 'zh' : 'en'] : source.title}</span>
+                              <span className="truncate">{getBilingualText(source.title, language === 'zh' ? 'zh' : 'en')}</span>
                             </a>
                           ))}
                         </div>
