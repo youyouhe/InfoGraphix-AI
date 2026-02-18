@@ -1,5 +1,5 @@
 import { domToPng } from 'modern-screenshot';
-import { InfographicReport } from '../../types';
+import { InfographicReport, BilingualText, getBilingualText, isBilingualText } from '../../types';
 
 /**
  * Image Exporter for InfographicReport
@@ -347,6 +347,67 @@ export class ImageExporter {
       await this.exportPageAsPng(element, filename, backgroundColor);
     } else {
       throw new Error(`Page ${pageIndex} not found`);
+    }
+  }
+
+  /**
+   * Check if a report is bilingual (contains bilingual text)
+   */
+  private isBilingualReport(report: InfographicReport): boolean {
+    return isBilingualText(report.title);
+  }
+
+  /**
+   * Export bilingual pages - separate files for English and Chinese
+   * @param report - The InfographicReport to export
+   * @param getSectionElement - Function to get the DOM element for each section
+   * @param basename - Base name for the files (defaults to report title)
+   * @param isDarkMode - Current dark mode state
+   */
+  async exportBilingualPages(
+    report: InfographicReport,
+    getSectionElement: (type: 'title' | 'section' | 'sources', index?: number, lang?: 'en' | 'zh') => HTMLElement | null,
+    basename?: string,
+    isDarkMode?: boolean
+  ): Promise<void> {
+    const sanitizedBasename = (basename || getBilingualText(report.title, 'en'))
+      .replace(/[<>:"/\\|?*]/g, '')
+      .substring(0, 50);
+
+    const backgroundColor = isDarkMode ? '#161618' : '#ffffff';
+
+    const languages: Array<{ code: 'en' | 'zh'; suffix: string }> = [
+      { code: 'en', suffix: 'en' },
+      { code: 'zh', suffix: 'zh' }
+    ];
+
+    for (const lang of languages) {
+      const langBasename = `${sanitizedBasename}_${lang.suffix}`;
+
+      // Collect title + summary page
+      const titleElement = getSectionElement('title', undefined, lang.code);
+      if (titleElement) {
+        await this.exportPageAsPng(titleElement, `${langBasename}_cover.png`, backgroundColor);
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      // Collect each section
+      for (let i = 0; i < report.sections.length; i++) {
+        const sectionElement = getSectionElement('section', i, lang.code);
+        if (sectionElement) {
+          await this.exportPageAsPng(sectionElement, `${langBasename}_page_${i + 1}.png`, backgroundColor);
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
+
+      // Collect sources page if available
+      if (report.sources && report.sources.length > 0) {
+        const sourcesElement = getSectionElement('sources', undefined, lang.code);
+        if (sourcesElement) {
+          await this.exportPageAsPng(sourcesElement, `${langBasename}_sources.png`, backgroundColor);
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
     }
   }
 

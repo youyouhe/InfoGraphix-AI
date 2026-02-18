@@ -311,16 +311,30 @@ export const CORE_SYSTEM_INSTRUCTION = getCoreSystemInstruction(5);
 /**
  * Get dynamic report schema for Gemini (uses native Schema type)
  * The enum values are fetched dynamically from the section registry
+ * @param language - Target language for the report
  */
-export function getReportSchema(): Schema {
+export function getReportSchema(language: Language = 'en'): Schema {
   // Get dynamically registered section types
   const sectionTypes = getSectionTypeSchemaEnum();
+
+  // For bilingual mode, use object schema with en/zh properties
+  const isBilingual = language === 'bilingual';
+  const textSchema = isBilingual
+    ? {
+        type: Type.OBJECT,
+        properties: {
+          en: { type: Type.STRING, description: "English text" },
+          zh: { type: Type.STRING, description: "Chinese (Simplified) text" }
+        },
+        required: ["en", "zh"]
+      }
+    : { type: Type.STRING };
 
   return {
     type: Type.OBJECT,
     properties: {
-      title: { type: Type.STRING, description: "A catchy, journalistic headline for the infographic report." },
-      summary: { type: Type.STRING, description: "A concise executive summary/intro (approx 80-100 words) setting the context." },
+      title: textSchema as any,
+      summary: textSchema as any,
       sections: {
         type: Type.ARRAY,
         items: {
@@ -331,10 +345,10 @@ export function getReportSchema(): Schema {
               enum: sectionTypes as any,
               description: "The visual component type.",
             },
-            title: { type: Type.STRING, description: "Section header." },
-            content: { type: Type.STRING, description: "Contextual narrative text." },
-            statValue: { type: Type.STRING, description: "ONLY for 'stat_highlight'. The focal number (e.g., '42%', '$10B')." },
-            statLabel: { type: Type.STRING, description: "ONLY for 'stat_highlight'. Label for the statistic." },
+            title: textSchema as any,
+            content: textSchema as any,
+            statValue: textSchema as any,
+            statLabel: textSchema as any,
             statTrend: { type: Type.STRING, enum: ['up', 'down', 'neutral'], description: "Visual trend indicator." },
             data: {
               type: Type.OBJECT,
@@ -347,8 +361,8 @@ export function getReportSchema(): Schema {
                 type: Type.OBJECT,
                 properties: {
                   step: { type: Type.NUMBER },
-                  title: { type: Type.STRING },
-                  description: { type: Type.STRING }
+                  title: textSchema as any,
+                  description: textSchema as any
                 }
               }
             },
@@ -358,9 +372,9 @@ export function getReportSchema(): Schema {
               items: {
                 type: Type.OBJECT,
                 properties: {
-                  label: { type: Type.STRING },
-                  left: { type: Type.STRING },
-                  right: { type: Type.STRING }
+                  label: textSchema as any,
+                  left: textSchema as any,
+                  right: textSchema as any
                 },
                 required: ["label", "left", "right"]
               }
@@ -446,15 +460,29 @@ export const REPORT_SCHEMA: Schema = {
 /**
  * Get dynamic JSON Schema version for non-Gemini providers
  * (OpenAI, DeepSeek, OpenRouter use JSON schema format)
+ * @param language - Target language for the report
  */
-export function getReportJsonSchema(): Record<string, unknown> {
+export function getReportJsonSchema(language: Language = 'en'): Record<string, unknown> {
   const sectionTypes = getSectionTypeSchemaEnum();
+
+  // For bilingual mode, use object schema with en/zh properties
+  const isBilingual = language === 'bilingual';
+  const textSchema = isBilingual
+    ? {
+        type: "object",
+        properties: {
+          en: { type: "string", description: "English text" },
+          zh: { type: "string", description: "Chinese (Simplified) text" }
+        },
+        required: ["en", "zh"]
+      }
+    : { type: "string" };
 
   return {
     type: "object",
     properties: {
-      title: { type: "string", description: "A catchy, journalistic headline for the infographic report." },
-      summary: { type: "string", description: "A concise executive summary/intro (approx 80-100 words) setting the context." },
+      title: textSchema,
+      summary: textSchema,
       sections: {
         type: "array",
         items: {
@@ -465,10 +493,10 @@ export function getReportJsonSchema(): Record<string, unknown> {
               enum: sectionTypes,
               description: "The visual component type."
             },
-            title: { type: "string", description: "Section header." },
-            content: { type: "string", description: "Contextual narrative text." },
-            statValue: { type: "string", description: "ONLY for 'stat_highlight'. The focal number (e.g., '42%', '$10B')." },
-            statLabel: { type: "string", description: "ONLY for 'stat_highlight'. Label for the statistic." },
+            title: textSchema,
+            content: textSchema,
+            statValue: textSchema,
+            statLabel: textSchema,
             statTrend: { type: "string", enum: ['up', 'down', 'neutral'], description: "Visual trend indicator." },
             data: {
               type: "object",
@@ -481,8 +509,8 @@ export function getReportJsonSchema(): Record<string, unknown> {
                 type: "object",
                 properties: {
                   step: { type: "number" },
-                  title: { type: "string" },
-                  description: { type: "string" }
+                  title: textSchema,
+                  description: textSchema
                 }
               }
             },
@@ -492,9 +520,9 @@ export function getReportJsonSchema(): Record<string, unknown> {
               items: {
                 type: "object",
                 properties: {
-                  label: { type: "string" },
-                  left: { type: "string" },
-                  right: { type: "string" }
+                  label: textSchema,
+                  left: textSchema,
+                  right: textSchema
                 },
                 required: ["label", "left", "right"]
               }
@@ -669,6 +697,62 @@ Isso inclui:
 - Todos os itens de comparação e rótulos
 
 O usuário fala português e espera todo o relatório de infográfico em português.`,
+  bilingual: `
+
+**CRITICAL - BILINGUAL OUTPUT REQUIREMENT:**
+You MUST output ALL content in **BOTH English AND Chinese (Simplified)**.
+This is a bilingual report - you need to provide translations for EVERY text field.
+
+**Format for ALL text fields:**
+Instead of a simple string like "title": "My Title", you MUST use the bilingual object format:
+"title": { "en": "My Title", "zh": "我的标题" }
+
+This applies to:
+- Report title and summary
+- All section titles and content
+- All chart labels, data names, and descriptions
+- All step titles and process flow descriptions
+- All comparison items and labels
+- All source titles
+
+**EXAMPLE of correct bilingual format:**
+\`\`\`json
+{
+  "title": { "en": "The Evolution of AI", "zh": "人工智能的演进" },
+  "summary": {
+    "en": "This report explores the development of artificial intelligence from 2020 to 2024.",
+    "zh": "本报告探讨了2020年至2024年间人工智能的发展。"
+  },
+  "sections": [
+    {
+      "type": "sequence-timeline-simple",
+      "title": { "en": "Timeline of AI Milestones", "zh": "AI发展里程碑" },
+      "data": {
+        "title": { "en": "Key Events", "zh": "关键事件" },
+        "items": [
+          { "label": { "en": "2020", "zh": "2020年" }, "desc": { "en": "GPT-3 released", "zh": "GPT-3发布" } },
+          { "label": { "en": "2022", "zh": "2022年" }, "desc": { "en": "ChatGPT launched", "zh": "ChatGPT推出" } }
+        ]
+      }
+    }
+  ],
+  "sources": [
+    {
+      "title": { "en": "OpenAI Research", "zh": "OpenAI研究" },
+      "uri": "https://openai.com/research"
+    }
+  ]
+}
+\`\`\`
+
+**IMPORTANT NOTES:**
+- ALWAYS provide both English and Chinese versions
+- Ensure translations are accurate and natural, not machine-translated literally
+- Use proper Simplified Chinese (中文简体)
+- Keep the same meaning and tone across both languages
+- For data labels (chart categories, timeline dates, etc.), provide bilingual versions
+- For numbers and statistics, keep them the same in both languages (e.g., "42%" in both)
+`,
 };
 
 /**
@@ -697,6 +781,7 @@ export function getLanguageName(code: Language): string {
     fr: 'Français',
     de: 'Deutsch',
     pt: 'Português',
+    bilingual: 'English + 中文',
   };
   return names[code] || 'English';
 }

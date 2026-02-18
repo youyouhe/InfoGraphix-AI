@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import SettingsModal from './components/SettingsModal';
 import { LLMServiceFactory, saveApiKey, getStoredApiKey } from './services/factory';
-import { HistoryItem, InfographicReport, SectionType, DisplayMode } from './types';
+import { HistoryItem, InfographicReport, SectionType, DisplayMode, BilingualText, getBilingualText, isBilingualText } from './types';
 import { TextSection, StatHighlight, ChartSection, ProcessFlow, ComparisonSection } from './components/Visuals';
 import { VisualTypesGallery } from './components/VisualTypesGallery';
 import { Share2, Download, ExternalLink, Sparkles, ArrowDown, Loader2, Moon, Sun, Bug, X, Key, Monitor, Settings, PanelLeftClose, PanelLeftOpen, Languages, Grid3x3 } from 'lucide-react';
@@ -14,6 +14,7 @@ import { ImageExporter } from './services/export/svgExporter';
 import { loadHistory, saveHistory, clearHistoryStorage } from './services/historyStorage';
 import { Language, getInitialLanguage, saveLanguage, UILanguage, getInitialUILanguage, saveUILanguage } from './i18n';
 import { debugStore } from './services/debugStore';
+import { BilingualSection, getBilingualLayout } from './components/BilingualSection';
 
 export default function App() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -236,7 +237,8 @@ export default function App() {
         id: Date.now().toString(),
         query: topic,
         timestamp: Date.now(),
-        report: normalizedReport
+        report: normalizedReport,
+        language: language === 'bilingual' ? 'bilingual' : language
       };
 
       setHistory(prev => [newHistoryItem, ...prev]);
@@ -311,6 +313,37 @@ export default function App() {
     return 1 + report.sections.length + (report.sources && report.sources.length > 0 ? 1 : 0);
   };
 
+  // Check if the current report is bilingual
+  const isBilingualReport = (report: InfographicReport | null): boolean => {
+    if (!report) return false;
+    // Check if title is a bilingual object
+    return isBilingualText(report.title);
+  };
+
+  // Render bilingual text
+  const renderBilingualText = (text: BilingualText): React.ReactNode => {
+    if (isBilingualText(text)) {
+      return (
+        <BilingualSection
+          en={<span>{text.en}</span>}
+          zh={<span>{text.zh}</span>}
+          layout={getBilingualLayout(displayMode)}
+        />
+      );
+    }
+    return <span>{text}</span>;
+  };
+
+  // Get text for a specific language from bilingual text
+  const getText = (text: BilingualText, lang: 'en' | 'zh'): string => {
+    return getBilingualText(text, lang);
+  };
+
+  // Get the effective language for rendering (en or zh for single, 'both' for bilingual)
+  const getRenderLanguage = (): 'en' | 'zh' | 'both' => {
+    return language === 'bilingual' ? 'both' : language as 'en' | 'zh';
+  };
+
   // Normalize report fields - handle field name variations from LLM
   const normalizeReport = (report: any): InfographicReport => {
     if (!report) return report;
@@ -363,36 +396,84 @@ export default function App() {
     try {
       const exporter = new ImageExporter();
 
+      // Check if this is a bilingual report
+      const isBilingual = isBilingualText(currentReport.title);
+
       // Helper function to get section elements from capture container
-      const getSectionElement = (type: 'title' | 'section' | 'sources', index?: number) => {
+      const getSectionElement = (type: 'title' | 'section' | 'sources', index?: number, lang?: 'en' | 'zh') => {
         if (!captureContainerRef.current) return null;
 
+        // For bilingual reports, use language-specific elements
+        if (isBilingual && lang) {
+          const suffix = lang === 'zh' ? 'zh' : 'en';
+          if (type === 'title') {
+            return captureContainerRef.current.querySelector(`[data-export-page="title-${suffix}"]`) as HTMLElement;
+          }
+          if (type === 'sources') {
+            return captureContainerRef.current.querySelector(`[data-export-page="sources-${suffix}"]`) as HTMLElement;
+          }
+        }
+
+        // Fallback to non-language-specific elements for single-language or when lang is not specified
         if (type === 'title') {
-          return captureContainerRef.current.querySelector('[data-export-page="title"]') as HTMLElement;
+          return captureContainerRef.current.querySelector('[data-export-page="title-en"]') as HTMLElement
+            || captureContainerRef.current.querySelector('[data-export-page="title"]') as HTMLElement;
         }
         if (type === 'section' && index !== undefined) {
           return captureContainerRef.current.querySelector(`[data-export-page="section-${index}"]`) as HTMLElement;
         }
         if (type === 'sources') {
-          return captureContainerRef.current.querySelector('[data-export-page="sources"]') as HTMLElement;
+          return captureContainerRef.current.querySelector('[data-export-page="sources-en"]') as HTMLElement
+            || captureContainerRef.current.querySelector('[data-export-page="sources"]') as HTMLElement;
         }
         return null;
       };
 
       // Sanitize filename
-      const sanitizedTitle = currentReport.title
+      const sanitizedTitle = isBilingual
+        ? getBilingualText(currentReport.title, 'en')
+        : currentReport.title;
+      const sanitizedBasename = sanitizedTitle
         .replace(/[<>:"/\\|?*]/g, '')
         .substring(0, 50);
 
-      if (mode === 'current') {
-        // Export current page only
-        await exporter.exportSinglePage(currentReport, currentPage, getSectionElement, sanitizedTitle, isDarkMode);
-      } else if (mode === 'combined') {
-        // Export all pages combined into single long image
-        await exporter.exportAllPages(currentReport, getSectionElement, sanitizedTitle, isDarkMode, 'combined');
+      if (isBilingual) {
+        // Bilingual export - separate files for each language
+        if (mode === 'current') {
+          // For current page, export both languages
+          const lang = language === 'zh' ? 'zh' : 'en';
+          const element = getSectionElement(
+            currentPage === 0 ? 'title' :
+              currentPage <= currentReport.sections.length ? 'section' : 'sources',
+            currentPage === 0 ? undefined :
+              currentPage <= currentReport.sections.length ? currentPage - 1 : undefined,
+            lang
+          );
+          if (element) {
+            await exporter.exportPageAsPng(
+              element,
+              `${sanitizedBasename}_${lang}_page_${currentPage}.png`,
+              isDarkMode ? '#161618' : '#ffffff'
+            );
+          }
+        } else if (mode === 'combined') {
+          // Export combined long image for each language
+          for (const lang of ['en', 'zh'] as const) {
+            await exporter.exportAllPages(currentReport, (type, index) => getSectionElement(type, index, lang), `${sanitizedBasename}_${lang}`, isDarkMode, 'combined');
+          }
+        } else {
+          // Export all pages as separate files for each language
+          await exporter.exportBilingualPages(currentReport, getSectionElement, sanitizedBasename, isDarkMode);
+        }
       } else {
-        // Export all pages as separate files
-        await exporter.exportAllPages(currentReport, getSectionElement, sanitizedTitle, isDarkMode, 'separate');
+        // Single language export (original behavior)
+        if (mode === 'current') {
+          await exporter.exportSinglePage(currentReport, currentPage, getSectionElement, sanitizedBasename, isDarkMode);
+        } else if (mode === 'combined') {
+          await exporter.exportAllPages(currentReport, getSectionElement, sanitizedBasename, isDarkMode, 'combined');
+        } else {
+          await exporter.exportAllPages(currentReport, getSectionElement, sanitizedBasename, isDarkMode, 'separate');
+        }
       }
     } catch (err: any) {
       console.error('PNG export failed:', err);
@@ -669,11 +750,11 @@ export default function App() {
               <div className="text-center mb-16 relative">
                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
                  <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-600 to-indigo-800 dark:from-white dark:via-indigo-200 dark:to-indigo-400 mb-6 relative z-10">
-                   {currentReport.title || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-3/4 inline-block"></span>}
+                   {currentReport.title ? renderBilingualText(currentReport.title) : <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-3/4 inline-block"></span>}
                  </h1>
                  <div className="max-w-2xl mx-auto bg-white/50 dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-6 rounded-2xl relative z-10 shadow-xl dark:shadow-2xl">
                     <p className="text-lg text-gray-700 dark:text-zinc-300 leading-relaxed font-light">
-                      {currentReport.summary || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-20 w-full inline-block"></span>}
+                      {currentReport.summary ? renderBilingualText(currentReport.summary) : <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-20 w-full inline-block"></span>}
                     </p>
                  </div>
               </div>
@@ -723,7 +804,7 @@ export default function App() {
                         className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-xs text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300 shadow-sm dark:shadow-none"
                       >
                         <ExternalLink size={12} />
-                        <span className="truncate max-w-[200px]">{source.title}</span>
+                        <span className="truncate max-w-[200px]">{isBilingualText(source.title) ? source.title[language === 'zh' ? 'zh' : 'en'] : source.title}</span>
                       </a>
                     ))}
                   </div>
@@ -751,10 +832,10 @@ export default function App() {
                     <div className="text-center bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl">
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
                       <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-600 to-indigo-800 dark:from-white dark:via-indigo-200 dark:to-indigo-400 mb-6 relative z-10">
-                        {currentReport.title || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-12 w-3/4 inline-block"></span>}
+                        {currentReport.title ? renderBilingualText(currentReport.title) : <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-12 w-3/4 inline-block"></span>}
                       </h1>
                       <p className="text-lg text-gray-700 dark:text-zinc-300 leading-relaxed font-light">
-                        {currentReport.summary || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-full inline-block"></span>}
+                        {currentReport.summary ? renderBilingualText(currentReport.summary) : <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-full inline-block"></span>}
                       </p>
                     </div>
                   </div>
@@ -780,7 +861,7 @@ export default function App() {
                             className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:border-indigo-500/50 transition-colors text-xs text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300"
                           >
                             <ExternalLink size={12} />
-                            <span className="truncate max-w-[200px]">{source.title}</span>
+                            <span className="truncate max-w-[200px]">{isBilingualText(source.title) ? source.title[language === 'zh' ? 'zh' : 'en'] : source.title}</span>
                           </a>
                         ))}
                       </div>
@@ -807,10 +888,10 @@ export default function App() {
                       /* Summary Page */
                       <div className="w-full max-w-4xl text-center bg-white dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-8 rounded-2xl shadow-xl animate-fade-in">
                         <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-600 to-indigo-800 dark:from-white dark:via-indigo-200 dark:to-indigo-400 mb-6">
-                          {currentReport.title || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-12 w-3/4 inline-block"></span>}
+                          {currentReport.title ? renderBilingualText(currentReport.title) : <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-12 w-3/4 inline-block"></span>}
                         </h1>
                         <p className="text-xl text-gray-700 dark:text-zinc-300 leading-relaxed font-light">
-                          {currentReport.summary || <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-full inline-block"></span>}
+                          {currentReport.summary ? renderBilingualText(currentReport.summary) : <span className="animate-pulse bg-gray-200 dark:bg-zinc-800 rounded h-16 w-full inline-block"></span>}
                         </p>
                       </div>
                     ) : currentPage <= (currentReport.sections?.length ?? 0) ? (
@@ -832,7 +913,7 @@ export default function App() {
                               className="flex items-center gap-2 px-4 py-3 bg-gray-50 dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-zinc-700 hover:border-indigo-500/50 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors text-sm text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300"
                             >
                               <ExternalLink size={14} />
-                              <span className="truncate">{source.title}</span>
+                              <span className="truncate">{isBilingualText(source.title) ? source.title[language === 'zh' ? 'zh' : 'en'] : source.title}</span>
                             </a>
                           ))}
                         </div>
@@ -1122,20 +1203,39 @@ export default function App() {
             className="fixed left-0 top-0 pointer-events-none -z-50"
             style={{ visibility: 'hidden', width: 'fit-content', height: 'fit-content' }}
           >
-            {/* Title + Summary Page */}
+            {/* Title + Summary Page - English */}
             <div
-              data-export-page="title"
+              data-export-page="title-en"
               className="bg-white dark:bg-[#161618]"
               style={{ padding: '60px', width: '1200px' }}
             >
               <div className="text-center relative">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
                 <h1 className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-600 to-indigo-800 dark:from-white dark:via-indigo-200 dark:to-indigo-400 mb-8 relative z-10">
-                  {currentReport.title}
+                  {getBilingualText(currentReport.title, 'en')}
                 </h1>
                 <div className="max-w-5xl mx-auto bg-white/50 dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-10 rounded-2xl relative z-10 shadow-xl dark:shadow-2xl">
                   <p className="text-2xl text-gray-700 dark:text-zinc-300 leading-relaxed font-light">
-                    {currentReport.summary}
+                    {getBilingualText(currentReport.summary, 'en')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Title + Summary Page - Chinese */}
+            <div
+              data-export-page="title-zh"
+              className="bg-white dark:bg-[#161618]"
+              style={{ padding: '60px', width: '1200px' }}
+            >
+              <div className="text-center relative">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl rounded-full pointer-events-none" />
+                <h1 className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-indigo-600 to-indigo-800 dark:from-white dark:via-indigo-200 dark:to-indigo-400 mb-8 relative z-10">
+                  {getBilingualText(currentReport.title, 'zh')}
+                </h1>
+                <div className="max-w-5xl mx-auto bg-white/50 dark:bg-zinc-900/80 backdrop-blur border border-gray-200 dark:border-zinc-700 p-10 rounded-2xl relative z-10 shadow-xl dark:shadow-2xl">
+                  <p className="text-2xl text-gray-700 dark:text-zinc-300 leading-relaxed font-light">
+                    {getBilingualText(currentReport.summary, 'zh')}
                   </p>
                 </div>
               </div>
@@ -1176,10 +1276,10 @@ export default function App() {
               </div>
             ))}
 
-            {/* Sources Page */}
+            {/* Sources Page - English */}
             {currentReport.sources && currentReport.sources.length > 0 && (
               <div
-                data-export-page="sources"
+                data-export-page="sources-en"
                 className="bg-white dark:bg-[#161618]"
                 style={{ padding: '60px', width: '1200px' }}
               >
@@ -1194,7 +1294,32 @@ export default function App() {
                       className="flex items-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-base text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300 shadow-sm dark:shadow-none"
                     >
                       <ExternalLink size={16} />
-                      <span className="truncate">{source.title}</span>
+                      <span className="truncate">{getBilingualText(source.title, 'en')}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sources Page - Chinese */}
+            {currentReport.sources && currentReport.sources.length > 0 && (
+              <div
+                data-export-page="sources-zh"
+                className="bg-white dark:bg-[#161618]"
+                style={{ padding: '60px', width: '1200px' }}
+              >
+                <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-10">{t('sources', uiLanguage)}</h2>
+                <div className="grid grid-cols-2 gap-6">
+                  {currentReport.sources.map((source, i) => (
+                    <a
+                      key={`zh-${i}`}
+                      href={source.uri}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-3 px-6 py-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-800 hover:border-indigo-500/50 hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors text-base text-gray-500 dark:text-zinc-400 hover:text-indigo-600 dark:hover:text-indigo-300 shadow-sm dark:shadow-none"
+                    >
+                      <ExternalLink size={16} />
+                      <span className="truncate">{getBilingualText(source.title, 'zh')}</span>
                     </a>
                   ))}
                 </div>

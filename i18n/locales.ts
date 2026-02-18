@@ -1,7 +1,7 @@
 /**
- * Supported languages for LLM output (8 languages)
+ * Supported languages for LLM output (9 languages including bilingual)
  */
-export type Language = 'en' | 'zh' | 'ja' | 'ko' | 'es' | 'fr' | 'de' | 'pt';
+export type Language = 'en' | 'zh' | 'ja' | 'ko' | 'es' | 'fr' | 'de' | 'pt' | 'bilingual';
 
 /**
  * UI language - only for interface translations (en/zh only)
@@ -25,6 +25,7 @@ export const SUPPORTED_LANGUAGES: LanguageInfo[] = [
   { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
   { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪' },
   { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇧🇷' },
+  { code: 'bilingual', name: 'Bilingual', nativeName: 'English + 中文', flag: '🌐' },
 ];
 
 export const DEFAULT_LANGUAGE: Language = 'en';

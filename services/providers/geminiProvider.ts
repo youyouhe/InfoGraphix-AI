@@ -45,8 +45,8 @@ export class GeminiProvider implements LLMProvider {
     try {
       const model = options?.model || (options?.maxTokens ? 'gemini-2.5-pro' : this.defaultModel);
 
-      // Use dynamic schema based on registered types
-      const reportSchema = getReportSchema();
+      // Use dynamic schema based on registered types and language
+      const reportSchema = getReportSchema(language);
 
       const response = await this.ai.models.generateContentStream({
         model: model,
